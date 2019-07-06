@@ -98,6 +98,7 @@ Wanderluster builds on the ideas drawn from the semantic web and is extensible. 
 - PatchValidator - responsible for validating the semantics of a patch request
 - EntityManager - responsible for retrieving and saving materialized entities
 - PropertyManager - responsible for retrieving metadata for a property
+- ObjectStorageManager - implements the storing/retrieving of entities from local storage, S3 or other sources
 
 
 
