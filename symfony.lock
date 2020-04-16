@@ -14,9 +14,6 @@
             "config/packages/aws.yaml"
         ]
     },
-    "brick/math": {
-        "version": "0.8.14"
-    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {
@@ -83,12 +80,6 @@
     },
     "ralouphie/getallheaders": {
         "version": "3.0.3"
-    },
-    "ramsey/collection": {
-        "version": "1.0.1"
-    },
-    "ramsey/uuid": {
-        "version": "4.0.1"
     },
     "sensio/framework-extra-bundle": {
         "version": "5.2",
