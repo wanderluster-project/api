@@ -31,13 +31,15 @@ class ShardCoordinator
      * Simple algorithm.  This can be expanded in the future.
      * @return int
      */
-    public function getAvailableShard(): int
+    public function getAvailableShard(): Shard
     {
-        return rand($this->min, $this->max);
+        $shardId = rand($this->min, $this->max);
+        return new Shard($shardId);
     }
 
-    public function isValidShard($shard)
+    public function isValidShard(Shard $shard): bool
     {
-        return $shard>= $this->min && $shard <= $this->max;
+        $shardId = $shard->getShardId();
+        return $shardId>= $this->min && $shardId <= $this->max;
     }
 }

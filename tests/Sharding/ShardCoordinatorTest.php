@@ -16,8 +16,8 @@ class ShardCoordinatorTest extends TestCase
 
         $sut = new ShardCoordinator($min, $max);
         for ($i=0;$i<=20;$i++) {
-            $this->assertGreaterThanOrEqual($min, $sut->getAvailableShard());
-            $this->assertLessThanOrEqual($max, $sut->getAvailableShard());
+            $this->assertGreaterThanOrEqual($min, $sut->getAvailableShard()->getShardId());
+            $this->assertLessThanOrEqual($max, $sut->getAvailableShard()->getShardId());
         }
     }
 }
