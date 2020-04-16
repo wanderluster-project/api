@@ -35,4 +35,9 @@ class ShardCoordinator
     {
         return rand($this->min, $this->max);
     }
+
+    public function isValidShard($shard)
+    {
+        return $shard>= $this->min && $shard <= $this->max;
+    }
 }

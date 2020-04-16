@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Sharding;
 
+use App\Exception\ErrorMessages;
+use App\Exception\WanderlusterException;
+
 class UuidFactory
 {
     /**
@@ -17,14 +20,20 @@ class UuidFactory
     protected $uuidStorage;
 
     /**
+     * @var TypeCoordinator
+     */
+    protected $typeCoordinator;
+
+    /**
      * UuidFactory constructor.
      * @param ShardCoordinator $shardCoordinator
      * @param UuidStorage $uuidStorage
      */
-    public function __construct(ShardCoordinator $shardCoordinator, UuidStorage $uuidStorage)
+    public function __construct(ShardCoordinator $shardCoordinator, UuidStorage $uuidStorage, TypeCoordinator $typeCoordinator)
     {
         $this->shardCoordinator = $shardCoordinator;
         $this->uuidStorage = $uuidStorage;
+        $this->typeCoordinator = $typeCoordinator;
     }
 
     /**
@@ -32,16 +41,19 @@ class UuidFactory
      *
      * @param string $slug
      * @param int $type
-     * @return string
+     * @return Uuid
+     * @throws WanderlusterException
      */
-    public function generateUUID(string $slug, int $type): string
+    public function generateUUID(string $slug, int $type): Uuid
     {
         $shard = $this->shardCoordinator->getAvailableShard();
         $identifier = substr(md5($slug), 0, 16);
 
-        // @todo add guard rails to check that slug/type/subtype are within appropriate range
+        if (!$this->typeCoordinator->isValidType($type)) {
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_TYPE, $type));
+        }
 
-        $uuid = dechex($shard) . '-' . dechex($type) . '-' . $identifier;
+        $uuid = new Uuid($shard . '-' . $type . '-' . $identifier);
         $this->uuidStorage->allocate($uuid);
 
         return $uuid;

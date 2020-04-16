@@ -6,22 +6,22 @@ namespace App\Sharding;
 
 class Uuid
 {
-    public $uuid;
+    protected $uuid;
 
     /**
      * @var int
      */
-    public $shard;
+    protected $shard;
 
     /**
      * @var int
      */
-    public $type;
+    protected $type;
 
     /**
-     * @var int
+     * @var string
      */
-    public $identifier;
+    protected $identifier;
 
     /**
      * Uuid constructor.
@@ -31,9 +31,9 @@ class Uuid
     {
         $this->uuid = $uuid;
         $uuidParts = explode('-', $uuid);
-        $this->shard = hexdec($uuidParts[0]);
-        $this->type = hexdec($uuidParts[1]);
-        $this->identifier = hexdec($uuidParts[2]);
+        $this->shard = (int) $uuidParts[0];
+        $this->type = (int) $uuidParts[1];
+        $this->identifier =  $uuidParts[2];
     }
 
     /**
@@ -58,8 +58,26 @@ class Uuid
      * Get the Identifier for this object.
      * @return int
      */
-    public function getIdentifier():int
+    public function getIdentifier():string
     {
         return $this->identifier;
+    }
+
+    /**
+     * Return the string representation.
+     * @return string
+     */
+    public function asString():string
+    {
+        return $this->__toString();
+    }
+
+    /**
+     * Return the string representation.
+     * @return string
+     */
+    public function __toString():string
+    {
+        return $this->uuid;
     }
 }
