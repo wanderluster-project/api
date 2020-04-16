@@ -3,3 +3,8 @@ vendor/*
 .DS_Store
 .env
 var/*
+###> symfony/phpunit-bridge ###
+.phpunit
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###

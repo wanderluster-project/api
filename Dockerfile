@@ -5,10 +5,10 @@ FROM ubuntu:18.04
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
     apt -y upgrade && \
-    apt-get install -y curl wget gzip git && \
+    apt-get install -y curl wget gzip git zip && \
     apt-get install -y apache2 && \
     apt-get install -y php libapache2-mod-php php-mysql php-dom php-xml php-mbstring php-intl && \
-    rm -Rf /var/www/html && \
+    rm -Rf /var/www/html/* && \
     rmdir /var/www/html && \
     ln -s /var/www/wanderluster/public /var/www/html
 
@@ -23,7 +23,9 @@ RUN wget https://get.symfony.com/cli/installer -O - | bash && \
     php composer-setup.php && \
     php -r "unlink('composer-setup.php');" && \
     mv composer.phar /usr/bin/composer && \
-    chmod +x /usr/bin/composer
+    chmod +x /usr/bin/composer && \
+    wget https://cs.symfony.com/download/php-cs-fixer-v2.phar -O /var/www/wanderluster/bin/php-cs-fixer && \
+    chmod +x /var/www/wanderluster/bin/php-cs-fixer
 
 EXPOSE 80
 CMD apachectl -D FOREGROUND
