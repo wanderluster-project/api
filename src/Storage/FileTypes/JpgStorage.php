@@ -14,24 +14,17 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class JpgStorage implements FileStorageInterface
 {
     /**
-     * @var StorageAdapterInterface
+     * @var FileUtilities
      */
-    protected $storageAdapter;
+    protected $fileUtilities;
 
     /**
-     * @var UuidFactory
+     * JpgStorage constructor.
+     * @param FileUtilities $fileUtilities
      */
-    protected $uuidFactory;
-
-    /**
-     * JpegImageStorage constructor.
-     * @param StorageAdapterInterface $storageAdapter
-     * @param UuidFactory $uuidFactory
-     */
-    public function __construct(StorageAdapterInterface $storageAdapter, UuidFactory $uuidFactory)
+    public function __construct(FileUtilities $fileUtilities)
     {
-        $this->storageAdapter=$storageAdapter;
-        $this->uuidFactory =$uuidFactory;
+        $this->fileUtilities= $fileUtilities;
     }
 
     public function isSupportedFile(File $file): bool
@@ -47,22 +40,13 @@ class JpgStorage implements FileStorageInterface
 
     public function saveFile(File $file)
     {
-        $mimeType = $file->getMimeType();
-        if (!in_array($mimeType, $this->getMimeTypes())) {
-            throw new BadRequestHttpException(sprintf('Invalid MIME type: %s', $mimeType));
-        }
-
-        $uuid = $this->uuidFactory->generateUUID($file->getFilename(), EntityTypes::FILE_IMAGE_JPG);
-        $filename = $uuid . $this->getFileExt() ;
-        $this->storageAdapter->copyFromLocal($file->getRealPath(), $this->getPathPrefix() . '/' . $filename);
-
-        return [
-            'status' => 'success',
-            'uuid' => $uuid,
-            'mime_type' => $mimeType,
-            'file_size' => $file->getSize(),
-            'url' => $this->generateFileUrl($uuid),
-        ];
+        return $this->fileUtilities->saveFile(
+            $file,
+            $this->getMimeTypes(),
+            $this->getFileExt(),
+            $this->getEntityType(),
+            $this->getPathPrefix()
+        );
     }
 
     public function archiveFile(File $file)
@@ -72,7 +56,7 @@ class JpgStorage implements FileStorageInterface
 
     public function generateFileUrl(Uuid $uuid): string
     {
-        return $this->storageAdapter->generateFileUrl($this->getPathPrefix().'/'.$uuid.'.'.$this->getFileExt());
+        return $this->fileUtilities->generateFileUrl($uuid, $this->getFileExt(), $this->getPathPrefix());
     }
 
     /**
@@ -83,11 +67,18 @@ class JpgStorage implements FileStorageInterface
         return ['image/jpeg','image/jpg'];
     }
 
-    protected function getFileExt():string{
+    protected function getFileExt():string
+    {
         return 'jpg';
     }
 
-    protected function getPathPrefix(){
+    protected function getPathPrefix()
+    {
         return 'images/original';
+    }
+
+    protected function getEntityType()
+    {
+        return EntityTypes::FILE_IMAGE_JPG;
     }
 }
