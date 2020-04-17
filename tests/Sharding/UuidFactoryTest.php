@@ -20,7 +20,7 @@ class UuidFactoryTest extends TestCase
         $typeCoordinator = new TypeCoordinator();
 
         $sut = new UuidFactory($shardCoordinator, $uuidStorage, $typeCoordinator);
-        $this->assertEquals('0-100-'.$this->getId('foobar'), $sut->generateUUID('foobar', new EntityType(100)));
+        $this->assertEquals('0-100-'.$this->getId('foobar'), $sut->generateUUID('foobar', 100));
     }
 
     protected function getId($slug)

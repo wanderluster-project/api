@@ -33,6 +33,7 @@ class UploadController
                 $response
             );
         } catch (Exception $e) {
+            throw $e;
             throw new HttpException(500, 'Error encountered saving file.  Please try again later.', $e);
         }
     }

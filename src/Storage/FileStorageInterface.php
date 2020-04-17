@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use App\Sharding\EntityType;
 use App\Sharding\Uuid;
 
-interface StorageInterface
+interface FileStorageInterface
 {
     public function isSupportedFile(File $file):bool;
 

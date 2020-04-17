@@ -11,9 +11,9 @@ use App\Sharding\UuidFactory;
 use App\Storage\FileSystemAdapters\StorageAdapterInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use App\Storage\StorageInterface;
+use App\Storage\FileStorageInterface;
 
-class ImageStorage implements StorageInterface
+class ImageStorage implements FileStorageInterface
 {
     const IMAGE_PATH_PREFIX = 'images/original';
 

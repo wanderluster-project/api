@@ -38,20 +38,20 @@ class UuidFactory
 
     /**
      * @param string $slug
-     * @param EntityType $type
+     * @param int $type
      * @return Uuid
      * @throws WanderlusterException
      */
-    public function generateUUID(string $slug, EntityType $type): Uuid
+    public function generateUUID(string $slug, int $entityTypeId): Uuid
     {
         $shard = $this->shardCoordinator->getAvailableShard();
         $identifier = substr(md5($slug), 0, 16);
 
-        if (!$this->typeCoordinator->isValidType($type)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_ENTITY_TYPE, $type));
+        if (!$this->typeCoordinator->isValidType($entityTypeId)) {
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_ENTITY_TYPE, $entityTypeId));
         }
 
-        $uuid = new Uuid($shard . '-' . $type . '-' . $identifier);
+        $uuid = new Uuid($shard . '-' . $entityTypeId . '-' . $identifier);
         $this->uuidStorage->allocate($uuid);
 
         return $uuid;

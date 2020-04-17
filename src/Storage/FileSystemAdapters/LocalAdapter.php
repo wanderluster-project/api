@@ -4,7 +4,7 @@ namespace App\Storage\FileSystemAdapters;
 
 class LocalAdapter implements StorageAdapterInterface
 {
-    public function saveFile($path, $resource)
+    public function copyFromLocal($fromPath, $toPath)
     {
         // TODO: Implement saveFile() method.
     }

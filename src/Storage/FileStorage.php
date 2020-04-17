@@ -8,7 +8,7 @@ use App\Sharding\Uuid;
 use Symfony\Component\HttpFoundation\File\File;
 use App\Storage\Coordinator\StorageCoordinator;
 
-class FileStorage implements StorageInterface
+class FileStorage implements FileStorageInterface
 {
     /**
      * @var StorageCoordinator

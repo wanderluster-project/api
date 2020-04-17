@@ -5,7 +5,7 @@ namespace App\Storage\Coordinator;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 use App\Sharding\EntityType;
-use App\Storage\StorageInterface;
+use App\Storage\FileStorageInterface;
 use SplPriorityQueue;
 use Symfony\Component\HttpFoundation\File\File;
 
@@ -28,14 +28,14 @@ class StorageCoordinator
      * Given a file, selects the correct storage.
      *
      * @param File $file
-     * @return StorageInterface
+     * @return FileStorageInterface
      * @throws WanderlusterException
      */
-    public function getStorageForFile(File $file):StorageInterface
+    public function getStorageForFile(File $file):FileStorageInterface
     {
         foreach ($this->storageSystems as $storage) {
             /**
-             * @var StorageInterface $storage
+             * @var FileStorageInterface $storage
              */
             if ($storage->isSupportedFile($file)) {
                 return $storage;
@@ -48,14 +48,14 @@ class StorageCoordinator
      * Given an Entity Type, selects the correct storage.
      *
      * @param EntityType $entityType
-     * @return StorageInterface
+     * @return FileStorageInterface
      * @throws WanderlusterException
      */
-    public function getStorageForEntityType(EntityType $entityType):StorageInterface
+    public function getStorageForEntityType(EntityType $entityType):FileStorageInterface
     {
         foreach ($this->storageSystems as $storage) {
             /**
-             * @var StorageInterface $storage
+             * @var FileStorageInterface $storage
              */
             if ($storage->isSupportedEntityType($entityType)) {
                 return $storage;
@@ -65,10 +65,10 @@ class StorageCoordinator
     }
 
     /**
-     * @param StorageInterface $storage
+     * @param FileStorageInterface $storage
      * @param int $priority
      */
-    public function register(StorageInterface $storage, int $priority)
+    public function register(FileStorageInterface $storage, int $priority)
     {
         $this->storageSystems->insert($storage, $priority);
     }

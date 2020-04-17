@@ -4,9 +4,8 @@ namespace App\Sharding;
 
 class TypeCoordinator
 {
-    public function isValidType(EntityType $type)
+    public function isValidType(int $entityTypeID)
     {
-        $id = $type->getId();
-        return $id >= 100 && $id <= 2000;
+        return $entityTypeID >= 100 && $entityTypeID <= 2000;
     }
 }

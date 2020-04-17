@@ -4,9 +4,9 @@ namespace App\Storage\FileTypes;
 
 use App\Sharding\EntityType;
 use Symfony\Component\HttpFoundation\File\File;
-use App\Storage\StorageInterface;
+use App\Storage\FileStorageInterface;
 
-class PdfStorage implements StorageInterface
+class PdfStorage implements FileStorageInterface
 {
     public function isSupportedFile(File $file): bool
     {

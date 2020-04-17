@@ -47,13 +47,14 @@ class S3StorageAdapter implements StorageAdapterInterface
     }
 
     /**
-     * @param $path
-     * @param $resource
+     * @param $fromPath
+     * @param $toPath
      * @throws \League\Flysystem\FileExistsException
      */
-    public function saveFile($path, $resource)
+    public function copyFromLocal($fromPath, $toPath)
     {
-        $this->filesystem->writeStream($path, $resource);
+        $stream = fopen($fromPath, 'r+');
+        $this->filesystem->writeStream($toPath, $stream);
     }
 
     /**
