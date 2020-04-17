@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Storage\FileTypes;
+namespace App\Storage\FileStorage;
 
 use App\Sharding\EntityTypes;
 
-class GifStorage extends AbstractFileStorage
+class PngStorage extends AbstractFileStorage
 {
     /**
      * JpgStorage constructor.
@@ -20,7 +20,7 @@ class GifStorage extends AbstractFileStorage
      */
     protected function getMimeTypes(): array
     {
-        return ['image/gif'];
+        return ['image/png'];
     }
 
     /**
@@ -28,7 +28,7 @@ class GifStorage extends AbstractFileStorage
      */
     protected function getFileExt(): string
     {
-        return 'gif';
+        return 'png';
     }
 
     /**
@@ -44,6 +44,6 @@ class GifStorage extends AbstractFileStorage
      */
     protected function getEntityType(): int
     {
-        return EntityTypes::FILE_IMAGE_GIF;
+        return EntityTypes::FILE_IMAGE_PNG;
     }
 }

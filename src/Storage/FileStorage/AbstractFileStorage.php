@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Storage\FileTypes;
+namespace App\Storage\FileStorage;
 
 use App\Sharding\EntityType;
 use App\Sharding\Uuid;
-use App\Storage\FileStorageInterface;
 use Symfony\Component\HttpFoundation\File\File;
 
 abstract class AbstractFileStorage implements FileStorageInterface

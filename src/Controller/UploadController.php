@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Storage\FileStorage;
+use App\Storage\FileStorage\GenericFileStorage;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -15,7 +15,7 @@ class UploadController
     /**
      * @Route("/api/v1/storage/image", methods={"POST"})
      */
-    public function uploadImage(Request $request, FileStorage $fileStorage)
+    public function uploadImage(Request $request, GenericFileStorage $fileStorage)
     {
         if (!$request->files->has('file')) {
             throw new BadRequestHttpException('Missing parameter: file');
@@ -33,7 +33,6 @@ class UploadController
                 $response
             );
         } catch (Exception $e) {
-            throw $e;
             throw new HttpException(500, 'Error encountered saving file.  Please try again later.', $e);
         }
     }

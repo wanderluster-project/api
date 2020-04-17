@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Storage;
+namespace App\Storage\FileStorage;
 
 use App\Exception\WanderlusterException;
 use App\Sharding\EntityType;
@@ -8,7 +8,7 @@ use App\Sharding\Uuid;
 use Symfony\Component\HttpFoundation\File\File;
 use App\Storage\Coordinator\StorageCoordinator;
 
-class FileStorage implements FileStorageInterface
+class GenericFileStorage implements FileStorageInterface
 {
     /**
      * @var StorageCoordinator

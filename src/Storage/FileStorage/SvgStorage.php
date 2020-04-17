@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Storage\FileTypes;
+namespace App\Storage\FileStorage;
 
 use App\Sharding\EntityTypes;
 
-class WebpStorage extends AbstractFileStorage
+class SvgStorage extends AbstractFileStorage
 {
     /**
      * JpgStorage constructor.
@@ -20,7 +20,7 @@ class WebpStorage extends AbstractFileStorage
      */
     protected function getMimeTypes(): array
     {
-        return ['image/webp'];
+        return ['image/svg+xml','svg'];
     }
 
     /**
@@ -28,7 +28,7 @@ class WebpStorage extends AbstractFileStorage
      */
     protected function getFileExt(): string
     {
-        return 'webp';
+        return 'svg';
     }
 
     /**
@@ -44,6 +44,6 @@ class WebpStorage extends AbstractFileStorage
      */
     protected function getEntityType(): int
     {
-        return EntityTypes::FILE_IMAGE_WEBP;
+        return EntityTypes::FILE_IMAGE_SVG;
     }
 }

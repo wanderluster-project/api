@@ -5,7 +5,7 @@ namespace App\Storage\Coordinator;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 use App\Sharding\EntityType;
-use App\Storage\FileStorageInterface;
+use App\Storage\FileStorage\FileStorageInterface;
 use SplPriorityQueue;
 use Symfony\Component\HttpFoundation\File\File;
 

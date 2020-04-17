@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Storage;
+namespace App\Storage\FileStorage;
 
 use Symfony\Component\HttpFoundation\File\File;
 use App\Sharding\EntityType;

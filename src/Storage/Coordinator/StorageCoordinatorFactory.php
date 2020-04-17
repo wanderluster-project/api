@@ -2,11 +2,11 @@
 
 namespace App\Storage\Coordinator;
 
-use App\Storage\FileTypes\GifStorage;
-use App\Storage\FileTypes\JpgStorage;
-use App\Storage\FileTypes\PdfStorage;
-use App\Storage\FileTypes\PngStorage;
-use App\Storage\FileTypes\WebpStorage;
+use App\Storage\FileStorage\GifStorage;
+use App\Storage\FileStorage\JpgStorage;
+use App\Storage\FileStorage\PdfStorage;
+use App\Storage\FileStorage\PngStorage;
+use App\Storage\FileStorage\WebpStorage;
 
 class StorageCoordinatorFactory
 {

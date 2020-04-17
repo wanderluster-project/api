@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Storage\FileTypes;
+namespace App\Storage\FileStorage;
 
 use App\Sharding\Uuid;
 use App\Sharding\UuidFactory;

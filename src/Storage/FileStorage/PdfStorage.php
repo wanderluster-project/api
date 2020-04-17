@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Storage\FileTypes;
+namespace App\Storage\FileStorage;
 
 use App\Sharding\EntityType;
 use App\Sharding\EntityTypes;
