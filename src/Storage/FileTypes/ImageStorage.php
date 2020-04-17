@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Storage;
+namespace App\Storage\FileTypes;
 
 use App\Sharding\Types;
 use App\Sharding\UuidFactory;
@@ -10,8 +10,9 @@ use Symfony\Component\HttpFoundation\File\File;
 use League\Flysystem\Filesystem;
 use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use App\Storage\StorageInterface;
 
-class ImageStorage implements StorageInteraface
+class ImageStorage implements StorageInterface
 {
     const IMAGE_PATH_PREFIX = 'images/original';
 

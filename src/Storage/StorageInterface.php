@@ -4,7 +4,7 @@ namespace App\Storage;
 
 use Symfony\Component\HttpFoundation\File\File;
 
-interface StorageInteraface
+interface StorageInterface
 {
     public function isSupported(File $file):bool;
 

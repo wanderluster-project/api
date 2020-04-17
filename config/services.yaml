@@ -27,3 +27,8 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+
+    App\Storage\Coordinator\StorageCoordinator:
+        factory: ['App\Storage\Coordinator\StorageCoordinatorFactory', 'create']
+        arguments: ['@App\Storage\FileTypes\ImageStorage', '@App\Storage\FileTypes\PdfStorage']

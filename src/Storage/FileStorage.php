@@ -2,57 +2,47 @@
 
 namespace App\Storage;
 
-use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 use Symfony\Component\HttpFoundation\File\File;
+use App\Storage\Coordinator\StorageCoordinator;
 
-class FileStorage implements StorageInteraface
+class FileStorage implements StorageInterface
 {
     /**
-     * @var StorageInteraface[]
+     * @var StorageCoordinator
      */
-    protected $storageAdapters = [];
+    protected $storageCoordinator;
 
-    public function __construct(ImageStorage $imageStorage)
+    public function __construct(StorageCoordinator $storageCoordinator)
     {
-        $this->storageAdapters[] = $imageStorage;
+        $this->storageCoordinator = $storageCoordinator;
     }
 
     public function saveFile(File $file)
     {
-        $adapter = $this->getStorageAdapter($file);
-        return $adapter->saveFile($file);
+        $storage = $this->storageCoordinator->getStorageForFile($file);
+        return $storage->saveFile($file);
     }
 
     public function isSupported(File $file): bool
     {
         try {
-            $adapter = $this->getStorageAdapter($file);
+            $storage =$this->storageCoordinator->getStorageForFile($file);
         } catch (WanderlusterException $e) {
-            $adapter = null;
+            $storage = null;
         }
-        return !is_null($adapter);
+        return !is_null($storage);
     }
 
     public function archiveFile(File $file)
     {
-        $adapter = $this->getStorageAdapter($file);
-        return $adapter->archiveFile($file);
+        $storage = $this->storageCoordinator->getStorageForFile($file);
+        return $storage->archiveFile($file);
     }
 
     public function generateFileUrl(File $file): string
     {
-        $adapter = $this->getStorageAdapter($file);
-        return $adapter->generateFileUrl($file);
-    }
-
-    protected function getStorageAdapter(File $file): StorageInteraface
-    {
-        foreach ($this->storageAdapters as $adapter) {
-            if ($adapter->isSupported($file)) {
-                return $adapter;
-            }
-        }
-        throw new WanderlusterException(sprintf(ErrorMessages::INVALID_MIMETYPE));
+        $storage = $this->storageCoordinator->getStorageForFile($file);
+        return $storage->generateFileUrl($file);
     }
 }
