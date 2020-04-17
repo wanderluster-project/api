@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Sharding;
 
+use App\Sharding\EntityType;
 use App\Sharding\ShardCoordinator;
 use App\Sharding\TypeCoordinator;
 use App\Sharding\UuidFactory;
@@ -19,7 +20,7 @@ class UuidFactoryTest extends TestCase
         $typeCoordinator = new TypeCoordinator();
 
         $sut = new UuidFactory($shardCoordinator, $uuidStorage, $typeCoordinator);
-        $this->assertEquals('0-100-'.$this->getId('foobar'), $sut->generateUUID('foobar', 100));
+        $this->assertEquals('0-100-'.$this->getId('foobar'), $sut->generateUUID('foobar', new EntityType(100)));
     }
 
     protected function getId($slug)

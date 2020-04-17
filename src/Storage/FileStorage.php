@@ -3,6 +3,8 @@
 namespace App\Storage;
 
 use App\Exception\WanderlusterException;
+use App\Sharding\EntityType;
+use App\Sharding\Uuid;
 use Symfony\Component\HttpFoundation\File\File;
 use App\Storage\Coordinator\StorageCoordinator;
 
@@ -24,7 +26,7 @@ class FileStorage implements StorageInterface
         return $storage->saveFile($file);
     }
 
-    public function isSupported(File $file): bool
+    public function isSupportedFile(File $file): bool
     {
         try {
             $storage =$this->storageCoordinator->getStorageForFile($file);
@@ -34,13 +36,19 @@ class FileStorage implements StorageInterface
         return !is_null($storage);
     }
 
+    public function isSupportedEntityType(EntityType $entityType)
+    {
+        // TODO: Implement isSupportedEntityType() method.
+    }
+
+
     public function archiveFile(File $file)
     {
         $storage = $this->storageCoordinator->getStorageForFile($file);
         return $storage->archiveFile($file);
     }
 
-    public function generateFileUrl($uuid): string
+    public function generateFileUrl(Uuid $uuid): string
     {
 //        $storage = $this->storageCoordinator->getStorageForFile($uuid);
 //        return $storage->generateFileUrl($file);

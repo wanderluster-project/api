@@ -6,5 +6,5 @@ interface StorageAdapterInterface
 {
     public function saveFile($path, $resource);
 
-    public function generateFileUrl($uuid);
+    public function generateFileUrl($path);
 }

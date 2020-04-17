@@ -37,20 +37,18 @@ class UuidFactory
     }
 
     /**
-     * Generates a unique identifier.
-     *
      * @param string $slug
-     * @param int $type
+     * @param EntityType $type
      * @return Uuid
      * @throws WanderlusterException
      */
-    public function generateUUID(string $slug, int $type): Uuid
+    public function generateUUID(string $slug, EntityType $type): Uuid
     {
         $shard = $this->shardCoordinator->getAvailableShard();
         $identifier = substr(md5($slug), 0, 16);
 
         if (!$this->typeCoordinator->isValidType($type)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_TYPE, $type));
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_ENTITY_TYPE, $type));
         }
 
         $uuid = new Uuid($shard . '-' . $type . '-' . $identifier);

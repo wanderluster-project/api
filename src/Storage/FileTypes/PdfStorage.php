@@ -2,15 +2,22 @@
 
 namespace App\Storage\FileTypes;
 
+use App\Sharding\EntityType;
 use Symfony\Component\HttpFoundation\File\File;
 use App\Storage\StorageInterface;
 
 class PdfStorage implements StorageInterface
 {
-    public function isSupported(File $file): bool
+    public function isSupportedFile(File $file): bool
     {
         return $file->getMimeType() === 'application/pdf';
     }
+
+    public function isSupportedEntityType(EntityType $entityType)
+    {
+        // TODO: Implement isSupportedEntityType() method.
+    }
+
 
     public function saveFile(File $file)
     {

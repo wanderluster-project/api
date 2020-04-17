@@ -9,7 +9,7 @@ class LocalAdapter implements StorageAdapterInterface
         // TODO: Implement saveFile() method.
     }
 
-    public function generateFileUrl($uuid)
+    public function generateFileUrl($path)
     {
         // TODO: Implement generateFileUrl() method.
     }

@@ -4,9 +4,10 @@ namespace App\Storage\Coordinator;
 
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
+use App\Sharding\EntityType;
+use App\Storage\StorageInterface;
 use SplPriorityQueue;
 use Symfony\Component\HttpFoundation\File\File;
-use App\Storage\StorageInterface;
 
 class StorageCoordinator
 {
@@ -34,13 +35,33 @@ class StorageCoordinator
     {
         foreach ($this->storageSystems as $storage) {
             /**
-             * @var StorageInterface $adapter
+             * @var StorageInterface $storage
              */
-            if ($storage->isSupported($file)) {
+            if ($storage->isSupportedFile($file)) {
                 return $storage;
             }
         }
         throw new WanderlusterException(sprintf(ErrorMessages::INVALID_MIMETYPE, $file->getMimeType()));
+    }
+
+    /**
+     * Given an Entity Type, selects the correct storage.
+     *
+     * @param EntityType $entityType
+     * @return StorageInterface
+     * @throws WanderlusterException
+     */
+    public function getStorageForEntityType(EntityType $entityType):StorageInterface
+    {
+        foreach ($this->storageSystems as $storage) {
+            /**
+             * @var StorageInterface $storage
+             */
+            if ($storage->isSupportedEntityType($entityType)) {
+                return $storage;
+            }
+        }
+        throw new WanderlusterException(sprintf(ErrorMessages::INVALID_ENTITY_TYPE, $entityType->getId()));
     }
 
     /**
