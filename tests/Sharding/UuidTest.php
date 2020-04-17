@@ -13,7 +13,7 @@ class UuidTest extends TestCase
         $sut = new Uuid($uuidString);
 
         $this->assertEquals(10, $sut->getShard());
-        $this->assertEquals(3, $sut->getType());
+        $this->assertEquals(3, $sut->getEntityType());
         $this->assertEquals('3858f62230ac3c91', $sut->getIdentifier());
     }
 

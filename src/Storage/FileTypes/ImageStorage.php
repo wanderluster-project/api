@@ -2,7 +2,7 @@
 
 namespace App\Storage\FileTypes;
 
-use App\Sharding\Types;
+use App\Sharding\EntityTypes;
 use App\Sharding\UuidFactory;
 use App\Storage\FileSystemAdapters\StorageAdapterInterface;
 use Symfony\Component\HttpFoundation\File\File;
@@ -16,23 +16,23 @@ class ImageStorage implements StorageInterface
     protected $mimeTypes = [
         'image/jpeg' => [
             'ext' => 'jpg',
-            'type' => Types::FILE_IMAGE_JPG
+            'type' => EntityTypes::FILE_IMAGE_JPG
         ],
         'image/svg+xml' => [
             'ext' => 'svg',
-            'type' => Types::FILE_IMAGE_SVG
+            'type' => EntityTypes::FILE_IMAGE_SVG
         ],
         'image/png' => [
             'ext' => 'png',
-            'type' => Types::FILE_IMAGE_PNG
+            'type' => EntityTypes::FILE_IMAGE_PNG
         ],
         'image/gif' => [
             'ext' => 'gif',
-            'type' => Types::FILE_IMAGE_GIF
+            'type' => EntityTypes::FILE_IMAGE_GIF
         ],
         'image/webp' => [
             'ext' => 'webp',
-            'type' => Types::FILE_IMAGE_WEBP
+            'type' => EntityTypes::FILE_IMAGE_WEBP
         ]
     ];
 

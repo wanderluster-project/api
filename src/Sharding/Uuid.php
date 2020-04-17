@@ -49,7 +49,7 @@ class Uuid
      * Get the type of this object.
      * @return int
      */
-    public function getType():int
+    public function getEntityType():int
     {
         return $this->type;
     }

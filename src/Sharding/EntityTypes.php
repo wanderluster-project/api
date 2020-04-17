@@ -2,7 +2,7 @@
 
 namespace App\Sharding;
 
-class Types
+class EntityTypes
 {
     // Types 0-100 reserved
 
