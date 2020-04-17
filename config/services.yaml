@@ -32,3 +32,7 @@ services:
     App\Storage\Coordinator\StorageCoordinator:
         factory: ['App\Storage\Coordinator\StorageCoordinatorFactory', 'create']
         arguments: ['@App\Storage\FileTypes\ImageStorage', '@App\Storage\FileTypes\PdfStorage']
+
+    App\Storage\FileSystemAdapters\StorageAdapterInterface:
+        factory: ['App\Storage\FileSystemAdapters\StorageAdapterFactory', 'create']
+        arguments: ['@App\Storage\FileSystemAdapters\S3StorageAdapter', '@App\Storage\FileSystemAdapters\LocalAdapter', '@Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface']

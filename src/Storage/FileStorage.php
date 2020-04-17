@@ -40,9 +40,9 @@ class FileStorage implements StorageInterface
         return $storage->archiveFile($file);
     }
 
-    public function generateFileUrl(File $file): string
+    public function generateFileUrl($uuid): string
     {
-        $storage = $this->storageCoordinator->getStorageForFile($file);
-        return $storage->generateFileUrl($file);
+//        $storage = $this->storageCoordinator->getStorageForFile($uuid);
+//        return $storage->generateFileUrl($file);
     }
 }

@@ -12,5 +12,5 @@ interface StorageInterface
 
     public function archiveFile(File $file);
 
-    public function generateFileUrl(File $file): string;
+    public function generateFileUrl($uuid): string;
 }

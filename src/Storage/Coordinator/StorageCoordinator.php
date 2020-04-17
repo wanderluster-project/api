@@ -18,7 +18,8 @@ class StorageCoordinator
     /**
      * StorageCoordinator constructor.
      */
-    public function __construct(){
+    public function __construct()
+    {
         $this->storageSystems = new SplPriorityQueue();
     }
 
@@ -29,12 +30,13 @@ class StorageCoordinator
      * @return StorageInterface
      * @throws WanderlusterException
      */
-    public function getStorageForFile(File $file):StorageInterface{
-        foreach($this->storageSystems as $storage){
+    public function getStorageForFile(File $file):StorageInterface
+    {
+        foreach ($this->storageSystems as $storage) {
             /**
              * @var StorageInterface $adapter
              */
-            if($storage->isSupported($file)){
+            if ($storage->isSupported($file)) {
                 return $storage;
             }
         }
@@ -45,7 +47,8 @@ class StorageCoordinator
      * @param StorageInterface $storage
      * @param int $priority
      */
-    function register(StorageInterface $storage, int $priority){
+    public function register(StorageInterface $storage, int $priority)
+    {
         $this->storageSystems->insert($storage, $priority);
     }
 }

@@ -22,7 +22,7 @@ class PdfStorage implements StorageInterface
         // TODO: Implement archiveFile() method.
     }
 
-    public function generateFileUrl(File $file): string
+    public function generateFileUrl($uuid): string
     {
         // TODO: Implement generateFileUrl() method.
     }

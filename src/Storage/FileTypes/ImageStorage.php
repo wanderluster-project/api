@@ -4,11 +4,8 @@ namespace App\Storage\FileTypes;
 
 use App\Sharding\Types;
 use App\Sharding\UuidFactory;
-use Aws\S3\S3Client;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use App\Storage\FileSystemAdapters\StorageAdapterInterface;
 use Symfony\Component\HttpFoundation\File\File;
-use League\Flysystem\Filesystem;
-use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use App\Storage\StorageInterface;
 
@@ -40,52 +37,23 @@ class ImageStorage implements StorageInterface
     ];
 
     /**
-     * @var S3Client
-     */
-    protected $s3Client;
-
-    /**
-     * @var string
-     */
-    protected $bucket;
-
-    /**
-     * @var ParameterBagInterface
-     */
-    protected $parameterBag;
-
-    /**
      * @var UuidFactory
      */
     protected $uuidFactory;
 
     /**
-     * @var Filesystem
+     * @var StorageAdapterInterface
      */
-    protected $filesystem;
+    protected $storageAdapter;
 
     /**
      * ImageStorage constructor.
-     * @param S3Client $s3Client
-     * @param ParameterBagInterface $parameterBag
+     * @param StorageAdapterInterface $storageAdapter
      * @param UuidFactory $uuidFactory
      */
-    public function __construct(S3Client $s3Client, ParameterBagInterface $parameterBag, UuidFactory $uuidFactory)
+    public function __construct(StorageAdapterInterface $storageAdapter, UuidFactory $uuidFactory)
     {
-        $this->s3Client = $s3Client;
-        $this->parameterBag = $parameterBag;
-        $this->uuidFactory = $uuidFactory;
-
-        $this->bucket = $parameterBag->get('wanderluster_s3_bucket');
-        $adapter = new AwsS3Adapter(
-            $s3Client,
-            $this->bucket,
-            "",
-            ['ACL' => 'public-read']
-        );
-
-        // The FilesystemOperator
-        $this->filesystem = new Filesystem($adapter);
+        $this->storageAdapter = $storageAdapter;
         $this->uuidFactory = $uuidFactory;
     }
 
@@ -109,7 +77,7 @@ class ImageStorage implements StorageInterface
         $filename = $uuid . '.' . $ext;
         $stream = fopen($file->getRealPath(), 'r+');
         $s3Path = self::IMAGE_PATH_PREFIX . '/' . $filename;
-        $this->filesystem->writeStream($s3Path, $stream);
+        $this->storageAdapter->saveFile($s3Path, $stream);
         fclose($stream);
 
         return [
@@ -117,7 +85,7 @@ class ImageStorage implements StorageInterface
             'uuid' => $uuid,
             'mime_type' => $mimeType,
             'file_size' => $fileSize,
-            'url' => 'https://' . $this->bucket . '.s3.amazonaws.com/' . $s3Path,
+            'url' => $this->generateFileUrl($uuid),
         ];
     }
 
@@ -125,8 +93,8 @@ class ImageStorage implements StorageInterface
     {
     }
 
-    public function generateFileUrl(File $file): string
+    public function generateFileUrl($uuid): string
     {
-        // TODO: Implement generateFileUrl() method.
+        return $this->storageAdapter->generateFileUrl('images/original/'.$uuid);
     }
 }

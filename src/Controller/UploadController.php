@@ -23,7 +23,7 @@ class UploadController
 
         $file = $request->files->get('file');
 
-        if (!$file->isValid()) {
+        if (!$file  || !$file->isValid()) {
             throw new BadRequestHttpException('Invalid file');
         }
 
