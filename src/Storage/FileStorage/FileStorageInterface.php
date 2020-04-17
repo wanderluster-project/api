@@ -12,7 +12,7 @@ interface FileStorageInterface
 
     public function isSupportedEntityType(EntityType $entityType):bool;
 
-    public function saveFile(File $file);
+    public function saveFileToRemote(File $file);
 
     public function archiveFile(File $file);
 

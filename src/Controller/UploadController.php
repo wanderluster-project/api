@@ -28,7 +28,7 @@ class UploadController
         }
 
         try {
-            $response = $fileStorage->saveFile($file);
+            $response = $fileStorage->saveFileToRemote($file);
             return new JsonResponse(
                 $response
             );

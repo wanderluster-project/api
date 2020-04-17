@@ -47,9 +47,9 @@ abstract class AbstractFileStorage implements FileStorageInterface
         return $entityType->getId() === $this->getEntityType();
     }
 
-    public function saveFile(File $file)
+    public function saveFileToRemote(File $file)
     {
-        return $this->fileUtilities->saveFile(
+        return $this->fileUtilities->saveFileToRemote(
             $file,
             $this->getMimeTypes(),
             $this->getFileExt(),

@@ -31,7 +31,7 @@ class FileUtilities
         $this->uuidFactory =$uuidFactory;
     }
 
-    public function saveFile(File $file, $mimeTypes, $fileExt, int $entityType, $pathPrefix)
+    public function saveFileToRemote(File $file, $mimeTypes, $fileExt, int $entityType, $pathPrefix)
     {
         $mimeType = $file->getMimeType();
         if (!in_array($file->getMimeType(), $mimeTypes)) {

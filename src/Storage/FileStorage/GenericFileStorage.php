@@ -20,10 +20,10 @@ class GenericFileStorage implements FileStorageInterface
         $this->storageCoordinator = $storageCoordinator;
     }
 
-    public function saveFile(File $file)
+    public function saveFileToRemote(File $file)
     {
         $storage = $this->storageCoordinator->getStorageForFile($file);
-        return $storage->saveFile($file);
+        return $storage->saveFileToRemote($file);
     }
 
     public function isSupportedFile(File $file): bool
