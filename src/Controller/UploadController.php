@@ -13,7 +13,7 @@ use Exception;
 class UploadController
 {
     /**
-     * @Route("/api/v1/media/image", methods={"POST"})
+     * @Route("/api/v1/storage/image", methods={"POST"})
      */
     public function uploadImage(Request $request, FileStorage $fileStorage)
     {

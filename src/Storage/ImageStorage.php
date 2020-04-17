@@ -16,11 +16,26 @@ class ImageStorage implements StorageInteraface
     const IMAGE_PATH_PREFIX = 'images/original';
 
     protected $mimeTypes = [
-        'image/jpeg' => 'jpg',
-        'image/svg+xml' => 'svg',
-        'image/png' => 'png',
-        'image/gif' => 'gif',
-        'image/webp' => 'webp'
+        'image/jpeg' => [
+            'ext' => 'jpg',
+            'type' => Types::FILE_IMAGE_JPG
+        ],
+        'image/svg+xml' => [
+            'ext' => 'svg',
+            'type' => Types::FILE_IMAGE_SVG
+        ],
+        'image/png' => [
+            'ext' => 'png',
+            'type' => Types::FILE_IMAGE_PNG
+        ],
+        'image/gif' => [
+            'ext' => 'gif',
+            'type' => Types::FILE_IMAGE_GIF
+        ],
+        'image/webp' => [
+            'ext' => 'webp',
+            'type' => Types::FILE_IMAGE_WEBP
+        ]
     ];
 
     /**
@@ -56,9 +71,9 @@ class ImageStorage implements StorageInteraface
      */
     public function __construct(S3Client $s3Client, ParameterBagInterface $parameterBag, UuidFactory $uuidFactory)
     {
-        $this->s3Client= $s3Client;
+        $this->s3Client = $s3Client;
         $this->parameterBag = $parameterBag;
-        $this->uuidFactory =$uuidFactory;
+        $this->uuidFactory = $uuidFactory;
 
         $this->bucket = $parameterBag->get('wanderluster_s3_bucket');
         $adapter = new AwsS3Adapter(
@@ -73,8 +88,9 @@ class ImageStorage implements StorageInteraface
         $this->uuidFactory = $uuidFactory;
     }
 
-    public function isSupported($mimeType):bool
+    public function isSupported(File $file): bool
     {
+        $mimeType = $file->getMimeType();
         return in_array($mimeType, array_keys($this->mimeTypes));
     }
 
@@ -86,8 +102,9 @@ class ImageStorage implements StorageInteraface
         }
 
         $fileSize = $file->getSize();
-        $ext = $this->mimeTypes[$file->getMimeType()];
-        $uuid = $this->uuidFactory->generateUUID($file->getFilename(), Types::FILE_IMAGE_JPG);
+        $ext = $this->mimeTypes[$file->getMimeType()]['ext'];
+        $type = $this->mimeTypes[$file->getMimeType()]['type'];
+        $uuid = $this->uuidFactory->generateUUID($file->getFilename(), $type);
         $filename = $uuid . '.' . $ext;
         $stream = fopen($file->getRealPath(), 'r+');
         $s3Path = self::IMAGE_PATH_PREFIX . '/' . $filename;

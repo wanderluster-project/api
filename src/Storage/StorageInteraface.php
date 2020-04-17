@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\File\File;
 
 interface StorageInteraface
 {
-    public function isSupported($mimeType):bool;
+    public function isSupported(File $file):bool;
 
     public function saveFile(File $file);
 

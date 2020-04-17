@@ -20,15 +20,14 @@ class FileStorage implements StorageInteraface
 
     public function saveFile(File $file)
     {
-        $mimeType = $file->getMimeType();
-        $adapter = $this->getStorageAdapter($mimeType);
+        $adapter = $this->getStorageAdapter($file);
         return $adapter->saveFile($file);
     }
 
-    public function isSupported($mimeType): bool
+    public function isSupported(File $file): bool
     {
         try {
-            $adapter = $this->getStorageAdapter($mimeType);
+            $adapter = $this->getStorageAdapter($file);
         } catch (WanderlusterException $e) {
             $adapter = null;
         }
@@ -37,22 +36,20 @@ class FileStorage implements StorageInteraface
 
     public function archiveFile(File $file)
     {
-        $mimeType = $file->getMimeType();
-        $adapter = $this->getStorageAdapter($mimeType);
+        $adapter = $this->getStorageAdapter($file);
         return $adapter->archiveFile($file);
     }
 
     public function generateFileUrl(File $file): string
     {
-        $mimeType = $file->getMimeType();
-        $adapter = $this->getStorageAdapter($mimeType);
+        $adapter = $this->getStorageAdapter($file);
         return $adapter->generateFileUrl($file);
     }
 
-    protected function getStorageAdapter($mimeType): StorageInteraface
+    protected function getStorageAdapter(File $file): StorageInteraface
     {
         foreach ($this->storageAdapters as $adapter) {
-            if ($adapter->isSupported($mimeType)) {
+            if ($adapter->isSupported($file)) {
                 return $adapter;
             }
         }
