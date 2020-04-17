@@ -4,7 +4,7 @@ namespace App\Storage\FileTypes;
 
 use App\Sharding\EntityTypes;
 
-class JpgStorage extends AbstractFileStorage
+class SvgStorage extends AbstractFileStorage
 {
     /**
      * JpgStorage constructor.
@@ -20,7 +20,7 @@ class JpgStorage extends AbstractFileStorage
      */
     protected function getMimeTypes(): array
     {
-        return ['image/jpeg', 'image/jpg'];
+        return ['image/svg+xml','svg'];
     }
 
     /**
@@ -28,7 +28,7 @@ class JpgStorage extends AbstractFileStorage
      */
     protected function getFileExt(): string
     {
-        return 'jpg';
+        return 'svg';
     }
 
     /**
@@ -44,6 +44,6 @@ class JpgStorage extends AbstractFileStorage
      */
     protected function getEntityType(): int
     {
-        return EntityTypes::FILE_IMAGE_JPG;
+        return EntityTypes::FILE_IMAGE_SVG;
     }
 }

@@ -31,7 +31,12 @@ services:
 
     App\Storage\Coordinator\StorageCoordinator:
         factory: ['App\Storage\Coordinator\StorageCoordinatorFactory', 'create']
-        arguments: ['@App\Storage\FileTypes\JpgStorage', '@App\Storage\FileTypes\PdfStorage']
+        arguments:
+            - '@App\Storage\FileTypes\JpgStorage'
+            - '@App\Storage\FileTypes\PngStorage'
+            - '@App\Storage\FileTypes\GifStorage'
+            - '@App\Storage\FileTypes\WebpStorage'
+            - '@App\Storage\FileTypes\PdfStorage'
 
     App\Storage\FileSystemAdapters\StorageAdapterInterface:
         factory: ['App\Storage\FileSystemAdapters\StorageAdapterFactory', 'create']

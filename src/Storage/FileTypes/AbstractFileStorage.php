@@ -23,10 +23,6 @@ abstract class AbstractFileStorage implements FileStorageInterface
         $this->fileUtilities = $fileUtilities;
     }
 
-    abstract public function isSupportedFile(File $file): bool;
-
-    abstract public function isSupportedEntityType(EntityType $entityType): bool;
-
     abstract protected function getMimeTypes(): array;
 
     abstract protected function getFileExt(): string;
@@ -34,6 +30,23 @@ abstract class AbstractFileStorage implements FileStorageInterface
     abstract protected function getPathPrefix(): string;
 
     abstract protected function getEntityType(): int;
+
+    /**
+     * @inheritdoc
+     */
+    public function isSupportedFile(File $file): bool
+    {
+        $mimeType = $file->getMimeType();
+        return in_array($mimeType, $this->getMimeTypes());
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isSupportedEntityType(EntityType $entityType): bool
+    {
+        return $entityType->getId() === $this->getEntityType();
+    }
 
     public function saveFile(File $file)
     {
@@ -55,5 +68,4 @@ abstract class AbstractFileStorage implements FileStorageInterface
     {
         return $this->fileUtilities->generateFileUrl($uuid, $this->getFileExt(), $this->getPathPrefix());
     }
-
 }

@@ -3,34 +3,66 @@
 namespace App\Storage\FileTypes;
 
 use App\Sharding\EntityType;
+use App\Sharding\EntityTypes;
 use Symfony\Component\HttpFoundation\File\File;
-use App\Storage\FileStorageInterface;
 
-class PdfStorage implements FileStorageInterface
+class PdfStorage extends AbstractFileStorage
 {
+    /**
+     * JpgStorage constructor.
+     * @param FileUtilities $fileUtilities
+     */
+    public function __construct(FileUtilities $fileUtilities)
+    {
+        parent::__construct($fileUtilities);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function isSupportedFile(File $file): bool
     {
-        return $file->getMimeType() === 'application/pdf';
+        $mimeType = $file->getMimeType();
+        return in_array($mimeType, $this->getMimeTypes());
     }
 
-    public function isSupportedEntityType(EntityType $entityType):bool
+    /**
+     * @inheritdoc
+     */
+    public function isSupportedEntityType(EntityType $entityType): bool
     {
-        // TODO: Implement isSupportedEntityType() method.
+        return $entityType->getId() === $this->getEntityType();
     }
 
-
-    public function saveFile(File $file)
+    /**
+     * @inheritdoc
+     */
+    protected function getMimeTypes(): array
     {
-        // TODO: Implement saveFile() method.
+        return ['application/pdf'];
     }
 
-    public function archiveFile(File $file)
+    /**
+     * @inheritdoc
+     */
+    protected function getFileExt(): string
     {
-        // TODO: Implement archiveFile() method.
+        return 'pdf';
     }
 
-    public function generateFileUrl($uuid): string
+    /**
+     * @inheritdoc
+     */
+    protected function getPathPrefix(): string
     {
-        // TODO: Implement generateFileUrl() method.
+        return 'pdf';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getEntityType(): int
+    {
+        return EntityTypes::FILE_PDF;
     }
 }
