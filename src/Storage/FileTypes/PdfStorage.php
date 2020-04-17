@@ -13,7 +13,7 @@ class PdfStorage implements FileStorageInterface
         return $file->getMimeType() === 'application/pdf';
     }
 
-    public function isSupportedEntityType(EntityType $entityType)
+    public function isSupportedEntityType(EntityType $entityType):bool
     {
         // TODO: Implement isSupportedEntityType() method.
     }

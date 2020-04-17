@@ -36,7 +36,7 @@ class FileStorage implements FileStorageInterface
         return !is_null($storage);
     }
 
-    public function isSupportedEntityType(EntityType $entityType)
+    public function isSupportedEntityType(EntityType $entityType):bool
     {
         // TODO: Implement isSupportedEntityType() method.
     }

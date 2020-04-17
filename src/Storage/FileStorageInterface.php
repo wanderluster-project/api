@@ -10,7 +10,7 @@ interface FileStorageInterface
 {
     public function isSupportedFile(File $file):bool;
 
-    public function isSupportedEntityType(EntityType $entityType);
+    public function isSupportedEntityType(EntityType $entityType):bool;
 
     public function saveFile(File $file);
 
