@@ -10,8 +10,10 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y php libapache2-mod-php php-mysql php-dom php-xml php-mbstring php-intl && \
     rm -Rf /var/www/html/* && \
     rmdir /var/www/html && \
-    ln -s /var/www/wanderluster/public /var/www/html
+    ln -sfn /var/www/wanderluster/public /var/www/html
 
+# Copy data into container
+COPY . /var/www/wanderluster
 
 # Dev Dependencies
 RUN apt-get install -y php7.2-phpdbg && \
@@ -28,7 +30,7 @@ RUN apt-get install -y php7.2-phpdbg && \
     mkdir -p /var/www/wanderluster/bin && \
     wget https://cs.symfony.com/download/php-cs-fixer-v2.phar -O /var/www/wanderluster/bin/php-cs-fixer && \
     chmod +x /var/www/wanderluster/bin/php-cs-fixer && \
-    ln -s /var/www/wanderluster/var/storage /var/www/wanderluster/public/storage
+    ln -sfn /var/www/wanderluster/var/storage /var/www/wanderluster/public/storage
 
 WORKDIR /var/www/wanderluster
 EXPOSE 80
