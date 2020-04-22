@@ -13,12 +13,12 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
-class UploadController
+class StorageController
 {
     /**
-     * @Route("/api/v1/storage/image", methods={"POST"})
+     * @Route("/api/v1/storage", methods={"POST"})
      */
-    public function uploadImage(Request $request, GenericFileStorage $fileStorage): Response
+    public function uploadFile(Request $request, GenericFileStorage $fileStorage): Response
     {
         if (!$request->files->has('file')) {
             throw new BadRequestHttpException('Missing parameter: file');

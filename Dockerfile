@@ -14,7 +14,8 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 
 
 # Dev Dependencies
-RUN wget https://get.symfony.com/cli/installer -O - | bash && \
+RUN apt-get install -y php7.2-phpdbg && \
+    wget https://get.symfony.com/cli/installer -O - | bash && \
     mv /root/.symfony/bin/symfony /usr/local/bin/symfony && \
     git config --global user.email "simpkevin@gmail.com" && \
     git config --global user.name "Kevin Simpson" && \
@@ -24,8 +25,10 @@ RUN wget https://get.symfony.com/cli/installer -O - | bash && \
     php -r "unlink('composer-setup.php');" && \
     mv composer.phar /usr/bin/composer && \
     chmod +x /usr/bin/composer && \
+    mkdir -p /var/www/wanderluster/bin && \
     wget https://cs.symfony.com/download/php-cs-fixer-v2.phar -O /var/www/wanderluster/bin/php-cs-fixer && \
     chmod +x /var/www/wanderluster/bin/php-cs-fixer
 
+WORKDIR /var/www/wanderluster
 EXPOSE 80
 CMD apachectl -D FOREGROUND

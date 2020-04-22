@@ -1,0 +1,13 @@
+All files in this site were downloaded from Wikimedia that listed them as CreativeCommons-0.
+
+sample.webp
+https://upload.wikimedia.org/wikipedia/commons/e/e0/Website_accessibility.webp
+
+sample.svg
+https://upload.wikimedia.org/wikipedia/commons/1/13/Mouse_mechanism_diagram.svg
+
+sample.jpg
+https://upload.wikimedia.org/wikipedia/commons/5/57/Antinous_Mandragone_profil.jpg
+
+sample.gif
+https://upload.wikimedia.org/wikipedia/commons/c/c0/Lunar_libration_with_phase2.gif

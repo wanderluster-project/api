@@ -31,13 +31,6 @@ services:
 
     App\Storage\Coordinator\StorageCoordinator:
         factory: ['App\Storage\Coordinator\StorageCoordinatorFactory', 'create']
-        arguments:
-            - '@App\Storage\FileStorage\JpgStorage'
-            - '@App\Storage\FileStorage\PngStorage'
-            - '@App\Storage\FileStorage\GifStorage'
-            - '@App\Storage\FileStorage\WebpStorage'
-            - '@App\Storage\FileStorage\PdfStorage'
 
     App\Storage\FileSystemAdapters\RemoteStorageAdapterInterface:
         factory: ['App\Storage\FileSystemAdapters\RemoteStorageAdapterFactory', 'create']
-        arguments: ['@App\Storage\FileSystemAdapters\S3StorageAdapter', '@Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface']

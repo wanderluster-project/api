@@ -4,6 +4,7 @@ vendor/*
 .env
 var/*
 .php_cs.cache
+tests/_reports/*
 
 ###> symfony/phpunit-bridge ###
 .phpunit

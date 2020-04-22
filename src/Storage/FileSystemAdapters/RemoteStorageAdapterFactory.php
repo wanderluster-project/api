@@ -8,7 +8,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class RemoteStorageAdapterFactory
 {
-    public function create(S3StorageAdapter $s3StorageAdapter, ParameterBagInterface $parameterBag): RemoteStorageAdapterInterface
+    public static function create(S3StorageAdapter $s3StorageAdapter, ParameterBagInterface $parameterBag): RemoteStorageAdapterInterface
     {
         return $s3StorageAdapter;
     }
