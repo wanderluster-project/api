@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace App\RDF;
 
-use App\Sharding\Uuid;
-use DateTimeImmutable;
-
 class Entity
 {
     /**
@@ -15,22 +12,37 @@ class Entity
     protected $uuid;
 
     /**
-     * @var DateTimeImmutable
+     * @var Metadata
      */
-    protected $createdAt;
+    protected $metadata;
 
     /**
-     * @var User
+     * @var Constraints
      */
-    protected $createdBy;
-
-    /**
-     * @var Data
-     */
-    protected $data;
+    protected $constraints;
 
     public function getUuid(): Uuid
     {
         return $this->uuid;
+    }
+
+    public function getEntityType(): int
+    {
+        return $this->getEntityType();
+    }
+
+    public function getData(): Data
+    {
+        return $this->metadata->getSnapshot()->getData();
+    }
+
+    public function getVersion(): int
+    {
+        return $this->metadata->getSnapshot()->getVersion();
+    }
+
+    public function getConstraints(): Constraints
+    {
+        return $this->constraints;
     }
 }

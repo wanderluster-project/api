@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Sharding;
+namespace App\Tests\RDF;
 
 use App\Exception\WanderlusterException;
-use App\Sharding\Uuid;
-use PHPUnit\Framework\TestCase;
+use App\RDF\Uuid;
 use Exception;
+use PHPUnit\Framework\TestCase;
 
 class UuidTest extends TestCase
 {
@@ -30,19 +30,20 @@ class UuidTest extends TestCase
         $this->assertEquals('10-3-3858f62230ac3c91', $sut->asString());
     }
 
-    public function testInvalidUuidFormat(){
-        try{
+    public function testInvalidUuidFormat(): void
+    {
+        try {
             new Uuid('kevin');
             $this->fail('Exception not thrown');
-        } catch(Exception $e){
+        } catch (Exception $e) {
             $this->assertInstanceOf(WanderlusterException::class, $e);
             $this->assertEquals('Invalid UUID format - kevin', $e->getMessage());
         }
 
-        try{
+        try {
             new Uuid('01-01-kevin');
             $this->fail('Exception not thrown');
-        } catch(Exception $e){
+        } catch (Exception $e) {
             $this->assertInstanceOf(WanderlusterException::class, $e);
             $this->assertEquals('Invalid UUID format - 01-01-kevin', $e->getMessage());
         }

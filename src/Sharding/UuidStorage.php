@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Sharding;
 
+use App\RDF\Uuid;
+
 class UuidStorage
 {
     /**

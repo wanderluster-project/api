@@ -6,6 +6,7 @@ namespace App\Sharding;
 
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
+use App\RDF\Uuid;
 
 class UuidFactory
 {

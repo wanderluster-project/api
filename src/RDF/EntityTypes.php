@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Sharding;
+namespace App\RDF;
 
 class EntityTypes
 {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Storage\FileStorage;
 
 use App\Exception\WanderlusterException;
-use App\Sharding\Uuid;
+use App\RDF\Uuid;
 use App\Sharding\UuidFactory;
 use App\Storage\FileSystemAdapters\StorageAdapterInterface;
 use Symfony\Component\HttpFoundation\File\File;

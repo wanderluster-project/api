@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Sharding;
+namespace App\RDF;
 
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
@@ -109,12 +109,13 @@ class Uuid implements Serializable, JsonSerializable
      * Parse UUID into parts and load state.
      *
      * @param string $uuid
+     *
      * @throws WanderlusterException
      */
     protected function init($uuid): void
     {
-        if(!preg_match('/^[0-9]*-[0-9]*-[0-9A-Fa-f]{16}$/', $uuid)){
-            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_UUID,$uuid));
+        if (!preg_match('/^[0-9]*-[0-9]*-[0-9A-Fa-f]{16}$/', $uuid)) {
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_UUID, $uuid));
         }
 
         $this->uuid = $uuid;

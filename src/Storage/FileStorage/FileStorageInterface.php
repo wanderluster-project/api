@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Storage\FileStorage;
 
-use App\Sharding\EntityType;
-use App\Sharding\Uuid;
+use App\RDF\EntityType;
+use App\RDF\Uuid;
 use Symfony\Component\HttpFoundation\File\File;
 
 interface FileStorageInterface

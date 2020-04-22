@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Storage\FileStorage;
 
-use App\Sharding\EntityTypes;
+use App\RDF\EntityTypes;
 
 class WebpStorage extends AbstractFileStorage
 {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Exception\ErrorMessages;
-use App\Sharding\Uuid;
+use App\RDF\Uuid;
 use App\Storage\FileStorage\GenericFileStorage;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
