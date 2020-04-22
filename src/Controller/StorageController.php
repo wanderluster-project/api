@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Exception\ErrorMessages;
+use App\Sharding\Uuid;
 use App\Storage\FileStorage\GenericFileStorage;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,13 +23,13 @@ class StorageController
     public function uploadFile(Request $request, GenericFileStorage $fileStorage): Response
     {
         if (!$request->files->has('file')) {
-            throw new BadRequestHttpException('Missing parameter: file');
+            throw new BadRequestHttpException(sprintf(ErrorMessages::REQUEST_MISSING_PARAMETER, 'file'));
         }
 
         $file = $request->files->get('file');
 
         if (!$file || !$file->isValid()) {
-            throw new BadRequestHttpException('Invalid file');
+            throw new BadRequestHttpException(ErrorMessages::REQUEST_INVALID_FILE);
         }
 
         try {
@@ -37,7 +39,30 @@ class StorageController
                 $response
             );
         } catch (Exception $e) {
-            throw new HttpException(500, 'Error encountered saving file.  Please try again later.', $e);
+            throw new HttpException(500, ErrorMessages::SERVER_ERROR_UPLOADING, $e);
+        }
+    }
+
+    /**
+     * @Route("/api/v1/storage/{uuid}", methods={"DELETE"})
+     *
+     * @param string $uuid
+     */
+    public function deleteFile($uuid, Request $request, GenericFileStorage $fileStorage): Response
+    {
+        if (!$uuid) {
+            throw new BadRequestHttpException(sprintf(ErrorMessages::REQUEST_MISSING_PARAMETER, 'uuid'));
+        }
+
+        try {
+            $uuid = new Uuid($uuid);
+            $fileStorage->deleteRemoteFile($uuid);
+
+            return new JsonResponse(
+                ['status' => 'success']
+            );
+        } catch (Exception $e) {
+            throw new HttpException(500, ErrorMessages::SERVER_ERROR_DELETING, $e);
         }
     }
 }

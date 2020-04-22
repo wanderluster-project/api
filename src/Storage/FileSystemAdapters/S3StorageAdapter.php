@@ -11,7 +11,7 @@ use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Filesystem;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
-class S3StorageAdapter implements RemoteStorageAdapterInterface
+class S3StorageAdapter implements StorageAdapterInterface
 {
     /**
      * @var Filesystem

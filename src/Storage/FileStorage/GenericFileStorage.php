@@ -67,4 +67,14 @@ class GenericFileStorage implements FileStorageInterface
 
         return $storage->generateFileUrl($uuid);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function deleteRemoteFile(Uuid $uuid): void
+    {
+        $storage = $this->storageCoordinator->getStorageForUuid($uuid);
+
+        $storage->deleteRemoteFile($uuid);
+    }
 }

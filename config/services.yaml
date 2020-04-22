@@ -32,5 +32,5 @@ services:
     App\Storage\Coordinator\StorageCoordinator:
         factory: ['App\Storage\Coordinator\StorageCoordinatorFactory', 'create']
 
-    App\Storage\FileSystemAdapters\RemoteStorageAdapterInterface:
-        factory: ['App\Storage\FileSystemAdapters\RemoteStorageAdapterFactory', 'create']
+    App\Storage\FileSystemAdapters\StorageAdapterInterface:
+        factory: ['App\Storage\FileSystemAdapters\StorageAdapterFactory', 'create']

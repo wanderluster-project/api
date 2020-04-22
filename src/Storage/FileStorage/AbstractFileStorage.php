@@ -72,4 +72,12 @@ abstract class AbstractFileStorage implements FileStorageInterface
     {
         return $this->fileUtilities->generateFileUrl($uuid, $this->getFileExt(), $this->getPathPrefix());
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function deleteRemoteFile(Uuid $uuid): void
+    {
+        $this->fileUtilities->deleteRemoteFile($uuid, $this->getFileExt(), $this->getPathPrefix());
+    }
 }

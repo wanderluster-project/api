@@ -27,7 +27,8 @@ RUN apt-get install -y php7.2-phpdbg && \
     chmod +x /usr/bin/composer && \
     mkdir -p /var/www/wanderluster/bin && \
     wget https://cs.symfony.com/download/php-cs-fixer-v2.phar -O /var/www/wanderluster/bin/php-cs-fixer && \
-    chmod +x /var/www/wanderluster/bin/php-cs-fixer
+    chmod +x /var/www/wanderluster/bin/php-cs-fixer && \
+    ln -s /var/www/wanderluster/var/storage /var/www/wanderluster/public/storage
 
 WORKDIR /var/www/wanderluster
 EXPOSE 80

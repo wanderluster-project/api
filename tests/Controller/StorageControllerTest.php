@@ -47,6 +47,10 @@ class StorageControllerTest extends WebTestCase
         $this->assertEquals('success', $data['status']);
         $this->assertEquals('image/jpeg', $data['mime_type']);
         $this->assertEquals(filesize($filename), $data['file_size']);
+
+        // delete this file
+        $client->request('DELETE', '/api/v1/storage/'.$uuid);
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
     public function testUploadPngTest(): void
@@ -66,6 +70,10 @@ class StorageControllerTest extends WebTestCase
         $this->assertEquals('success', $data['status']);
         $this->assertEquals('image/png', $data['mime_type']);
         $this->assertEquals(filesize($filename), $data['file_size']);
+
+        // delete this file
+        $client->request('DELETE', '/api/v1/storage/'.$uuid);
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
     public function testUploadGifTest(): void
@@ -81,10 +89,15 @@ class StorageControllerTest extends WebTestCase
         $uuid = new Uuid($data['uuid']);
         $this->assertArrayHasKey('uuid', $data);
         $this->assertArrayHasKey('url', $data);
+        var_dump($data);exit;
         $this->assertEquals(EntityTypes::FILE_IMAGE_GIF, $uuid->getEntityType());
         $this->assertEquals('success', $data['status']);
         $this->assertEquals('image/gif', $data['mime_type']);
         $this->assertEquals(filesize($filename), $data['file_size']);
+
+        // delete this file
+        $client->request('DELETE', '/api/v1/storage/'.$uuid);
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
     public function testUploadSvgTest(): void
@@ -104,6 +117,10 @@ class StorageControllerTest extends WebTestCase
         $this->assertEquals('success', $data['status']);
         $this->assertEquals('image/svg+xml', $data['mime_type']);
         $this->assertEquals(filesize($filename), $data['file_size']);
+
+        // delete this file
+        $client->request('DELETE', '/api/v1/storage/'.$uuid);
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
     public function testUploadPdfTest(): void
@@ -123,5 +140,9 @@ class StorageControllerTest extends WebTestCase
         $this->assertEquals('success', $data['status']);
         $this->assertEquals('application/pdf', $data['mime_type']);
         $this->assertEquals(filesize($filename), $data['file_size']);
+
+        // delete this file
+        $client->request('DELETE', '/api/v1/storage/'.$uuid);
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 }

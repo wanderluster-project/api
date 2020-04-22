@@ -31,4 +31,9 @@ interface FileStorageInterface
      * Generate a URL for a given UUID.
      */
     public function generateFileUrl(Uuid $uuid): string;
+
+    /**
+     * Delete a file for a given UUID.
+     */
+    public function deleteRemoteFile(Uuid $uuid): void;
 }

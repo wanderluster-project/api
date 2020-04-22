@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Storage\FileSystemAdapters;
 
-interface RemoteStorageAdapterInterface
+interface StorageAdapterInterface
 {
     /**
      * @param string $fromPath

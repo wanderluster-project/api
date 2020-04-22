@@ -7,14 +7,14 @@ namespace App\Storage\FileStorage;
 use App\Exception\WanderlusterException;
 use App\Sharding\Uuid;
 use App\Sharding\UuidFactory;
-use App\Storage\FileSystemAdapters\RemoteStorageAdapterInterface;
+use App\Storage\FileSystemAdapters\StorageAdapterInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class FileUtilities
 {
     /**
-     * @var RemoteStorageAdapterInterface
+     * @var StorageAdapterInterface
      */
     protected $remoteStorageAdapter;
 
@@ -26,7 +26,7 @@ class FileUtilities
     /**
      * JpegImageStorage constructor.
      */
-    public function __construct(RemoteStorageAdapterInterface $remoteStorageAdapter, UuidFactory $uuidFactory)
+    public function __construct(StorageAdapterInterface $remoteStorageAdapter, UuidFactory $uuidFactory)
     {
         $this->remoteStorageAdapter = $remoteStorageAdapter;
         $this->uuidFactory = $uuidFactory;
@@ -66,5 +66,14 @@ class FileUtilities
     public function generateFileUrl(Uuid $uuid, $fileExt, $pathPrefix): string
     {
         return $this->remoteStorageAdapter->generateFileUrl($pathPrefix.'/'.$uuid.'.'.$fileExt);
+    }
+
+    /**
+     * @param string $fileExt
+     * @param string $pathPrefix
+     */
+    public function deleteRemoteFile(Uuid $uuid, $fileExt, $pathPrefix): void
+    {
+        $this->remoteStorageAdapter->deleteRemoteFile($pathPrefix.'/'.$uuid.'.'.$fileExt);
     }
 }
