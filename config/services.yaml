@@ -38,6 +38,6 @@ services:
             - '@App\Storage\FileStorage\WebpStorage'
             - '@App\Storage\FileStorage\PdfStorage'
 
-    App\Storage\FileSystemAdapters\StorageAdapterInterface:
-        factory: ['App\Storage\FileSystemAdapters\StorageAdapterFactory', 'create']
-        arguments: ['@App\Storage\FileSystemAdapters\S3StorageAdapter', '@App\Storage\FileSystemAdapters\LocalAdapter', '@Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface']
+    App\Storage\FileSystemAdapters\RemoteStorageAdapterInterface:
+        factory: ['App\Storage\FileSystemAdapters\RemoteStorageAdapterFactory', 'create']
+        arguments: ['@App\Storage\FileSystemAdapters\S3StorageAdapter', '@Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface']

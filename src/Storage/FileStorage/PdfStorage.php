@@ -1,16 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Storage\FileStorage;
 
-use App\Sharding\EntityType;
 use App\Sharding\EntityTypes;
-use Symfony\Component\HttpFoundation\File\File;
 
 class PdfStorage extends AbstractFileStorage
 {
     /**
      * JpgStorage constructor.
-     * @param FileUtilities $fileUtilities
      */
     public function __construct(FileUtilities $fileUtilities)
     {
@@ -18,24 +17,7 @@ class PdfStorage extends AbstractFileStorage
     }
 
     /**
-     * @inheritdoc
-     */
-    public function isSupportedFile(File $file): bool
-    {
-        $mimeType = $file->getMimeType();
-        return in_array($mimeType, $this->getMimeTypes());
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function isSupportedEntityType(EntityType $entityType): bool
-    {
-        return $entityType->getId() === $this->getEntityType();
-    }
-
-    /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function getMimeTypes(): array
     {
@@ -43,7 +25,7 @@ class PdfStorage extends AbstractFileStorage
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function getFileExt(): string
     {
@@ -51,7 +33,7 @@ class PdfStorage extends AbstractFileStorage
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function getPathPrefix(): string
     {
@@ -59,7 +41,7 @@ class PdfStorage extends AbstractFileStorage
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function getEntityType(): int
     {

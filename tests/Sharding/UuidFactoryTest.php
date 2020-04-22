@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Sharding;
 
-use App\Sharding\EntityType;
 use App\Sharding\ShardCoordinator;
 use App\Sharding\TypeCoordinator;
 use App\Sharding\UuidFactory;
@@ -13,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 
 class UuidFactoryTest extends TestCase
 {
-    public function testGenerateUuid()
+    public function testGenerateUuid(): void
     {
         $shardCoordinator = new ShardCoordinator(0, 0);
         $uuidStorage = new UuidStorage();
@@ -23,7 +22,12 @@ class UuidFactoryTest extends TestCase
         $this->assertEquals('0-100-'.$this->getId('foobar'), $sut->generateUUID('foobar', 100));
     }
 
-    protected function getId($slug)
+    /**
+     * Convert string to MD5 substring.
+     *
+     * @param string $slug
+     */
+    protected function getId($slug): string
     {
         return substr(md5($slug), 0, 16);
     }

@@ -1,16 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Storage\FileSystemAdapters;
 
-class LocalAdapter implements StorageAdapterInterface
+class LocalAdapter
 {
-    public function copyFromLocal($fromPath, $toPath)
-    {
-        // TODO: Implement saveFile() method.
-    }
-
-    public function generateFileUrl($path)
-    {
-        // TODO: Implement generateFileUrl() method.
-    }
 }

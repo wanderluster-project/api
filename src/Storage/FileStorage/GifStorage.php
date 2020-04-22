@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Storage\FileStorage;
 
 use App\Sharding\EntityTypes;
@@ -8,7 +10,6 @@ class GifStorage extends AbstractFileStorage
 {
     /**
      * JpgStorage constructor.
-     * @param FileUtilities $fileUtilities
      */
     public function __construct(FileUtilities $fileUtilities)
     {
@@ -16,7 +17,7 @@ class GifStorage extends AbstractFileStorage
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function getMimeTypes(): array
     {
@@ -24,7 +25,7 @@ class GifStorage extends AbstractFileStorage
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function getFileExt(): string
     {
@@ -32,7 +33,7 @@ class GifStorage extends AbstractFileStorage
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function getPathPrefix(): string
     {
@@ -40,7 +41,7 @@ class GifStorage extends AbstractFileStorage
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function getEntityType(): int
     {

@@ -18,8 +18,6 @@ class ShardCoordinator
 
     /**
      * ShardCoordinator constructor.
-     * @param int $min
-     * @param int $max
      */
     public function __construct(int $min = 0, int $max = 100)
     {
@@ -29,22 +27,21 @@ class ShardCoordinator
 
     /**
      * Simple algorithm.  This can be expanded in the future.
-     * @return Shard
      */
     public function getAvailableShard(): Shard
     {
         $shardId = rand($this->min, $this->max);
+
         return new Shard($shardId);
     }
 
     /**
      * Check if the Shard object is valid.
-     * @param Shard $shard
-     * @return bool
      */
     public function isValidShard(Shard $shard): bool
     {
         $shardId = $shard->getShardId();
-        return $shardId>= $this->min && $shardId <= $this->max;
+
+        return $shardId >= $this->min && $shardId <= $this->max;
     }
 }

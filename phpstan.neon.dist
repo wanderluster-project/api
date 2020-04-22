@@ -1,0 +1,13 @@
+parameters:
+    level: 6
+    paths:
+        - src
+        - tests
+    excludes_analyse:
+        - tests/bootstrap.php
+    autoload_files:
+        - vendor/autoload.php
+        - bin/.phpunit/phpunit-7.5-0/vendor/autoload.php
+    symfony:
+        container_xml_path: '%rootDir%/../../../var/cache/dev/App_KernelDevDebugContainer.xml'
+    checkMissingIterableValueType: false

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Sharding;
 
 class Shard
@@ -11,17 +13,13 @@ class Shard
 
     /**
      * Shard constructor.
-     * @param int $shardId
      */
     public function __construct(int $shardId)
     {
         $this->shardId = $shardId;
     }
 
-    /**
-     * @return int
-     */
-    public function getShardId():int
+    public function getShardId(): int
     {
         return $this->shardId;
     }
@@ -31,6 +29,6 @@ class Shard
      */
     public function __toString()
     {
-        return (string)$this->shardId;
+        return (string) $this->shardId;
     }
 }

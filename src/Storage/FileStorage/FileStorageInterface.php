@@ -1,20 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Storage\FileStorage;
 
-use Symfony\Component\HttpFoundation\File\File;
 use App\Sharding\EntityType;
 use App\Sharding\Uuid;
+use Symfony\Component\HttpFoundation\File\File;
 
 interface FileStorageInterface
 {
-    public function isSupportedFile(File $file):bool;
+    /**
+     * Return TRUE if File is supported, FALSE otherwise.
+     */
+    public function isSupportedFile(File $file): bool;
 
-    public function isSupportedEntityType(EntityType $entityType):bool;
+    /**
+     * Return TRUE if the EntityType is supported, FALSE otherwise.
+     */
+    public function isSupportedEntityType(int $entityType): bool;
 
-    public function saveFileToRemote(File $file);
+    /**
+     * Move a local file to a remote file system.
+     *
+     * @return string[]
+     */
+    public function saveFileToRemote(File $file): array;
 
-    public function archiveFile(File $file);
-
+    /**
+     * Generate a URL for a given UUID.
+     */
     public function generateFileUrl(Uuid $uuid): string;
 }

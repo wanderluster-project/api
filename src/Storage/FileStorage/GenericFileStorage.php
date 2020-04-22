@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Storage\FileStorage;
 
 use App\Exception\WanderlusterException;
-use App\Sharding\EntityType;
 use App\Sharding\Uuid;
-use Symfony\Component\HttpFoundation\File\File;
 use App\Storage\Coordinator\StorageCoordinator;
+use Symfony\Component\HttpFoundation\File\File;
 
 class GenericFileStorage implements FileStorageInterface
 {
@@ -15,42 +16,55 @@ class GenericFileStorage implements FileStorageInterface
      */
     protected $storageCoordinator;
 
+    /**
+     * GenericFileStorage constructor.
+     */
     public function __construct(StorageCoordinator $storageCoordinator)
     {
         $this->storageCoordinator = $storageCoordinator;
     }
 
-    public function saveFileToRemote(File $file)
+    /**
+     * {@inheritdoc}
+     */
+    public function saveFileToRemote(File $file): array
     {
         $storage = $this->storageCoordinator->getStorageForFile($file);
+
         return $storage->saveFileToRemote($file);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function isSupportedFile(File $file): bool
     {
         try {
-            $storage =$this->storageCoordinator->getStorageForFile($file);
+            $storage = $this->storageCoordinator->getStorageForFile($file);
         } catch (WanderlusterException $e) {
             $storage = null;
         }
+
         return !is_null($storage);
     }
 
-    public function isSupportedEntityType(EntityType $entityType):bool
+    /**
+     * {@inheritdoc}
+     */
+    public function isSupportedEntityType(int $entityType): bool
     {
-        // TODO: Implement isSupportedEntityType() method.
+        $storage = $this->storageCoordinator->getStorageForEntityType($entityType);
+
+        return $storage->isSupportedEntityType($entityType);
     }
 
-
-    public function archiveFile(File $file)
-    {
-        $storage = $this->storageCoordinator->getStorageForFile($file);
-        return $storage->archiveFile($file);
-    }
-
+    /**
+     * {@inheritdoc}
+     */
     public function generateFileUrl(Uuid $uuid): string
     {
-//        $storage = $this->storageCoordinator->getStorageForFile($uuid);
-//        return $storage->generateFileUrl($file);
+        $storage = $this->storageCoordinator->getStorageForUuid($uuid);
+
+        return $storage->generateFileUrl($uuid);
     }
 }

@@ -8,10 +8,9 @@ class UuidStorage
 {
     /**
      * Stores UUID into the storage.
-     * Will throw Exception if UUID already exists
-     * @param $uuid
+     * Will throw Exception if UUID already exists.
      */
-    public function allocate(Uuid $uuid)
+    public function allocate(Uuid $uuid): void
     {
         // @todo save UUID and confirm it is unique
     }

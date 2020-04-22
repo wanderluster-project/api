@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Storage\FileStorage;
 
-use App\Sharding\EntityType;
 use App\Sharding\Uuid;
 use Symfony\Component\HttpFoundation\File\File;
 
@@ -15,13 +16,15 @@ abstract class AbstractFileStorage implements FileStorageInterface
 
     /**
      * JpgStorage constructor.
-     * @param FileUtilities $fileUtilities
      */
     public function __construct(FileUtilities $fileUtilities)
     {
         $this->fileUtilities = $fileUtilities;
     }
 
+    /**
+     * @return string[]
+     */
     abstract protected function getMimeTypes(): array;
 
     abstract protected function getFileExt(): string;
@@ -31,23 +34,27 @@ abstract class AbstractFileStorage implements FileStorageInterface
     abstract protected function getEntityType(): int;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function isSupportedFile(File $file): bool
     {
         $mimeType = $file->getMimeType();
+
         return in_array($mimeType, $this->getMimeTypes());
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function isSupportedEntityType(EntityType $entityType): bool
+    public function isSupportedEntityType(int $entityType): bool
     {
-        return $entityType->getId() === $this->getEntityType();
+        return $entityType === $this->getEntityType();
     }
 
-    public function saveFileToRemote(File $file)
+    /**
+     * {@inheritdoc}
+     */
+    public function saveFileToRemote(File $file): array
     {
         return $this->fileUtilities->saveFileToRemote(
             $file,
@@ -58,11 +65,9 @@ abstract class AbstractFileStorage implements FileStorageInterface
         );
     }
 
-    public function archiveFile(File $file)
-    {
-        // TODO: Implement archiveFile() method.
-    }
-
+    /**
+     * {@inheritdoc}
+     */
     public function generateFileUrl(Uuid $uuid): string
     {
         return $this->fileUtilities->generateFileUrl($uuid, $this->getFileExt(), $this->getPathPrefix());

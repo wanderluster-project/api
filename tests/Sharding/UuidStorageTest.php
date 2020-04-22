@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class UuidStorageTest extends TestCase
 {
-    public function testAllocate()
+    public function testAllocate(): void
     {
         $this->markTestSkipped('UUID Allocate method not implemented yet.');
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Storage\FileStorage;
 
 use App\Sharding\EntityTypes;
@@ -8,7 +10,6 @@ class SvgStorage extends AbstractFileStorage
 {
     /**
      * JpgStorage constructor.
-     * @param FileUtilities $fileUtilities
      */
     public function __construct(FileUtilities $fileUtilities)
     {
@@ -16,15 +17,15 @@ class SvgStorage extends AbstractFileStorage
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function getMimeTypes(): array
     {
-        return ['image/svg+xml','svg'];
+        return ['image/svg+xml', 'svg'];
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function getFileExt(): string
     {
@@ -32,7 +33,7 @@ class SvgStorage extends AbstractFileStorage
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function getPathPrefix(): string
     {
@@ -40,7 +41,7 @@ class SvgStorage extends AbstractFileStorage
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function getEntityType(): int
     {

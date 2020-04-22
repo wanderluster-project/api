@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Storage\FileSystemAdapters;
 
 use App\Exception\ErrorMessages;
@@ -9,7 +11,7 @@ use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Filesystem;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
-class S3StorageAdapter implements StorageAdapterInterface
+class S3StorageAdapter implements RemoteStorageAdapterInterface
 {
     /**
      * @var Filesystem
@@ -23,13 +25,12 @@ class S3StorageAdapter implements StorageAdapterInterface
 
     /**
      * S3StorageAdapter constructor.
-     * @param S3Client $s3Client
-     * @param ParameterBagInterface $parameterBag
+     *
      * @throws WanderlusterException
      */
     public function __construct(S3Client $s3Client, ParameterBagInterface $parameterBag)
     {
-        $this->bucket = (string)$parameterBag->get('wanderluster_s3_bucket');
+        $this->bucket = (string) $parameterBag->get('wanderluster_s3_bucket');
 
         if (!$this->bucket) {
             throw new WanderlusterException(sprintf(ErrorMessages::INVALID_S3_BUCKET, $this->bucket));
@@ -38,7 +39,7 @@ class S3StorageAdapter implements StorageAdapterInterface
         $adapter = new AwsS3Adapter(
             $s3Client,
             $this->bucket,
-            "",
+            '',
             ['ACL' => 'public-read']
         );
 
@@ -47,22 +48,27 @@ class S3StorageAdapter implements StorageAdapterInterface
     }
 
     /**
-     * @param $fromPath
-     * @param $toPath
-     * @throws \League\Flysystem\FileExistsException
+     * {@inheritdoc}
      */
-    public function copyFromLocal($fromPath, $toPath)
+    public function pushLocalFileToRemote($fromPath, $toPath): void
     {
         $stream = fopen($fromPath, 'r+');
         $this->filesystem->writeStream($toPath, $stream);
     }
 
     /**
-     * @param $path
-     * @return string
+     * {@inheritdoc}
      */
-    public function generateFileUrl($path)
+    public function deleteRemoteFile($path): void
     {
-        return 'https://' . $this->bucket . '.s3.amazonaws.com/' . $path;
+        $this->filesystem->delete($path);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function generateFileUrl($path): string
+    {
+        return 'https://'.$this->bucket.'.s3.amazonaws.com/'.$path;
     }
 }

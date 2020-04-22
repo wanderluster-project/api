@@ -4,8 +4,14 @@ declare(strict_types=1);
 
 namespace App\Sharding;
 
-class Uuid
+use JsonSerializable;
+use Serializable;
+
+class Uuid implements Serializable, JsonSerializable
 {
+    /**
+     * @var string
+     */
     protected $uuid;
 
     /**
@@ -25,59 +31,89 @@ class Uuid
 
     /**
      * Uuid constructor.
-     * @param string $uuid
      */
     public function __construct(string $uuid)
     {
-        $this->uuid = $uuid;
-        $uuidParts = explode('-', $uuid);
-        $this->shard = (int) $uuidParts[0];
-        $this->type = (int) $uuidParts[1];
-        $this->identifier =  $uuidParts[2];
+        $this->init($uuid);
     }
 
     /**
      * Get the shard where this object is stored.
-     * @return int
      */
-    public function getShard():int
+    public function getShard(): int
     {
         return $this->shard;
     }
 
     /**
      * Get the type of this object.
-     * @return int
      */
-    public function getEntityType():int
+    public function getEntityType(): int
     {
         return $this->type;
     }
 
     /**
      * Get the Identifier for this object.
-     * @return int
      */
-    public function getIdentifier():string
+    public function getIdentifier(): string
     {
         return $this->identifier;
     }
 
     /**
      * Return the string representation.
-     * @return string
      */
-    public function asString():string
+    public function asString(): string
     {
         return $this->__toString();
     }
 
     /**
      * Return the string representation.
-     * @return string
      */
-    public function __toString():string
+    public function __toString(): string
     {
         return $this->uuid;
+    }
+
+    /**
+     * Serialize the UUID to string.
+     */
+    public function serialize(): string
+    {
+        return $this->uuid;
+    }
+
+    /**
+     * Convert string --> UUID parts.
+     *
+     * @param string $serialized
+     */
+    public function unserialize($serialized): void
+    {
+        $this->init($serialized);
+    }
+
+    /**
+     * Serialize the UUID to string.
+     */
+    public function jsonSerialize(): string
+    {
+        return $this->uuid;
+    }
+
+    /**
+     * Parse UUID into parts and load state.
+     *
+     * @param string $uuid
+     */
+    protected function init($uuid): void
+    {
+        $this->uuid = $uuid;
+        $uuidParts = explode('-', $uuid);
+        $this->shard = (int) $uuidParts[0];
+        $this->type = (int) $uuidParts[1];
+        $this->identifier = $uuidParts[2];
     }
 }

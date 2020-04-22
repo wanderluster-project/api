@@ -26,8 +26,6 @@ class UuidFactory
 
     /**
      * UuidFactory constructor.
-     * @param ShardCoordinator $shardCoordinator
-     * @param UuidStorage $uuidStorage
      */
     public function __construct(ShardCoordinator $shardCoordinator, UuidStorage $uuidStorage, TypeCoordinator $typeCoordinator)
     {
@@ -37,9 +35,6 @@ class UuidFactory
     }
 
     /**
-     * @param string $slug
-     * @param int $type
-     * @return Uuid
      * @throws WanderlusterException
      */
     public function generateUUID(string $slug, int $entityTypeId): Uuid
@@ -51,7 +46,7 @@ class UuidFactory
             throw new WanderlusterException(sprintf(ErrorMessages::INVALID_ENTITY_TYPE, $entityTypeId));
         }
 
-        $uuid = new Uuid($shard . '-' . $entityTypeId . '-' . $identifier);
+        $uuid = new Uuid($shard.'-'.$entityTypeId.'-'.$identifier);
         $this->uuidStorage->allocate($uuid);
 
         return $uuid;

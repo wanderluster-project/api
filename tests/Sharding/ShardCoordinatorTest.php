@@ -9,13 +9,13 @@ use PHPUnit\Framework\TestCase;
 
 class ShardCoordinatorTest extends TestCase
 {
-    public function testGetAvailableShard()
+    public function testGetAvailableShard(): void
     {
         $min = 0;
         $max = 10;
 
         $sut = new ShardCoordinator($min, $max);
-        for ($i=0;$i<=20;$i++) {
+        for ($i = 0; $i <= 20; ++$i) {
             $this->assertGreaterThanOrEqual($min, $sut->getAvailableShard()->getShardId());
             $this->assertLessThanOrEqual($max, $sut->getAvailableShard()->getShardId());
         }
