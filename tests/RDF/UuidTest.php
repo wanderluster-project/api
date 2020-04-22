@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\RDF;
 
+use App\DataModel\Uuid;
 use App\Exception\WanderlusterException;
-use App\RDF\Uuid;
 use Exception;
 use PHPUnit\Framework\TestCase;
 

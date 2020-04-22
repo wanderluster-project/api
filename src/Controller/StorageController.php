@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\DataModel\Uuid;
 use App\Exception\ErrorMessages;
-use App\RDF\Uuid;
-use App\Storage\FileStorage\GenericFileStorage;
+use App\FileStorage\FileAdapters\GenericFileAdapter;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,7 +20,7 @@ class StorageController
     /**
      * @Route("/api/v1/storage", methods={"POST"})
      */
-    public function uploadFile(Request $request, GenericFileStorage $fileStorage): Response
+    public function uploadFile(Request $request, GenericFileAdapter $fileStorage): Response
     {
         if (!$request->files->has('file')) {
             throw new BadRequestHttpException(sprintf(ErrorMessages::REQUEST_MISSING_PARAMETER, 'file'));
@@ -48,7 +48,7 @@ class StorageController
      *
      * @param string $uuid
      */
-    public function deleteFile($uuid, Request $request, GenericFileStorage $fileStorage): Response
+    public function deleteFile($uuid, Request $request, GenericFileAdapter $fileStorage): Response
     {
         if (!$uuid) {
             throw new BadRequestHttpException(sprintf(ErrorMessages::REQUEST_MISSING_PARAMETER, 'uuid'));

@@ -29,8 +29,8 @@ services:
     # please note that last definitions always *replace* previous ones
 
 
-    App\Storage\Coordinator\StorageCoordinator:
-        factory: ['App\Storage\Coordinator\StorageCoordinatorFactory', 'create']
+    App\FileStorage\FileAdapterRegistry:
+        factory: ['App\Factory\FileAdapterRegistryFactory', 'create']
 
-    App\Storage\FileSystemAdapters\StorageAdapterInterface:
-        factory: ['App\Storage\FileSystemAdapters\StorageAdapterFactory', 'create']
+    App\FileStorage\FileSystemAdapters\StorageAdapterInterface:
+        factory: ['App\Factory\FileSystemAdapterFactory', 'create']
