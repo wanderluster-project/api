@@ -89,7 +89,6 @@ class StorageControllerTest extends WebTestCase
         $uuid = new Uuid($data['uuid']);
         $this->assertArrayHasKey('uuid', $data);
         $this->assertArrayHasKey('url', $data);
-        var_dump($data);exit;
         $this->assertEquals(EntityTypes::FILE_IMAGE_GIF, $uuid->getEntityType());
         $this->assertEquals('success', $data['status']);
         $this->assertEquals('image/gif', $data['mime_type']);
