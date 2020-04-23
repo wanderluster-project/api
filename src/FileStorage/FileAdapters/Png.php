@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\FileStorage\FileAdapters;
 
-use App\DataModel\EntityTypes;
+use App\DataModel\Entity\EntityTypes;
 use App\FileStorage\FileUtilities;
 
 class Png extends AbstractFileAdapter

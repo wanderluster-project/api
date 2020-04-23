@@ -10,7 +10,11 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y php libapache2-mod-php php-mysql php-dom php-xml php-mbstring php-intl && \
     rm -Rf /var/www/html/* && \
     rmdir /var/www/html && \
-    ln -sfn /var/www/wanderluster/public /var/www/html
+    ln -sfn /var/www/wanderluster/public /var/www/html && \
+    apt-get install -y libsodium-dev php-pear php-dev && \
+    pecl install libsodium && \
+    echo 'extension=sodium.so' >>  /etc/php/7.2/apache2/php.ini && \
+    echo 'extension=sodium.so' >>  /etc/php/7.2/cli/php.ini
 
 # Copy data into container
 COPY . /var/www/wanderluster

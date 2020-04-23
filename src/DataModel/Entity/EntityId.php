@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\DataModel;
+namespace App\DataModel\Entity;
 
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 use JsonSerializable;
 use Serializable;
 
-class Uuid implements Serializable, JsonSerializable
+class EntityId implements Serializable, JsonSerializable
 {
     /**
      * @var string
      */
-    protected $uuid;
+    protected $entityId;
 
     /**
      * @var int
@@ -32,11 +32,13 @@ class Uuid implements Serializable, JsonSerializable
     protected $identifier;
 
     /**
-     * Uuid constructor.
+     * EntityId constructor.
+     *
+     * @throws WanderlusterException
      */
-    public function __construct(string $uuid)
+    public function __construct(string $entityId)
     {
-        $this->init($uuid);
+        $this->init($entityId);
     }
 
     /**
@@ -76,19 +78,19 @@ class Uuid implements Serializable, JsonSerializable
      */
     public function __toString(): string
     {
-        return $this->uuid;
+        return $this->entityId;
     }
 
     /**
-     * Serialize the UUID to string.
+     * Serialize the EntityID to string.
      */
     public function serialize(): string
     {
-        return $this->uuid;
+        return $this->entityId;
     }
 
     /**
-     * Convert string --> UUID parts.
+     * Convert string --> EntityId parts.
      *
      * @param string $serialized
      */
@@ -98,30 +100,30 @@ class Uuid implements Serializable, JsonSerializable
     }
 
     /**
-     * Serialize the UUID to string.
+     * Serialize the EntityID to string.
      */
     public function jsonSerialize(): string
     {
-        return $this->uuid;
+        return $this->entityId;
     }
 
     /**
-     * Parse UUID into parts and load state.
+     * Parse EntityId into parts and load state.
      *
-     * @param string $uuid
+     * @param string $entityId
      *
      * @throws WanderlusterException
      */
-    protected function init($uuid): void
+    protected function init($entityId): void
     {
-        if (!preg_match('/^[0-9]*-[0-9]*-[0-9A-Fa-f]{16}$/', $uuid)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_UUID, $uuid));
+        if (!preg_match('/^[0-9]*-[0-9]*-[0-9A-Fa-f]{16}$/', $entityId)) {
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_ENTITY_ID, $entityId));
         }
 
-        $this->uuid = $uuid;
-        $uuidParts = explode('-', $uuid);
-        $this->shard = (int) $uuidParts[0];
-        $this->type = (int) $uuidParts[1];
-        $this->identifier = $uuidParts[2];
+        $this->entityId = $entityId;
+        $parts = explode('-', $entityId);
+        $this->shard = (int) $parts[0];
+        $this->type = (int) $parts[1];
+        $this->identifier = $parts[2];
     }
 }

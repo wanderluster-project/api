@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\RDF;
+namespace App\Tests\DataModel\Entity;
 
-use App\DataModel\Uuid;
+use App\DataModel\Entity\EntityId;
 use App\Exception\WanderlusterException;
 use Exception;
 use PHPUnit\Framework\TestCase;
 
-class UuidTest extends TestCase
+class EntityIdTest extends TestCase
 {
     public function testConstructor(): void
     {
-        $uuidString = '10-3-'.substr(md5('foobar'), 0, 16);
-        $sut = new Uuid($uuidString);
+        $entityIdString = '10-3-'.substr(md5('foobar'), 0, 16);
+        $sut = new EntityId($entityIdString);
 
         $this->assertEquals(10, $sut->getShard());
         $this->assertEquals(3, $sut->getEntityType());
@@ -23,29 +23,29 @@ class UuidTest extends TestCase
 
     public function testToString(): void
     {
-        $uuidString = '10-3-'.substr(md5('foobar'), 0, 16);
-        $sut = new Uuid($uuidString);
+        $entityIdString = '10-3-'.substr(md5('foobar'), 0, 16);
+        $sut = new EntityId($entityIdString);
 
         $this->assertEquals('10-3-3858f62230ac3c91', (string) $sut);
         $this->assertEquals('10-3-3858f62230ac3c91', $sut->asString());
     }
 
-    public function testInvalidUuidFormat(): void
+    public function testInvalidEntityIdFormat(): void
     {
         try {
-            new Uuid('kevin');
+            new EntityId('kevin');
             $this->fail('Exception not thrown');
         } catch (Exception $e) {
             $this->assertInstanceOf(WanderlusterException::class, $e);
-            $this->assertEquals('Invalid UUID format - kevin', $e->getMessage());
+            $this->assertEquals('Invalid EntityID format - kevin', $e->getMessage());
         }
 
         try {
-            new Uuid('01-01-kevin');
+            new EntityId('01-01-kevin');
             $this->fail('Exception not thrown');
         } catch (Exception $e) {
             $this->assertInstanceOf(WanderlusterException::class, $e);
-            $this->assertEquals('Invalid UUID format - 01-01-kevin', $e->getMessage());
+            $this->assertEquals('Invalid EntityID format - 01-01-kevin', $e->getMessage());
         }
     }
 }

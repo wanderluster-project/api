@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\FileStorage\FileAdapters;
 
-use App\DataModel\Uuid;
+use App\DataModel\Entity\EntityId;
 use App\FileStorage\FileUtilities;
 use Symfony\Component\HttpFoundation\File\File;
 
@@ -69,16 +69,16 @@ abstract class AbstractFileAdapter implements FileAdapterInterface
     /**
      * {@inheritdoc}
      */
-    public function generateFileUrl(Uuid $uuid): string
+    public function generateFileUrl(EntityId $entityId): string
     {
-        return $this->fileUtilities->generateFileUrl($uuid, $this->getFileExt(), $this->getPathPrefix());
+        return $this->fileUtilities->generateFileUrl($entityId, $this->getFileExt(), $this->getPathPrefix());
     }
 
     /**
      * {@inheritdoc}
      */
-    public function deleteRemoteFile(Uuid $uuid): void
+    public function deleteRemoteFile(EntityId $entityId): void
     {
-        $this->fileUtilities->deleteRemoteFile($uuid, $this->getFileExt(), $this->getPathPrefix());
+        $this->fileUtilities->deleteRemoteFile($entityId, $this->getFileExt(), $this->getPathPrefix());
     }
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\FileStorage\FileAdapters;
 
-use App\DataModel\Uuid;
+use App\DataModel\Entity\EntityId;
 use Symfony\Component\HttpFoundation\File\File;
 
 interface FileAdapterInterface
@@ -27,12 +27,12 @@ interface FileAdapterInterface
     public function saveFileToRemote(File $file): array;
 
     /**
-     * Generate a URL for a given UUID.
+     * Generate a URL for a given EntityId.
      */
-    public function generateFileUrl(Uuid $uuid): string;
+    public function generateFileUrl(EntityId $entityId): string;
 
     /**
-     * Delete a file for a given UUID.
+     * Delete a file for a given EntityId.
      */
-    public function deleteRemoteFile(Uuid $uuid): void;
+    public function deleteRemoteFile(EntityId $entityId): void;
 }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
-use App\DataModel\EntityTypes;
-use App\DataModel\Uuid;
+use App\DataModel\Entity\EntityId;
+use App\DataModel\Entity\EntityTypes;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -40,16 +40,16 @@ class StorageControllerTest extends WebTestCase
 
         $data = json_decode($client->getResponse()->getContent(), true);
 
-        $uuid = new Uuid($data['uuid']);
-        $this->assertArrayHasKey('uuid', $data);
+        $this->assertArrayHasKey('id', $data);
+        $entityId = new EntityId($data['id']);
         $this->assertArrayHasKey('url', $data);
-        $this->assertEquals(EntityTypes::FILE_IMAGE_JPG, $uuid->getEntityType());
+        $this->assertEquals(EntityTypes::FILE_IMAGE_JPG, $entityId->getEntityType());
         $this->assertEquals('success', $data['status']);
         $this->assertEquals('image/jpeg', $data['mime_type']);
         $this->assertEquals(filesize($filename), $data['file_size']);
 
         // delete this file
-        $client->request('DELETE', '/api/v1/storage/'.$uuid);
+        $client->request('DELETE', '/api/v1/storage/'.$entityId);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
@@ -63,16 +63,16 @@ class StorageControllerTest extends WebTestCase
 
         $data = json_decode($client->getResponse()->getContent(), true);
 
-        $uuid = new Uuid($data['uuid']);
-        $this->assertArrayHasKey('uuid', $data);
+        $this->assertArrayHasKey('id', $data);
+        $entityId = new EntityId($data['id']);
         $this->assertArrayHasKey('url', $data);
-        $this->assertEquals(EntityTypes::FILE_IMAGE_PNG, $uuid->getEntityType());
+        $this->assertEquals(EntityTypes::FILE_IMAGE_PNG, $entityId->getEntityType());
         $this->assertEquals('success', $data['status']);
         $this->assertEquals('image/png', $data['mime_type']);
         $this->assertEquals(filesize($filename), $data['file_size']);
 
         // delete this file
-        $client->request('DELETE', '/api/v1/storage/'.$uuid);
+        $client->request('DELETE', '/api/v1/storage/'.$entityId);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
@@ -86,16 +86,16 @@ class StorageControllerTest extends WebTestCase
 
         $data = json_decode($client->getResponse()->getContent(), true);
 
-        $uuid = new Uuid($data['uuid']);
-        $this->assertArrayHasKey('uuid', $data);
+        $this->assertArrayHasKey('id', $data);
+        $entityId = new EntityId($data['id']);
         $this->assertArrayHasKey('url', $data);
-        $this->assertEquals(EntityTypes::FILE_IMAGE_GIF, $uuid->getEntityType());
+        $this->assertEquals(EntityTypes::FILE_IMAGE_GIF, $entityId->getEntityType());
         $this->assertEquals('success', $data['status']);
         $this->assertEquals('image/gif', $data['mime_type']);
         $this->assertEquals(filesize($filename), $data['file_size']);
 
         // delete this file
-        $client->request('DELETE', '/api/v1/storage/'.$uuid);
+        $client->request('DELETE', '/api/v1/storage/'.$entityId);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
@@ -109,16 +109,16 @@ class StorageControllerTest extends WebTestCase
 
         $data = json_decode($client->getResponse()->getContent(), true);
 
-        $uuid = new Uuid($data['uuid']);
-        $this->assertArrayHasKey('uuid', $data);
+        $this->assertArrayHasKey('id', $data);
+        $entityId = new EntityId($data['id']);
         $this->assertArrayHasKey('url', $data);
-        $this->assertEquals(EntityTypes::FILE_IMAGE_SVG, $uuid->getEntityType());
+        $this->assertEquals(EntityTypes::FILE_IMAGE_SVG, $entityId->getEntityType());
         $this->assertEquals('success', $data['status']);
         $this->assertEquals('image/svg+xml', $data['mime_type']);
         $this->assertEquals(filesize($filename), $data['file_size']);
 
         // delete this file
-        $client->request('DELETE', '/api/v1/storage/'.$uuid);
+        $client->request('DELETE', '/api/v1/storage/'.$entityId);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
@@ -132,16 +132,16 @@ class StorageControllerTest extends WebTestCase
 
         $data = json_decode($client->getResponse()->getContent(), true);
 
-        $uuid = new Uuid($data['uuid']);
-        $this->assertArrayHasKey('uuid', $data);
+        $this->assertArrayHasKey('id', $data);
+        $entityId = new EntityId($data['id']);
         $this->assertArrayHasKey('url', $data);
-        $this->assertEquals(EntityTypes::FILE_PDF, $uuid->getEntityType());
+        $this->assertEquals(EntityTypes::FILE_PDF, $entityId->getEntityType());
         $this->assertEquals('success', $data['status']);
         $this->assertEquals('application/pdf', $data['mime_type']);
         $this->assertEquals(filesize($filename), $data['file_size']);
 
         // delete this file
-        $client->request('DELETE', '/api/v1/storage/'.$uuid);
+        $client->request('DELETE', '/api/v1/storage/'.$entityId);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 }

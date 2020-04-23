@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\FileStorage\FileAdapters;
 
-use App\DataModel\Uuid;
+use App\DataModel\Entity\EntityId;
 use App\Exception\WanderlusterException;
 use App\FileStorage\FileAdapterRegistry;
 use Symfony\Component\HttpFoundation\File\File;
@@ -61,20 +61,20 @@ class GenericFileAdapter implements FileAdapterInterface
     /**
      * {@inheritdoc}
      */
-    public function generateFileUrl(Uuid $uuid): string
+    public function generateFileUrl(EntityId $entityId): string
     {
-        $storage = $this->storageCoordinator->getFileAdapterForUuid($uuid);
+        $storage = $this->storageCoordinator->getFileAdapterForEntityId($entityId);
 
-        return $storage->generateFileUrl($uuid);
+        return $storage->generateFileUrl($entityId);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function deleteRemoteFile(Uuid $uuid): void
+    public function deleteRemoteFile(EntityId $entityId): void
     {
-        $storage = $this->storageCoordinator->getFileAdapterForUuid($uuid);
+        $storage = $this->storageCoordinator->getFileAdapterForEntityId($entityId);
 
-        $storage->deleteRemoteFile($uuid);
+        $storage->deleteRemoteFile($entityId);
     }
 }

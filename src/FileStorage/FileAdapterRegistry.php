@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\FileStorage;
 
-use App\DataModel\Uuid;
+use App\DataModel\Entity\EntityId;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 use App\FileStorage\FileAdapters\FileAdapterInterface;
@@ -65,9 +65,9 @@ class FileAdapterRegistry
     /**
      * @throws WanderlusterException
      */
-    public function getFileAdapterForUuid(Uuid $uuid): FileAdapterInterface
+    public function getFileAdapterForEntityId(EntityId $entityId): FileAdapterInterface
     {
-        return $this->getFileAdapterForEntityType($uuid->getEntityType());
+        return $this->getFileAdapterForEntityType($entityId->getEntityType());
     }
 
     public function register(FileAdapterInterface $storage, int $priority): void

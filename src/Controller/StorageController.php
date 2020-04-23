@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\DataModel\Uuid;
+use App\DataModel\Entity\EntityId;
 use App\Exception\ErrorMessages;
 use App\FileStorage\FileAdapters\GenericFileAdapter;
 use Exception;
@@ -44,19 +44,19 @@ class StorageController
     }
 
     /**
-     * @Route("/api/v1/storage/{uuid}", methods={"DELETE"})
+     * @Route("/api/v1/storage/{entityId}", methods={"DELETE"})
      *
-     * @param string $uuid
+     * @param string $entityId
      */
-    public function deleteFile($uuid, Request $request, GenericFileAdapter $fileStorage): Response
+    public function deleteFile($entityId, Request $request, GenericFileAdapter $fileStorage): Response
     {
-        if (!$uuid) {
-            throw new BadRequestHttpException(sprintf(ErrorMessages::REQUEST_MISSING_PARAMETER, 'uuid'));
+        if (!$entityId) {
+            throw new BadRequestHttpException(sprintf(ErrorMessages::REQUEST_MISSING_PARAMETER, 'entityId'));
         }
 
         try {
-            $uuid = new Uuid($uuid);
-            $fileStorage->deleteRemoteFile($uuid);
+            $entityId = new EntityId($entityId);
+            $fileStorage->deleteRemoteFile($entityId);
 
             return new JsonResponse(
                 ['status' => 'success']
