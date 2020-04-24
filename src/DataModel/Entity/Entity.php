@@ -5,37 +5,106 @@ declare(strict_types=1);
 namespace App\DataModel\Entity;
 
 use App\DataModel\Snapshot\Snapshot;
-use App\DataModel\Validation\Constraints;
 
 class Entity
 {
     /**
-     * @var EntityId
+     * @var string|null
      */
-    protected $entityId;
+    protected $lang;
 
     /**
-     * @var Constraints
+     * @var EntityId|null
      */
-    protected $constraints;
+    protected $entityId = null;
+
+    /**
+     * @var Snapshot|null
+     */
+    protected $previousSnapshot;
 
     /**
      * @var Snapshot
      */
-    protected $snapshot;
+    protected $currentSnapshot;
 
-    public function getEntityId(): EntityId
+    /**
+     * Entity constructor.
+     *
+     * @param string|null $lang
+     */
+    public function __construct(EntityId $entityId = null, Snapshot $previousSnapshot = null, $lang = null)
+    {
+        $this->entityId = $entityId;
+        $this->previousSnapshot = $previousSnapshot;
+        $this->lang = $lang;
+        $this->currentSnapshot = new Snapshot($lang);
+    }
+
+    /**
+     * Get the language of this Entity.
+     */
+    public function getLang(): ?string
+    {
+        return $this->lang;
+    }
+
+    /**
+     * Get the EntityId for this Entity.
+     */
+    public function getEntityId(): ?EntityId
     {
         return $this->entityId;
     }
 
-    public function getSnapshot(): Snapshot
+    /**
+     * @param string $key
+     */
+    public function get($key): ?string
     {
-        return $this->snapshot;
+        $curValue = $this->currentSnapshot->get($key);
+
+        if (!is_null($curValue)) {
+            return $curValue;
+        }
+
+        if ($this->previousSnapshot) {
+            return $this->previousSnapshot->get($key);
+        }
+
+        return null;
     }
 
-    public function getConstraints(): Constraints
+    /**
+     * @param string $key
+     * @param mixed  $value
+     */
+    public function set($key, $value): void
     {
-        return $this->constraints;
+        $this->currentSnapshot->set($key, $value);
+    }
+
+    /**
+     * @param string $key
+     */
+    public function has($key): bool
+    {
+        if ($this->currentSnapshot->wasDeleted($key)) {
+            return false;
+        } elseif ($this->currentSnapshot->has($key)) {
+            return true;
+        } elseif ($this->previousSnapshot) {
+            return $this->previousSnapshot->has($key);
+        }
+
+        return false;
+    }
+
+    /**
+     * @param string $key
+     */
+    public function del($key): void
+    {
+        $this->currentSnapshot->del($key);
     }
 }
