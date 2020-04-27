@@ -39,7 +39,7 @@ class StorageController
             $entity = $fileStorage->saveFileToRemote($file);
             $entityManager->commit($entity, LanguageCodes::ENGLISH);
 
-            return new Response($serializer->encode($entity));
+            return new JsonResponse($serializer->encode($entity),200, [], true);
         } catch (Exception $e) {
             throw new HttpException(500, ErrorMessages::SERVER_ERROR_UPLOADING, $e);
         }
