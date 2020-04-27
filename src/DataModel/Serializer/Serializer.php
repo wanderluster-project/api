@@ -114,7 +114,7 @@ class Serializer
                 }
 
                 return json_encode([
-                    'entity_id' => $encodedEntityId,
+                    'id' => $encodedEntityId,
                     'lang' => $obj->getLang(),
                     'data' => $obj->all(),
                 ]);
@@ -176,11 +176,11 @@ class Serializer
         $entityId = null;
 
         // decode entity id
-        if (!array_key_exists('entity_id', $jsonData)) {
+        if (!array_key_exists('id', $jsonData)) {
             throw new WanderlusterException(sprintf(ErrorMessages::DESERIALIZATION_ERROR, Entity::class));
         }
-        if (!is_null($jsonData['entity_id'])) {
-            $entityId = $this->decodeEntityId($jsonData['entity_id']);
+        if (!is_null($jsonData['id'])) {
+            $entityId = $this->decodeEntityId($jsonData['id']);
         }
 
         // decode language
@@ -197,7 +197,7 @@ class Serializer
 
         $entity = new Entity($data, $lang);
         if ($entityId) {
-            $this->entityUtilites->setEntityId($entityId, $entity);
+            $this->entityUtilites->setEntityId($entity, $entityId);
         }
 
         return $entity;

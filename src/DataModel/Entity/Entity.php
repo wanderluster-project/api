@@ -22,10 +22,11 @@ class Entity
      * Entity constructor.
      *
      * @param string|null $lang
+     * @param int|null    $entityType
      */
-    public function __construct(array $data = [], $lang = null)
+    public function __construct(array $data = [], $lang = null, $entityType = null)
     {
-        $this->snapshot = new Snapshot($data, $lang);
+        $this->snapshot = new Snapshot($data, $lang, $entityType);
     }
 
     /**
@@ -34,6 +35,14 @@ class Entity
     public function getLang(): ?string
     {
         return $this->snapshot->getLanguage();
+    }
+
+    /**
+     * Get the EntityType for this Entity.
+     */
+    public function getEntityType(): ?int
+    {
+        return $this->snapshot->getEntityType();
     }
 
     /**

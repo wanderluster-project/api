@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\FileStorage\FileAdapters;
 
+use App\DataModel\Entity\Entity;
 use App\DataModel\Entity\EntityId;
 use App\Exception\WanderlusterException;
 use App\FileStorage\FileAdapterRegistry;
@@ -27,7 +28,7 @@ class GenericFileAdapter implements FileAdapterInterface
     /**
      * {@inheritdoc}
      */
-    public function saveFileToRemote(File $file): array
+    public function saveFileToRemote(File $file): Entity
     {
         $storage = $this->storageCoordinator->getFileAdapterForFile($file);
 

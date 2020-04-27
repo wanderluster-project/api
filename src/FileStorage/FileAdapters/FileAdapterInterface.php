@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\FileStorage\FileAdapters;
 
+use App\DataModel\Entity\Entity;
 use App\DataModel\Entity\EntityId;
 use Symfony\Component\HttpFoundation\File\File;
 
@@ -21,10 +22,8 @@ interface FileAdapterInterface
 
     /**
      * Move a local file to a remote file system.
-     *
-     * @return string[]
      */
-    public function saveFileToRemote(File $file): array;
+    public function saveFileToRemote(File $file): Entity;
 
     /**
      * Generate a URL for a given EntityId.

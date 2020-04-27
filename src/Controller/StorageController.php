@@ -6,6 +6,8 @@ namespace App\Controller;
 
 use App\DataModel\Entity\EntityId;
 use App\DataModel\Serializer\Serializer;
+use App\DataModel\Translation\LanguageCodes;
+use App\EntityManager\EntityManager;
 use App\Exception\ErrorMessages;
 use App\FileStorage\FileAdapters\GenericFileAdapter;
 use Exception;
@@ -21,7 +23,7 @@ class StorageController
     /**
      * @Route("/api/v1/storage", methods={"POST"})
      */
-    public function uploadFile(Request $request, GenericFileAdapter $fileStorage, Serializer $serializer): Response
+    public function uploadFile(Request $request, GenericFileAdapter $fileStorage, Serializer $serializer, EntityManager $entityManager): Response
     {
         if (!$request->files->has('file')) {
             throw new BadRequestHttpException(sprintf(ErrorMessages::REQUEST_MISSING_PARAMETER, 'file'));
@@ -34,7 +36,10 @@ class StorageController
         }
 
         try {
-            return new Response($serializer->encode($fileStorage->saveFileToRemote($file)));
+            $entity = $fileStorage->saveFileToRemote($file);
+            $entityManager->commit($entity, LanguageCodes::ENGLISH);
+
+            return new Response($serializer->encode($entity));
         } catch (Exception $e) {
             throw new HttpException(500, ErrorMessages::SERVER_ERROR_UPLOADING, $e);
         }

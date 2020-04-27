@@ -11,6 +11,7 @@ class ErrorMessages
     const INVALID_S3_BUCKET = 'Invalid S3 Bucket - %s';
     const INVALID_ENTITY_ID = 'Invalid EntityID format - %s';
     const INVALID_SNAPSHOT_ID = 'Invalid SnapshotId format - %s';
+    const INVALID_LANGUAGE_CODE = 'Invalid language code -  %s';
 
     const REQUEST_MISSING_PARAMETER = 'Missing parameter: %s';
     const REQUEST_INVALID_FILE = 'Invalid or corrupt file uploaded.';

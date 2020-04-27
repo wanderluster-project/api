@@ -56,20 +56,20 @@ class EntityTest extends WebTestCase
     {
         // test empty
         $entity = new Entity();
-        $this->assertEquals('{"entity_id":null,"lang":null,"data":[]}', $this->getSerializer()->encode($entity));
+        $this->assertEquals('{"id":null,"lang":null,"data":[]}', $this->getSerializer()->encode($entity));
 
         // test with data
         $entity = new Entity([], LanguageCodes::ENGLISH);
         $entity->set('foo1', 'bar1');
         $entity->set('foo2', 'bar2');
         $entity->del('foo2');
-        $this->assertEquals('{"entity_id":null,"lang":"en","data":{"foo1":"bar1"}}', $this->getSerializer()->encode($entity));
+        $this->assertEquals('{"id":null,"lang":"en","data":{"foo1":"bar1"}}', $this->getSerializer()->encode($entity));
     }
 
     public function testDeserialization(): void
     {
         // test empty
-        $json = '{"entity_id":null,"lang":null,"data":[]}';
+        $json = '{"id":null,"lang":null,"data":[]}';
         $entity = $this->getSerializer()->decode($json, Entity::class);
         $this->assertInstanceOf(Entity::class, $entity);
         $this->assertEquals(null, $entity->getEntityId());
@@ -77,7 +77,7 @@ class EntityTest extends WebTestCase
         $this->assertEquals([], $entity->all());
 
         // test fully realized
-        $json = '{"entity_id":"10-3-3858f62230ac3c91","lang":"en","data":{"foo1":"bar1"}}';
+        $json = '{"id":"10-3-3858f62230ac3c91","lang":"en","data":{"foo1":"bar1"}}';
         $entity = $this->getSerializer()->decode($json, Entity::class);
         $this->assertInstanceOf(Entity::class, $entity);
         $this->assertEquals('10-3-3858f62230ac3c91', (string) $entity->getEntityId());

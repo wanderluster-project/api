@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\FileStorage\FileAdapters;
 
+use App\DataModel\Entity\Entity;
 use App\DataModel\Entity\EntityId;
 use App\FileStorage\FileUtilities;
 use Symfony\Component\HttpFoundation\File\File;
@@ -55,7 +56,7 @@ abstract class AbstractFileAdapter implements FileAdapterInterface
     /**
      * {@inheritdoc}
      */
-    public function saveFileToRemote(File $file): array
+    public function saveFileToRemote(File $file): Entity
     {
         return $this->fileUtilities->saveFileToRemote(
             $file,
