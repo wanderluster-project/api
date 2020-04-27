@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\DataModel;
+namespace App\Tests\DataModel\Snapshot;
 
 use App\DataModel\Snapshot\Snapshot;
 use App\DataModel\Translation\LanguageCodes;
@@ -17,7 +17,7 @@ class SnapshotTest extends TestCase
         $this->assertNull($sut->getLanguage());
 
         // passing along language
-        $sut = new Snapshot(LanguageCodes::ENGLISH);
+        $sut = new Snapshot([], LanguageCodes::ENGLISH);
         $this->assertEquals(LanguageCodes::ENGLISH, $sut->getLanguage());
     }
 
@@ -72,5 +72,13 @@ class SnapshotTest extends TestCase
         $this->assertFalse($sut->wasDeleted('foo1'));
         $sut->del('foo1');
         $this->assertTrue($sut->wasDeleted('foo1'));
+    }
+
+    public function testGetDeletedKeys(): void
+    {
+        $sut = new Snapshot();
+        $sut->set('foo1', 'bar1');
+        $sut->del('foo1');
+        $this->assertEquals(['foo1'], $sut->getDeletedKeys());
     }
 }

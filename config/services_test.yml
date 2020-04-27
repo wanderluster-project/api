@@ -1,0 +1,4 @@
+services:
+  test.serializer:
+    alias: 'App\DataModel\Serializer\Serializer'
+    public: true

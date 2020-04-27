@@ -4,19 +4,17 @@ declare(strict_types=1);
 
 namespace App\DataModel\Entity;
 
+use App\DataModel\StringInterface;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
-use JsonSerializable;
-use Serializable;
 
-class EntityId implements Serializable, JsonSerializable
+class EntityId implements StringInterface
 {
-    /**
-     * @var string
-     */
-    protected $entityId;
+    const PATTERN = '/^[0-9]*-[0-9]*-[0-9A-Fa-f]{16}$/';
 
     /**
+     * @SerializedName("customer_name")
+     *
      * @var int
      */
     protected $shard;
@@ -36,9 +34,16 @@ class EntityId implements Serializable, JsonSerializable
      *
      * @throws WanderlusterException
      */
-    public function __construct(string $entityId)
+    public function __construct(string $entityIdString)
     {
-        $this->init($entityId);
+        if (!preg_match(self::PATTERN, $entityIdString)) {
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_ENTITY_ID, $entityIdString));
+        }
+
+        $parts = explode('-', $entityIdString);
+        $this->shard = (int) $parts[0];
+        $this->type = (int) $parts[1];
+        $this->identifier = $parts[2];
     }
 
     /**
@@ -70,7 +75,7 @@ class EntityId implements Serializable, JsonSerializable
      */
     public function asString(): string
     {
-        return $this->__toString();
+        return $this->getShard().'-'.$this->getEntityType().'-'.$this->getIdentifier();
     }
 
     /**
@@ -78,52 +83,6 @@ class EntityId implements Serializable, JsonSerializable
      */
     public function __toString(): string
     {
-        return $this->entityId;
-    }
-
-    /**
-     * Serialize the EntityID to string.
-     */
-    public function serialize(): string
-    {
-        return $this->entityId;
-    }
-
-    /**
-     * Convert string --> EntityId parts.
-     *
-     * @param string $serialized
-     */
-    public function unserialize($serialized): void
-    {
-        $this->init($serialized);
-    }
-
-    /**
-     * Serialize the EntityID to string.
-     */
-    public function jsonSerialize(): string
-    {
-        return $this->entityId;
-    }
-
-    /**
-     * Parse EntityId into parts and load state.
-     *
-     * @param string $entityId
-     *
-     * @throws WanderlusterException
-     */
-    protected function init($entityId): void
-    {
-        if (!preg_match('/^[0-9]*-[0-9]*-[0-9A-Fa-f]{16}$/', $entityId)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_ENTITY_ID, $entityId));
-        }
-
-        $this->entityId = $entityId;
-        $parts = explode('-', $entityId);
-        $this->shard = (int) $parts[0];
-        $this->type = (int) $parts[1];
-        $this->identifier = $parts[2];
+        return $this->asString();
     }
 }

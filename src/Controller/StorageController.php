@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\DataModel\Entity\EntityId;
+use App\DataModel\Serializer\Serializer;
 use App\Exception\ErrorMessages;
 use App\FileStorage\FileAdapters\GenericFileAdapter;
 use Exception;
@@ -20,7 +21,7 @@ class StorageController
     /**
      * @Route("/api/v1/storage", methods={"POST"})
      */
-    public function uploadFile(Request $request, GenericFileAdapter $fileStorage): Response
+    public function uploadFile(Request $request, GenericFileAdapter $fileStorage, Serializer $serializer): Response
     {
         if (!$request->files->has('file')) {
             throw new BadRequestHttpException(sprintf(ErrorMessages::REQUEST_MISSING_PARAMETER, 'file'));
@@ -33,11 +34,7 @@ class StorageController
         }
 
         try {
-            $response = $fileStorage->saveFileToRemote($file);
-
-            return new JsonResponse(
-                $response
-            );
+            return new Response($serializer->encode($fileStorage->saveFileToRemote($file)));
         } catch (Exception $e) {
             throw new HttpException(500, ErrorMessages::SERVER_ERROR_UPLOADING, $e);
         }

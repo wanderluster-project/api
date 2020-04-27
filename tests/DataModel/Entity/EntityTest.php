@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace App\Tests\DataModel\Entity;
 
 use App\DataModel\Entity\Entity;
-use App\DataModel\Entity\EntityId;
-use App\DataModel\Snapshot\Snapshot;
+use App\DataModel\Serializer\Serializer;
 use App\DataModel\Translation\LanguageCodes;
-use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class EntityTest extends TestCase
+class EntityTest extends WebTestCase
 {
     public function testConstuctor(): void
     {
@@ -21,11 +20,8 @@ class EntityTest extends TestCase
         $this->assertFalse($sut->has('foo'));
 
         // initialization params
-        $entityId = new EntityId('10-3-3858f62230ac3c91');
-        $previousSnapshot = new Snapshot();
-        $previousSnapshot->set('foo', 'bar');
-        $sut = new Entity($entityId, $previousSnapshot, LanguageCodes::ENGLISH);
-        $this->assertEquals($entityId, $sut->getEntityId());
+        $sut = new Entity(['foo' => 'bar'], LanguageCodes::ENGLISH);
+        $this->assertEquals(null, $sut->getEntityId());
         $this->assertEquals(LanguageCodes::ENGLISH, $sut->getLang());
         $this->assertTrue($sut->has('foo'));
     }
@@ -41,10 +37,7 @@ class EntityTest extends TestCase
 
     public function testHasPreviousSnapshot(): void
     {
-        $entityId = new EntityId('10-3-3858f62230ac3c91');
-        $previousSnapshot = new Snapshot();
-        $previousSnapshot->set('foo1', 'bar1');
-        $sut = new Entity($entityId, $previousSnapshot, LanguageCodes::ENGLISH);
+        $sut = new Entity(['foo1' => 'bar1'], LanguageCodes::ENGLISH);
 
         // confirm using previous values
         $this->assertTrue($sut->has('foo1'));
@@ -53,11 +46,50 @@ class EntityTest extends TestCase
         // set new value
         $sut->set('foo2', 'bar2');
         $this->assertTrue($sut->has('foo2'));
-        $this->assertFalse($previousSnapshot->has('foo2'));
 
         // remove value
         $sut->del('foo1');
-        $this->assertTrue($previousSnapshot->has('foo1'));
         $this->assertFalse($sut->has('foo1'));
+    }
+
+    public function testSerialization(): void
+    {
+        // test empty
+        $entity = new Entity();
+        $this->assertEquals('{"entity_id":null,"lang":null,"data":[]}', $this->getSerializer()->encode($entity));
+
+        // test with data
+        $entity = new Entity([], LanguageCodes::ENGLISH);
+        $entity->set('foo1', 'bar1');
+        $entity->set('foo2', 'bar2');
+        $entity->del('foo2');
+        $this->assertEquals('{"entity_id":null,"lang":"en","data":{"foo1":"bar1"}}', $this->getSerializer()->encode($entity));
+    }
+
+    public function testDeserialization(): void
+    {
+        // test empty
+        $json = '{"entity_id":null,"lang":null,"data":[]}';
+        $entity = $this->getSerializer()->decode($json, Entity::class);
+        $this->assertInstanceOf(Entity::class, $entity);
+        $this->assertEquals(null, $entity->getEntityId());
+        $this->assertEquals(null, $entity->getLang());
+        $this->assertEquals([], $entity->all());
+
+        // test fully realized
+        $json = '{"entity_id":"10-3-3858f62230ac3c91","lang":"en","data":{"foo1":"bar1"}}';
+        $entity = $this->getSerializer()->decode($json, Entity::class);
+        $this->assertInstanceOf(Entity::class, $entity);
+        $this->assertEquals('10-3-3858f62230ac3c91', (string) $entity->getEntityId());
+        $this->assertTrue($entity->has('foo1'));
+        $this->assertEquals('bar1', $entity->get('foo1'));
+        $this->assertEquals(LanguageCodes::ENGLISH, $entity->getLang());
+    }
+
+    protected function getSerializer(): Serializer
+    {
+        self::bootKernel();
+
+        return self::$container->get('test.serializer');
     }
 }

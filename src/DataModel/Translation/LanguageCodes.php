@@ -6,7 +6,7 @@ namespace App\DataModel\Translation;
 
 class LanguageCodes
 {
-    const ENGLISH = 'us';
+    const ENGLISH = 'en';
     const SPANISH = 'es';
 
     /**

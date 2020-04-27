@@ -12,12 +12,12 @@ class Snapshot
     /**
      * @var string|null
      */
-    protected $lang;
+    protected $lang = null;
 
     /**
      * @var SnapshotId|null
      */
-    protected $snapshotId;
+    protected $snapshotId = null;
 
     /**
      * @var DateTimeImmutable
@@ -30,11 +30,6 @@ class Snapshot
     protected $createdBy = null;
 
     /**
-     * @var int
-     */
-    protected $version = 0;
-
-    /**
      * @var string[]|null[]
      */
     protected $attributes = [];
@@ -42,12 +37,14 @@ class Snapshot
     /**
      * Snapshot constructor.
      *
-     * @param string $lang
+     * @param string|null $lang
      */
-    public function __construct($lang = null, SnapshotId $snapshotId = null)
+    public function __construct(array $data = [], $lang = null)
     {
         $this->lang = $lang;
-        $this->snapshotId = $snapshotId;
+        foreach ($data as $key => $value) {
+            $this->set($key, $value);
+        }
     }
 
     /**
@@ -56,14 +53,6 @@ class Snapshot
     public function getLanguage(): ?string
     {
         return $this->lang;
-    }
-
-    /**
-     * Get the version of this snapshot.
-     */
-    public function getVersion(): int
-    {
-        return $this->version;
     }
 
     /**
@@ -158,6 +147,22 @@ class Snapshot
         }
 
         return is_null($this->attributes[$key]);
+    }
+
+    /**
+     * Return the keys that were deleted.
+     */
+    public function getDeletedKeys(): array
+    {
+        $return = [];
+        foreach ($this->attributes as $key => $value) {
+            if (is_null($value)) {
+                $return[] = $key;
+            }
+        }
+        ksort($return);
+
+        return $return;
     }
 
     /**

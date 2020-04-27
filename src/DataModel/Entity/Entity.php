@@ -9,36 +9,23 @@ use App\DataModel\Snapshot\Snapshot;
 class Entity
 {
     /**
-     * @var string|null
-     */
-    protected $lang;
-
-    /**
      * @var EntityId|null
      */
     protected $entityId = null;
 
     /**
-     * @var Snapshot|null
-     */
-    protected $previousSnapshot;
-
-    /**
      * @var Snapshot
      */
-    protected $currentSnapshot;
+    protected $snapshot;
 
     /**
      * Entity constructor.
      *
      * @param string|null $lang
      */
-    public function __construct(EntityId $entityId = null, Snapshot $previousSnapshot = null, $lang = null)
+    public function __construct(array $data = [], $lang = null)
     {
-        $this->entityId = $entityId;
-        $this->previousSnapshot = $previousSnapshot;
-        $this->lang = $lang;
-        $this->currentSnapshot = new Snapshot($lang);
+        $this->snapshot = new Snapshot($data, $lang);
     }
 
     /**
@@ -46,7 +33,7 @@ class Entity
      */
     public function getLang(): ?string
     {
-        return $this->lang;
+        return $this->snapshot->getLanguage();
     }
 
     /**
@@ -62,17 +49,7 @@ class Entity
      */
     public function get($key): ?string
     {
-        $curValue = $this->currentSnapshot->get($key);
-
-        if (!is_null($curValue)) {
-            return $curValue;
-        }
-
-        if ($this->previousSnapshot) {
-            return $this->previousSnapshot->get($key);
-        }
-
-        return null;
+        return $this->snapshot->get($key);
     }
 
     /**
@@ -81,7 +58,7 @@ class Entity
      */
     public function set($key, $value): void
     {
-        $this->currentSnapshot->set($key, $value);
+        $this->snapshot->set($key, $value);
     }
 
     /**
@@ -89,15 +66,11 @@ class Entity
      */
     public function has($key): bool
     {
-        if ($this->currentSnapshot->wasDeleted($key)) {
+        if ($this->snapshot->wasDeleted($key)) {
             return false;
-        } elseif ($this->currentSnapshot->has($key)) {
-            return true;
-        } elseif ($this->previousSnapshot) {
-            return $this->previousSnapshot->has($key);
         }
 
-        return false;
+        return $this->snapshot->has($key);
     }
 
     /**
@@ -105,6 +78,21 @@ class Entity
      */
     public function del($key): void
     {
-        $this->currentSnapshot->del($key);
+        $this->snapshot->del($key);
+    }
+
+    public function all(): array
+    {
+        $return = $this->snapshot->all();
+
+        foreach ($this->snapshot->getDeletedKeys() as $deletedKey) {
+            if (array_key_exists($deletedKey, $return)) {
+                unset($return[$deletedKey]);
+            }
+        }
+
+        ksort($return);
+
+        return $return;
     }
 }
