@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\DataModel\Snapshot;
 
-use App\DataModel\User;
+use App\Security\User;
 use DateTimeImmutable;
 
 class Snapshot

@@ -39,9 +39,9 @@ class StorageController
             $entity = $fileStorage->saveFileToRemote($file);
             $entityManager->commit($entity, LanguageCodes::ENGLISH);
 
-            return new JsonResponse($serializer->encode($entity),200, [], true);
+            return new JsonResponse($serializer->encode($entity), Response::HTTP_OK, [], true);
         } catch (Exception $e) {
-            throw new HttpException(500, ErrorMessages::SERVER_ERROR_UPLOADING, $e);
+            throw new HttpException(Response::HTTP_INTERNAL_SERVER_ERROR, ErrorMessages::SERVER_ERROR_UPLOADING, $e);
         }
     }
 
@@ -64,7 +64,17 @@ class StorageController
                 ['status' => 'success']
             );
         } catch (Exception $e) {
-            throw new HttpException(500, ErrorMessages::SERVER_ERROR_DELETING, $e);
+            throw new HttpException(Response::HTTP_INTERNAL_SERVER_ERROR, ErrorMessages::SERVER_ERROR_DELETING, $e);
         }
+    }
+
+    /**
+     * @Route("/api/v1/storage/{entityId}", methods={"GET"})
+     *
+     * @param string $entityId
+     */
+    public function getFile($entityId, Request $request): Response
+    {
+        return new Response('Not implemented yet', Response::HTTP_NOT_IMPLEMENTED);
     }
 }

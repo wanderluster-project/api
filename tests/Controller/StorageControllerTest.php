@@ -6,6 +6,8 @@ namespace App\Tests\Controller;
 
 use App\DataModel\Entity\EntityId;
 use App\DataModel\Entity\EntityTypes;
+use App\Security\JwtTokenUtilities;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -13,7 +15,7 @@ class StorageControllerTest extends WebTestCase
 {
     public function testUploadExceptions(): void
     {
-        $client = static::createClient();
+        $client = self::getClient('simpkevin@gmail.com');
 
         // error if missing 'file' param
         $client->request('POST', '/api/v1/storage');
@@ -32,7 +34,7 @@ class StorageControllerTest extends WebTestCase
 
     public function testUploadJpegTest(): void
     {
-        $client = static::createClient();
+        $client = self::getClient('simpkevin@gmail.com');
         $filename = '/var/www/wanderluster/tests/Fixtures/Files/sample.jpg';
         $file = new UploadedFile($filename, 'sample.jpg');
         $client->request('POST', '/api/v1/storage', [], ['file' => $file]);
@@ -54,7 +56,7 @@ class StorageControllerTest extends WebTestCase
 
     public function testUploadPngTest(): void
     {
-        $client = static::createClient();
+        $client = self::getClient('simpkevin@gmail.com');
         $filename = '/var/www/wanderluster/tests/Fixtures/Files/sample.png';
         $file = new UploadedFile($filename, 'sample.png');
         $client->request('POST', '/api/v1/storage', [], ['file' => $file]);
@@ -76,7 +78,7 @@ class StorageControllerTest extends WebTestCase
 
     public function testUploadGifTest(): void
     {
-        $client = static::createClient();
+        $client = self::getClient('simpkevin@gmail.com');
         $filename = '/var/www/wanderluster/tests/Fixtures/Files/sample.gif';
         $file = new UploadedFile($filename, 'sample.gif');
         $client->request('POST', '/api/v1/storage', [], ['file' => $file]);
@@ -98,7 +100,7 @@ class StorageControllerTest extends WebTestCase
 
     public function testUploadSvgTest(): void
     {
-        $client = static::createClient();
+        $client = self::getClient('simpkevin@gmail.com');
         $filename = '/var/www/wanderluster/tests/Fixtures/Files/sample.svg';
         $file = new UploadedFile($filename, 'sample.svg');
         $client->request('POST', '/api/v1/storage', [], ['file' => $file]);
@@ -120,7 +122,7 @@ class StorageControllerTest extends WebTestCase
 
     public function testUploadPdfTest(): void
     {
-        $client = static::createClient();
+        $client = self::getClient('simpkevin@gmail.com');
         $filename = '/var/www/wanderluster/tests/Fixtures/Files/sample.pdf';
         $file = new UploadedFile($filename, 'sample.pdf');
         $client->request('POST', '/api/v1/storage', [], ['file' => $file]);
@@ -138,5 +140,19 @@ class StorageControllerTest extends WebTestCase
         // delete this file
         $client->request('DELETE', '/api/v1/storage/'.$entityId);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
+    }
+
+    /**
+     * @param string $username
+     */
+    protected static function getClient($username = null): KernelBrowser
+    {
+        $jwt = '';
+        if ($username) {
+            $tokenUtilities = new JwtTokenUtilities();
+            $jwt = $tokenUtilities->generate($username);
+        }
+
+        return static::createClient([], ['HTTP_AUTHENTICATION' => 'Bearer: '.$jwt]);
     }
 }

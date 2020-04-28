@@ -6,6 +6,7 @@ var/*
 .php_cs.cache
 tests/_reports/*
 public/storage
+config/certs/*
 
 ###> symfony/phpunit-bridge ###
 .phpunit
