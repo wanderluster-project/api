@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace App\Tests\DataModel\Snapshot;
 
 use App\DataModel\Entity\EntityId;
-use App\DataModel\Serializer\Serializer;
 use App\DataModel\Snapshot\SnapshotId;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Exception\WanderlusterException;
+use Exception;
+use PHPUnit\Framework\TestCase;
 
-class SnapshotIdTest extends WebTestCase
+class SnapshotIdTest extends TestCase
 {
     public function testConstructor(): void
     {
@@ -19,31 +20,21 @@ class SnapshotIdTest extends WebTestCase
         $this->assertEquals(100, $snapshotId->getVersion());
     }
 
+    public function testInvalidSnapshotId(): void
+    {
+        try {
+            $snapshotId = new SnapshotId('INVALID-SNAPSHOT-ID');
+            $this->fail('Exception not thrown');
+        } catch (Exception $e) {
+            $this->assertInstanceOf(WanderlusterException::class, $e);
+            $this->assertEquals('Invalid SnapshotId format - INVALID-SNAPSHOT-ID', $e->getMessage());
+        }
+    }
+
     public function testToString(): void
     {
         $snapshotId = new SnapshotId('10-3-3858f62230ac3c91.100');
         $this->assertEquals('10-3-3858f62230ac3c91.100', (string) $snapshotId);
         $this->assertEquals('10-3-3858f62230ac3c91.100', $snapshotId->asString());
-    }
-
-    public function testSerializing(): void
-    {
-        $snapshotId = new SnapshotId('10-3-3858f62230ac3c91.100');
-        $this->assertEquals('10-3-3858f62230ac3c91.100', $this->getSerializer()->encode($snapshotId));
-    }
-
-    public function testDeserializing(): void
-    {
-        $snapshotId = $this->getSerializer()->decode('10-3-3858f62230ac3c91.100', SnapshotId::class);
-        $this->assertInstanceOf(SnapshotId::class, $snapshotId);
-        $this->assertEquals('10-3-3858f62230ac3c91', (string) $snapshotId->getEntityId());
-        $this->assertEquals(100, $snapshotId->getVersion());
-    }
-
-    protected function getSerializer(): Serializer
-    {
-        self::bootKernel();
-
-        return self::$container->get('test.serializer');
     }
 }

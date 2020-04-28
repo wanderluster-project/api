@@ -54,6 +54,8 @@ class Entity
     }
 
     /**
+     * Get the value associated with a key.
+     *
      * @param string $key
      */
     public function get($key): ?string
@@ -62,6 +64,8 @@ class Entity
     }
 
     /**
+     * Set the value associated with a key.
+     *
      * @param string $key
      * @param mixed  $value
      */
@@ -71,6 +75,9 @@ class Entity
     }
 
     /**
+     * Returns TRUE if entity has key, FALSE otherwise.
+     * If entity was deleted then will return FALSE.
+     *
      * @param string $key
      */
     public function has($key): bool
@@ -83,6 +90,8 @@ class Entity
     }
 
     /**
+     * Delete a key from an Entity.
+     *
      * @param string $key
      */
     public function del($key): void
@@ -90,18 +99,37 @@ class Entity
         $this->snapshot->del($key);
     }
 
+    /**
+     * Return all the data associated with this Entity.
+     */
     public function all(): array
     {
-        $return = $this->snapshot->all();
+        return $this->snapshot->all();
+    }
 
-        foreach ($this->snapshot->getDeletedKeys() as $deletedKey) {
-            if (array_key_exists($deletedKey, $return)) {
-                unset($return[$deletedKey]);
-            }
-        }
+    /**
+     * Return the keys associaated with this Entity.
+     */
+    public function keys(): array
+    {
+        return $this->snapshot->keys();
+    }
 
-        ksort($return);
+    /**
+     * Returns TRUE if key was deleted from Entity, FALSE otherwise.
+     *
+     * @param string $key
+     */
+    public function wasDeleted($key): bool
+    {
+        return $this->snapshot->wasDeleted($key);
+    }
 
-        return $return;
+    /**
+     * Returns array of keys deleted from this entity.
+     */
+    public function getDeletedKeys(): array
+    {
+        return $this->snapshot->getDeletedKeys();
     }
 }

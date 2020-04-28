@@ -155,6 +155,28 @@ class StorageControllerTest extends FunctionalTest
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
+    public function testUploadWebpTest(): void
+    {
+        $client = self::getClient('simpkevin@gmail.com');
+        $filename = '/var/www/wanderluster/tests/Fixtures/Files/sample.webp';
+        $file = new UploadedFile($filename, 'sample.webp');
+        $client->request('POST', '/api/v1/storage', [], ['file' => $file]);
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+
+        $data = json_decode($client->getResponse()->getContent(), true);
+
+        $this->assertArrayHasKey('id', $data);
+        $entityId = new EntityId($data['id']);
+        $this->assertArrayHasKey('url', $data['data']);
+        $this->assertEquals(EntityTypes::FILE_IMAGE_WEBP, $entityId->getEntityType());
+        $this->assertEquals('image/webp', $data['data']['mime_type']);
+        $this->assertEquals(filesize($filename), $data['data']['file_size']);
+
+        // delete this file
+        $client->request('DELETE', '/api/v1/storage/'.$entityId);
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+    }
+
     public function testUploadSvgTest(): void
     {
         $client = self::getClient('simpkevin@gmail.com');

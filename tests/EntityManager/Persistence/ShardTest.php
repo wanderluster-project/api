@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\EntityManager\Sharding;
+namespace App\Tests\EntityManager\Persistence;
 
 use App\EntityManager\Persistence\Shard;
 use PHPUnit\Framework\TestCase;

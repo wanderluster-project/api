@@ -27,50 +27,90 @@ class Serializer
     }
 
     /**
+     * Encode an object into string representation.
+     *
      * @param mixed $val
      *
      * @throws WanderlusterException
      */
     public function encode($val): string
     {
-        if (is_scalar($val)) {
-            return (string) $val;
+        if (is_null($val)) {
+            return 'null';
+        } elseif (is_scalar($val)) {
+            if (true === $val) {
+                return 'true';
+            } elseif (false === $val) {
+                return 'false';
+            } elseif (is_int($val)) {
+                return (string) $val;
+            } elseif (is_float($val)) {
+                return (string) $val;
+            } elseif (is_string($val)) {
+                return (string) $val;
+            }
         } elseif (is_array($val)) {
             return $this->encodeArray($val);
         } elseif (is_object($val)) {
             return $this->encodeObject($val);
         }
-        throw new WanderlusterException(sprintf(ErrorMessages::SERIALIZATION_ERROR, 'UNKNOWN'));
+        throw new WanderlusterException(sprintf(ErrorMessages::SERIALIZATION_ERROR, 'Invalid data type'));
     }
 
     /**
+     * Decode a string representation into an Object.
+     *
      * @param string $serializedString
-     * @param string $type
+     * @param string $class
      *
      * @return Entity|EntityId|SnapshotId
      *
      * @throws WanderlusterException
      */
-    public function decode($serializedString, $type)
+    public function decode($serializedString, $class)
     {
-        return $this->decodeObject($serializedString, $type);
+        switch ($class) {
+            case EntityId::class:
+                return $this->decodeEntityId($serializedString);
+            case SnapshotId::class:
+                return $this->decodeSnapshotId($serializedString);
+            case Entity::class:
+                return $this->decodeEntity($serializedString);
+            default:
+                throw new WanderlusterException(sprintf(ErrorMessages::DESERIALIZATION_ERROR, 'Invalid class: '.$class));
+        }
     }
 
+    /**
+     * Convert an array into a string representation.
+     * If indexed  : ["a","b"]
+     * If associative : {"foo":"bar"}.
+     *
+     * @throws WanderlusterException
+     */
     protected function encodeArray(array $arr): string
     {
         if ($this->isAssocArray($arr)) {
             $items = [];
             foreach ($arr as $key => $value) {
                 $encodedKey = $this->encode($key);
-                $encodedValue = $this->encode($value);
-                $items[] = '"'.$encodedKey.'":"'.$encodedValue.'"';
+                if (is_string($value)) {
+                    $encodedValue = '"'.$this->encode($value).'"';
+                } else {
+                    $encodedValue = $this->encode($value);
+                }
+                $items[] = '"'.$encodedKey.'":'.$encodedValue;
             }
 
             return '{'.implode($items, ',').'}';
         } else {
             $items = [];
             foreach ($arr as $value) {
-                $encodedValue = $this->encode($value);
+                if (is_string($value)) {
+                    $encodedValue = '"'.$this->encode($value).'"';
+                } else {
+                    $encodedValue = $this->encode($value);
+                }
                 $items[] = $encodedValue;
             }
 
@@ -92,6 +132,8 @@ class Serializer
     }
 
     /**
+     * Encode an object into a string representation.
+     *
      * @param object $obj
      */
     protected function encodeObject($obj): string
@@ -119,33 +161,13 @@ class Serializer
                     'data' => $obj->all(),
                 ]);
             default:
-                throw new WanderlusterException(sprintf(ErrorMessages::SERIALIZATION_ERROR, $class));
+                throw new WanderlusterException(sprintf(ErrorMessages::SERIALIZATION_ERROR, 'Invalid class: '.$class));
         }
     }
 
     /**
-     * @param string $string
-     * @param string $class
+     * Decode string representation into EntityId.
      *
-     * @return EntityId|SnapshotId|Entity
-     *
-     * @throws WanderlusterException
-     */
-    protected function decodeObject($string, $class)
-    {
-        switch ($class) {
-            case EntityId::class:
-                return $this->decodeEntityId($string);
-            case SnapshotId::class:
-                return $this->decodeSnapshotId($string);
-            case Entity::class:
-               return $this->decodeEntity($string);
-            default:
-                throw new WanderlusterException(sprintf(ErrorMessages::DESERIALIZATION_ERROR, $class));
-        }
-    }
-
-    /**
      * @param string $string
      *
      * @throws WanderlusterException
@@ -156,6 +178,8 @@ class Serializer
     }
 
     /**
+     * Decode string representation into SnapshotId.
+     *
      * @param string $string
      *
      * @throws WanderlusterException
@@ -166,6 +190,8 @@ class Serializer
     }
 
     /**
+     * Decode string representation into Entity.
+     *
      * @param string $string
      *
      * @throws WanderlusterException
@@ -177,7 +203,7 @@ class Serializer
 
         // decode entity id
         if (!array_key_exists('id', $jsonData)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::DESERIALIZATION_ERROR, Entity::class));
+            throw new WanderlusterException(sprintf(ErrorMessages::DESERIALIZATION_ERROR, 'Missing parameter: id'));
         }
         if (!is_null($jsonData['id'])) {
             $entityId = $this->decodeEntityId($jsonData['id']);
@@ -185,13 +211,13 @@ class Serializer
 
         // decode language
         if (!array_key_exists('lang', $jsonData)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::DESERIALIZATION_ERROR, Entity::class));
+            throw new WanderlusterException(sprintf(ErrorMessages::DESERIALIZATION_ERROR, 'Missing parameter: lang'));
         }
         $lang = $jsonData['lang'];
 
         // decode data values
         if (!array_key_exists('data', $jsonData)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::DESERIALIZATION_ERROR, Entity::class));
+            throw new WanderlusterException(sprintf(ErrorMessages::DESERIALIZATION_ERROR, 'Missing parameter: data'));
         }
         $data = $jsonData['data'];
 
