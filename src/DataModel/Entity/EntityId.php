@@ -6,6 +6,7 @@ namespace App\DataModel\Entity;
 
 use App\DataModel\StringInterface;
 use App\Exception\ErrorMessages;
+use App\Exception\InvalidEntityIdFormatException;
 use App\Exception\WanderlusterException;
 
 class EntityId implements StringInterface
@@ -37,7 +38,7 @@ class EntityId implements StringInterface
     public function __construct(string $entityIdString)
     {
         if (!preg_match(self::PATTERN, $entityIdString)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_ENTITY_ID, $entityIdString));
+            throw new InvalidEntityIdFormatException(sprintf(ErrorMessages::INVALID_ENTITY_ID, $entityIdString));
         }
 
         $parts = explode('-', $entityIdString);

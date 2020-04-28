@@ -9,13 +9,16 @@ use App\DataModel\Serializer\Serializer;
 use App\DataModel\Translation\LanguageCodes;
 use App\EntityManager\EntityManager;
 use App\Exception\ErrorMessages;
+use App\Exception\InvalidEntityIdFormatException;
 use App\FileStorage\FileAdapters\GenericFileAdapter;
 use Exception;
+use League\Flysystem\FileNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class StorageController
@@ -52,10 +55,6 @@ class StorageController
      */
     public function deleteFile($entityId, Request $request, GenericFileAdapter $fileStorage): Response
     {
-        if (!$entityId) {
-            throw new BadRequestHttpException(sprintf(ErrorMessages::REQUEST_MISSING_PARAMETER, 'entityId'));
-        }
-
         try {
             $entityId = new EntityId($entityId);
             $fileStorage->deleteRemoteFile($entityId);
@@ -64,6 +63,12 @@ class StorageController
                 ['status' => 'success']
             );
         } catch (Exception $e) {
+            if ($e instanceof FileNotFoundException) {
+                throw new NotFoundHttpException(ErrorMessages::SERVER_ERROR_DELETING, $e);
+            }
+            if ($e instanceof InvalidEntityIdFormatException) {
+                throw new BadRequestHttpException($e->getMessage());
+            }
             throw new HttpException(Response::HTTP_INTERNAL_SERVER_ERROR, ErrorMessages::SERVER_ERROR_DELETING, $e);
         }
     }

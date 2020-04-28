@@ -5,3 +5,4 @@
 ./vendor/bin/phpstan analyse src tests
 
 /var/www/wanderluster/bin/phpunit tests
+# phpdbg -qrr /var/www/wanderluster/bin/phpunit tests --coverage-html /var/www/wanderluster/tests/_reports

@@ -4,14 +4,19 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
+use App\Controller\StorageController;
 use App\DataModel\Entity\EntityId;
 use App\DataModel\Entity\EntityTypes;
-use App\Security\JwtTokenUtilities;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\EntityManager\EntityManager;
+use App\FileStorage\FileAdapters\GenericFileAdapter;
+use App\Tests\FunctionalTest;
+use Exception;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class StorageControllerTest extends WebTestCase
+class StorageControllerTest extends FunctionalTest
 {
     public function testUploadExceptions(): void
     {
@@ -30,6 +35,58 @@ class StorageControllerTest extends WebTestCase
         // error if not a file
         $client->request('POST', '/api/v1/storage', ['file' => 'foo']);
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
+    }
+
+    public function testUploadServerError(): void
+    {
+        // mock error encountered when committing
+        $sut = new StorageController();
+        $fileAdapter = $this->getFileAdapter();
+        $serializer = $this->getSerializer();
+        $mockEntityManager = \Mockery::mock(EntityManager::class);
+        $mockEntityManager->shouldReceive('commit')->andThrow(new Exception());
+        $file = new UploadedFile('/var/www/wanderluster/tests/Fixtures/Files/sample.jpg', 'sample.jpg', 'image/jpeg', UPLOAD_ERR_OK, true);
+
+        try {
+            $sut->uploadFile(new Request([], [], [], [], ['file' => $file]), $fileAdapter, $serializer, $mockEntityManager);
+            $this->fail('Exception not thrown');
+        } catch (HttpException $e) {
+            $this->assertInstanceOf(HttpException::class, $e);
+            $this->assertEquals(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getStatusCode());
+        }
+    }
+
+    public function testDeleteExceptions(): void
+    {
+        // 404 error should be thrown if issuing DEL to endpoint without entity id
+        $client = self::getClient('simpkevin@gmail.com');
+        $client->request('DELETE', '/api/v1/storage/');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+
+        // 400 error if issuing DEL with invalid entity id
+        $client->request('DELETE', '/api/v1/storage/I-AM-INVALID');
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+
+        // 404 error should be thrown if issuing DEL to non-existent entity id
+        $client->request('DELETE', '/api/v1/storage/1-1000-0000000000000000');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+    }
+
+    public function testDeleteServerError(): void
+    {
+        // mock error encountered deleting file
+        $entityId = '1-1000-0000000000000000';
+        $sut = new StorageController();
+        $mockFileAdapter = \Mockery::mock(GenericFileAdapter::class);
+        $mockFileAdapter->shouldReceive('deleteRemoteFile')->andThrow(new Exception());
+
+        try {
+            $sut->deleteFile($entityId, new Request(), $mockFileAdapter);
+            $this->fail('Exception not thrown');
+        } catch (HttpException $e) {
+            $this->assertInstanceOf(HttpException::class, $e);
+            $this->assertEquals(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getStatusCode());
+        }
     }
 
     public function testUploadJpegTest(): void
@@ -142,17 +199,11 @@ class StorageControllerTest extends WebTestCase
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
-    /**
-     * @param string $username
-     */
-    protected static function getClient($username = null): KernelBrowser
+    public function testGetFile(): void
     {
-        $jwt = '';
-        if ($username) {
-            $tokenUtilities = new JwtTokenUtilities();
-            $jwt = $tokenUtilities->generate($username);
-        }
-
-        return static::createClient([], ['HTTP_AUTHENTICATION' => 'Bearer: '.$jwt]);
+        $entityId = '1-1000-0000000000000000';
+        $client = self::getClient('simpkevin@gmail.com');
+        $client->request('POST', '/api/v1/storage/'.$entityId);
+        $this->assertEquals(405, $client->getResponse()->getStatusCode());
     }
 }

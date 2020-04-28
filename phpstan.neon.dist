@@ -12,4 +12,4 @@ parameters:
         container_xml_path: '%rootDir%/../../../var/cache/dev/App_KernelDevDebugContainer.xml'
     checkMissingIterableValueType: false
     ignoreErrors:
-        - '/Service "test.serializer" is not registered in the container./'
+        - '/Service "test.(.*)" is not registered in the container./'
