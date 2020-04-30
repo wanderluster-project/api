@@ -13,126 +13,108 @@ class EntityTest extends WebTestCase
 {
     public function testConstuctor(): void
     {
-        $sut = new Entity(LanguageCodes::ENGLISH, EntityTypes::TEST_ENTITY_TYPE);
-        $this->assertEquals(LanguageCodes::ENGLISH, $sut->getLanguage());
+        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE);
+        $this->assertEquals([], $sut->getLanguages());
         $this->assertEquals(EntityTypes::TEST_ENTITY_TYPE, $sut->getEntityId());
-        $this->assertEmpty($sut->all());
-    }
-
-    public function testNoData(): void
-    {
-        $sut = new Entity(LanguageCodes::ENGLISH, EntityTypes::TEST_ENTITY_TYPE);
-        $this->assertEquals(LanguageCodes::ENGLISH, $sut->getLanguage());
-        $this->assertEquals(EntityTypes::TEST_ENTITY_TYPE, $sut->getEntityId());
+        $this->assertEmpty($sut->all(LanguageCodes::ENGLISH));
         $this->assertNull($sut->getEntityId());
-        $this->assertNull($sut->get('foo'));
-        $this->assertFalse($sut->has('foo'));
-        $sut->set('foo', 'bar');
-        $this->assertTrue($sut->has('foo'));
-    }
-
-    public function testHasData(): void
-    {
-        $sut = new Entity(LanguageCodes::ENGLISH, EntityTypes::TEST_ENTITY_TYPE);
-        $sut->set('foo1', 'bar1');
-
-        $this->assertEquals(LanguageCodes::ENGLISH, $sut->getLanguage());
-        $this->assertEquals(EntityTypes::TEST_ENTITY_TYPE, $sut->getEntityId());
-        $this->assertEquals(LanguageCodes::ENGLISH, $sut->getLanguage());
-
-        // confirm using previous values
-        $this->assertTrue($sut->has('foo1'));
-        $this->assertFalse($sut->has('foo2'));
-
-        // set new value
-        $sut->set('foo2', 'bar2');
-        $this->assertTrue($sut->has('foo2'));
-
-        // remove value
-        $sut->del('foo1');
-        $this->assertFalse($sut->has('foo1'));
+        $this->assertNull($sut->get('foo', LanguageCodes::ENGLISH));
+        $this->assertFalse($sut->has('foo', LanguageCodes::ENGLISH));
     }
 
     public function testSetGetHasAll(): void
     {
         // Empty entity
-        $sut = new Entity(LanguageCodes::ENGLISH, EntityTypes::TEST_ENTITY_TYPE);
-        $this->assertNull($sut->get('foo'));
-        $this->assertFalse($sut->has('foo'));
-        $this->assertEquals([], $sut->all());
+        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE);
+        $this->assertNull($sut->get('foo', LanguageCodes::ENGLISH));
+        $this->assertFalse($sut->has('foo', LanguageCodes::ENGLISH));
+        $this->assertEquals([], $sut->all(LanguageCodes::ENGLISH));
 
         // Set a value
-        $sut->set('foo1', 'bar1');
-        $this->assertTrue($sut->has('foo1'));
-        $this->assertEquals('bar1', $sut->get('foo1'));
-        $this->assertEquals(['foo1' => 'bar1'], $sut->all());
+        $sut->set('foo1', 'bar1', LanguageCodes::ENGLISH);
+        $this->assertTrue($sut->has('foo1', LanguageCodes::ENGLISH));
+        $this->assertEquals('bar1', $sut->get('foo1', LanguageCodes::ENGLISH));
+        $this->assertEquals(['foo1' => 'bar1'], $sut->all(LanguageCodes::ENGLISH));
 
         // Set another value
-        $sut->set('foo2', 'bar2');
-        $this->assertTrue($sut->has('foo2'));
-        $this->assertEquals('bar2', $sut->get('foo2'));
-        $this->assertEquals(['foo1' => 'bar1', 'foo2' => 'bar2'], $sut->all());
+        $sut->set('foo2', 'bar2', LanguageCodes::ENGLISH);
+        $this->assertTrue($sut->has('foo2', LanguageCodes::ENGLISH));
+        $this->assertEquals('bar2', $sut->get('foo2', LanguageCodes::ENGLISH));
+        $this->assertEquals(['foo1' => 'bar1', 'foo2' => 'bar2'], $sut->all(LanguageCodes::ENGLISH));
 
         // Remove a value
-        $sut->del('foo1');
-        $this->assertFalse($sut->has('foo1'));
-        $this->assertEquals(null, $sut->get('foo1'));
-        $this->assertEquals(['foo2' => 'bar2'], $sut->all());
+        $sut->del('foo1', LanguageCodes::ENGLISH);
+        $this->assertFalse($sut->has('foo1', LanguageCodes::ENGLISH));
+        $this->assertEquals(null, $sut->get('foo1', LanguageCodes::ENGLISH));
+        $this->assertEquals(['foo2' => 'bar2'], $sut->all(LanguageCodes::ENGLISH));
 
         // Adding back deleted value
-        $sut->set('foo1', 'bar1.1');
-        $this->assertTrue($sut->has('foo1'));
-        $this->assertEquals('bar1.1', $sut->get('foo1'));
-        $this->assertEquals(['foo1' => 'bar1.1', 'foo2' => 'bar2'], $sut->all());
+        $sut->set('foo1', 'bar1.1', LanguageCodes::ENGLISH);
+        $this->assertTrue($sut->has('foo1', LanguageCodes::ENGLISH));
+        $this->assertEquals('bar1.1', $sut->get('foo1', LanguageCodes::ENGLISH));
+        $this->assertEquals(['foo1' => 'bar1.1', 'foo2' => 'bar2'], $sut->all(LanguageCodes::ENGLISH));
     }
 
     public function testDel(): void
     {
         // Empty entity
-        $sut = new Entity(LanguageCodes::ENGLISH, EntityTypes::TEST_ENTITY_TYPE);
-        $this->assertEquals([], $sut->keys());
+        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE);
+        $this->assertEquals([], $sut->keys(LanguageCodes::ENGLISH));
 
         // add value
-        $sut->set('foo1', 'bar1');
-        $this->assertEquals(['foo1'], $sut->keys());
+        $sut->set('foo1', 'bar1', LanguageCodes::ENGLISH);
+        $this->assertEquals(['foo1'], $sut->keys(LanguageCodes::ENGLISH));
 
         // add another value
-        $sut->set('foo2', 'bar2');
-        $this->assertEquals(['foo1', 'foo2'], $sut->keys());
+        $sut->set('foo2', 'bar2', LanguageCodes::ENGLISH);
+        $this->assertEquals(['foo1', 'foo2'], $sut->keys(LanguageCodes::ENGLISH));
 
         // assert no record of anything being deleted
-        $this->assertEquals([], $sut->getDeletedKeys());
-        $this->assertFalse($sut->wasDeleted('foo1'));
+        $this->assertEquals([], $sut->getDeletedKeys(LanguageCodes::ENGLISH));
+        $this->assertFalse($sut->wasDeleted('foo1', LanguageCodes::ENGLISH));
 
         // delete value
-        $sut->del('foo1');
-        $this->assertEquals(['foo2'], $sut->keys());
-        $this->assertEquals(['foo1'], $sut->getDeletedKeys());
-        $this->assertTrue($sut->wasDeleted('foo1'));
+        $sut->del('foo1', LanguageCodes::ENGLISH);
+        $this->assertEquals(['foo2'], $sut->keys(LanguageCodes::ENGLISH));
+        $this->assertEquals(['foo1'], $sut->getDeletedKeys(LanguageCodes::ENGLISH));
+        $this->assertTrue($sut->wasDeleted('foo1', LanguageCodes::ENGLISH));
 
         // delete by setting equal to null
-        $sut->set('foo2', null);
-        $this->assertEquals([], $sut->keys());
-        $this->assertEquals(['foo1', 'foo2'], $sut->getDeletedKeys());
-        $this->assertTrue($sut->wasDeleted('foo2'));
+        $sut->set('foo2', null, LanguageCodes::ENGLISH);
+        $this->assertEquals([], $sut->keys(LanguageCodes::ENGLISH));
+        $this->assertEquals(['foo1', 'foo2'], $sut->getDeletedKeys(LanguageCodes::ENGLISH));
+        $this->assertTrue($sut->wasDeleted('foo2', LanguageCodes::ENGLISH));
     }
 
     public function testKeys(): void
     {
         // Empty entity
-        $sut = new Entity(LanguageCodes::ENGLISH, EntityTypes::TEST_ENTITY_TYPE);
-        $this->assertEquals([], $sut->keys());
+        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE);
+        $this->assertEquals([], $sut->keys(LanguageCodes::ENGLISH));
 
         // add value
-        $sut->set('foo1', 'bar1');
-        $this->assertEquals(['foo1'], $sut->keys());
+        $sut->set('foo1', 'bar1', LanguageCodes::ENGLISH);
+        $this->assertEquals(['foo1'], $sut->keys(LanguageCodes::ENGLISH));
 
         // add another value
-        $sut->set('foo2', 'bar2');
-        $this->assertEquals(['foo1', 'foo2'], $sut->keys());
+        $sut->set('foo2', 'bar2', LanguageCodes::ENGLISH);
+        $this->assertEquals(['foo1', 'foo2'], $sut->keys(LanguageCodes::ENGLISH));
 
         // delete value
-        $sut->del('foo1');
-        $this->assertEquals(['foo2'], $sut->keys());
+        $sut->del('foo1', LanguageCodes::ENGLISH);
+        $this->assertEquals(['foo2'], $sut->keys(LanguageCodes::ENGLISH));
+    }
+
+    public function testMultilanguage(): void
+    {
+        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE);
+        $this->assertEquals([], $sut->all(LanguageCodes::ENGLISH));
+
+        $sut->set('animal', 'dog', LanguageCodes::ENGLISH);
+        $sut->set('animal', 'perro', LanguageCodes::SPANISH);
+        $this->assertEquals('dog', $sut->get('animal', LanguageCodes::ENGLISH));
+        $this->assertEquals('perro', $sut->get('animal', LanguageCodes::SPANISH));
+        $this->assertEquals(['animal'], $sut->keys(LanguageCodes::ENGLISH));
+        $this->assertEquals(['animal'], $sut->keys(LanguageCodes::SPANISH));
     }
 }

@@ -60,12 +60,11 @@ class FileUtilities
         $this->remoteStorageAdapter->pushLocalFileToRemote($file->getRealPath(), $pathPrefix.'/'.$filename);
 
         $entity = new Entity(
-            LanguageCodes::ENGLISH,
             $entityType);
 
-        $entity->set('mime_type', $mimeType)
-            ->set('file_size', $file->getSize())
-            ->set('url', $this->remoteStorageAdapter->generateFileUrl($pathPrefix.'/'.$filename));
+        $entity->set('mime_type', $mimeType, LanguageCodes::ENGLISH)
+            ->set('file_size', $file->getSize(), LanguageCodes::ENGLISH)
+            ->set('url', $this->remoteStorageAdapter->generateFileUrl($pathPrefix.'/'.$filename), LanguageCodes::ENGLISH);
 
         $this->entityUtilities->setEntityId($entity, $entityId);
 

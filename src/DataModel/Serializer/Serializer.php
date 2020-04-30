@@ -185,7 +185,6 @@ class Serializer
                 return json_encode([
                     'id' => $encodedEntityId,
                     'type' => $obj->getEntityType(),
-                    'lang' => $obj->getLanguage(),
                     'data' => $data,
                 ]);
             default:
@@ -231,21 +230,21 @@ class Serializer
             throw new WanderlusterException(ErrorMessages::INVALID_JSON);
         }
 
-        $entityId = null;
+        $whitelistedKeys = ['id', 'type', 'data'];
+        foreach ($jsonData as $key => $value) {
+            if (!in_array($key, $whitelistedKeys)) {
+                throw new WanderlusterException(sprintf(ErrorMessages::DESERIALIZATION_ERROR, 'Invalid key - '.$key));
+            }
+        }
 
         // decode entity id
+        $entityId = null;
         if (!array_key_exists('id', $jsonData)) {
             throw new WanderlusterException(sprintf(ErrorMessages::DESERIALIZATION_ERROR, 'Missing parameter: id'));
         }
         if (!is_null($jsonData['id'])) {
             $entityId = $this->decodeEntityId($jsonData['id']);
         }
-
-        // decode language
-        if (!array_key_exists('lang', $jsonData)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::DESERIALIZATION_ERROR, 'Missing parameter: lang'));
-        }
-        $lang = $jsonData['lang'];
 
         // decode entity type
         if (!array_key_exists('type', $jsonData)) {
@@ -266,7 +265,7 @@ class Serializer
             throw new WanderlusterException(ErrorMessages::INVALID_ENTITY_DATA);
         }
 
-        $entity = new Entity($lang, $entityType);
+        $entity = new Entity($entityType);
         if ($entityId) {
             $this->entityUtilites->setEntityId($entity, $entityId);
         }
@@ -281,9 +280,6 @@ class Serializer
                 $entity->set($key, $value, $lang);
             }
         }
-
-        // set language to null so user has to specify it
-        $entity->setLanguage(null);
 
         return $entity;
     }
