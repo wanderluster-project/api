@@ -59,8 +59,7 @@ class FileUtilities
         $filename = $entityId.'.'.$fileExt;
         $this->remoteStorageAdapter->pushLocalFileToRemote($file->getRealPath(), $pathPrefix.'/'.$filename);
 
-        $entity = new Entity(
-            $entityType);
+        $entity = new Entity($entityType);
 
         $entity->set('mime_type', $mimeType, LanguageCodes::ENGLISH)
             ->set('file_size', $file->getSize(), LanguageCodes::ENGLISH)
