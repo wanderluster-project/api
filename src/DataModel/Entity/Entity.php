@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\DataModel\Entity;
 
 use App\DataModel\Snapshot\Snapshot;
+use App\Exception\ErrorMessages;
+use App\Exception\WanderlusterException;
 
 class Entity
 {
@@ -21,7 +23,7 @@ class Entity
     /**
      * @var Snapshot[]
      */
-    protected $snapshots;
+    protected $snapshots = [];
 
     /**
      * @var string
@@ -33,19 +35,41 @@ class Entity
      *
      * @param string $lang
      */
-    public function __construct($lang, int $entityType, array $data = [])
+    public function __construct($lang, int $entityType)
     {
-        $this->currentLang = $lang;
+        $this->setLanguage($lang);
         $this->entityType = $entityType;
-        $this->setSnapshot($this->currentLang, new Snapshot($lang, $data));
     }
 
     /**
      * Get the language of this Entity.
      */
-    public function getLang(): ?string
+    public function getLanguage(): ?string
     {
         return $this->currentLang;
+    }
+
+    /**
+     * @param string|null $lang
+     */
+    public function setLanguage($lang): void
+    {
+        $this->currentLang = $lang;
+        if (!$lang) {
+            return;
+        }
+
+        if (!isset($this->snapshots[$lang])) {
+            $this->snapshots[$lang] = new Snapshot($lang);
+        }
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getLanguages(): array
+    {
+        return array_keys($this->snapshots);
     }
 
     /**
@@ -75,33 +99,38 @@ class Entity
     /**
      * Get the value associated with a key.
      *
-     * @param string $key
+     * @param string      $key
+     * @param string|null $lang
      */
-    public function get($key): ?string
+    public function get($key, $lang = null): ?string
     {
-        return $this->getSnapshot()->get($key);
+        return $this->getSnapshot($lang)->get($key);
     }
 
     /**
      * Set the value associated with a key.
      *
-     * @param string $key
-     * @param mixed  $value
+     * @param string      $key
+     * @param mixed       $value
+     * @param string|null $lang
      */
-    public function set($key, $value): void
+    public function set($key, $value, $lang = null): Entity
     {
-        $this->getSnapshot()->set($key, $value);
+        $this->getSnapshot($lang)->set($key, $value);
+
+        return $this;
     }
 
     /**
      * Returns TRUE if entity has key, FALSE otherwise.
      * If entity was deleted then will return FALSE.
      *
-     * @param string $key
+     * @param string      $key
+     * @param string|null $lang
      */
-    public function has($key): bool
+    public function has($key, $lang = null): bool
     {
-        if ($this->getSnapshot()->wasDeleted($key)) {
+        if ($this->getSnapshot($lang)->wasDeleted($key)) {
             return false;
         }
 
@@ -111,66 +140,74 @@ class Entity
     /**
      * Delete a key from an Entity.
      *
-     * @param string $key
+     * @param string      $key
+     * @param string|null $lang
      */
-    public function del($key): void
+    public function del($key, $lang = null): void
     {
-        $this->getSnapshot()->del($key);
+        $this->getSnapshot($lang)->del($key);
     }
 
     /**
      * Return all the data associated with this Entity.
+     *
+     * @param string|null $lang
      */
-    public function all(): array
+    public function all($lang = null): array
     {
-        return $this->getSnapshot()->all();
+        return $this->getSnapshot($lang)->all();
     }
 
     /**
-     * Return the keys associaated with this Entity.
+     * Return the keys associated with this Entity.
+     *
+     * @param string|null $lang
      */
-    public function keys(): array
+    public function keys($lang = null): array
     {
-        return $this->getSnapshot()->keys();
+        return $this->getSnapshot($lang)->keys();
     }
 
     /**
      * Returns TRUE if key was deleted from Entity, FALSE otherwise.
      *
-     * @param string $key
+     * @param string      $key
+     * @param string|null $lang
      */
-    public function wasDeleted($key): bool
+    public function wasDeleted($key, $lang = null): bool
     {
-        return $this->getSnapshot()->wasDeleted($key);
+        return $this->getSnapshot($lang)->wasDeleted($key);
     }
 
     /**
      * Returns array of keys deleted from this entity.
+     *
+     * @param string|null $lang
      */
-    public function getDeletedKeys(): array
+    public function getDeletedKeys($lang = null): array
     {
-        return $this->getSnapshot()->getDeletedKeys();
+        return $this->getSnapshot($lang)->getDeletedKeys();
     }
 
     /**
      * Get the snapshot associated with a language.
      *
      * @param string|null $lang
+     *
+     * @throws WanderlusterException
      */
     protected function getSnapshot($lang = null): Snapshot
     {
         $lang = $lang ? $lang : $this->currentLang;
 
-        return $this->snapshots[$lang];
-    }
+        if (!$lang) {
+            throw new WanderlusterException(ErrorMessages::ENTITY_LANGUAGE_NOT_SET);
+        }
 
-    /**
-     * Set the snapshot associated with a language.
-     *
-     * @param string $lang
-     */
-    protected function setSnapshot($lang, Snapshot $snapshot): void
-    {
-        $this->snapshots[$lang] = $snapshot;
+        if (!isset($this->snapshots[$lang])) {
+            $this->snapshots[$lang] = new Snapshot($lang);
+        }
+
+        return $this->snapshots[$lang];
     }
 }

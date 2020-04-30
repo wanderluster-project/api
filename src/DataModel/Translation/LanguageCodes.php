@@ -19,4 +19,12 @@ class LanguageCodes
             self::SPANISH,
         ];
     }
+
+    /**
+     * @param string $languageCode
+     */
+    public function isValidLanguageCode($languageCode): bool
+    {
+        return in_array($languageCode, $this->getLanguageCodes());
+    }
 }

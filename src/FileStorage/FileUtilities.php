@@ -61,14 +61,12 @@ class FileUtilities
 
         $entity = new Entity(
             LanguageCodes::ENGLISH,
-            $entityType,
-            [
-                'mime_type' => $mimeType,
-                'file_size' => $file->getSize(),
-                'url' => $this->remoteStorageAdapter->generateFileUrl($pathPrefix.'/'.$filename),
-            ]);
+            $entityType);
 
-        $this->entityUtilities->setEntityType($entity, $entityType);
+        $entity->set('mime_type', $mimeType)
+            ->set('file_size', $file->getSize())
+            ->set('url', $this->remoteStorageAdapter->generateFileUrl($pathPrefix.'/'.$filename));
+
         $this->entityUtilities->setEntityId($entity, $entityId);
 
         return $entity;

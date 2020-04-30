@@ -11,6 +11,6 @@ class EntityTypeManager
      */
     public function isValidType(int $entityTypeID): bool
     {
-        return $entityTypeID >= 100 && $entityTypeID <= 2000;
+        return $entityTypeID >= 0 && $entityTypeID <= 1000000;
     }
 }

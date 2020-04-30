@@ -7,6 +7,8 @@ namespace App\DataModel\Serializer;
 use App\DataModel\Entity\Entity;
 use App\DataModel\Entity\EntityId;
 use App\DataModel\Snapshot\SnapshotId;
+use App\DataModel\Translation\LanguageCodes;
+use App\EntityManager\EntityTypeManager;
 use App\EntityManager\EntityUtilites;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
@@ -19,11 +21,23 @@ class Serializer
     protected $entityUtilites;
 
     /**
+     * @var LanguageCodes
+     */
+    protected $languageCodes;
+
+    /**
+     * @var EntityTypeManager
+     */
+    protected $entityTypeManager;
+
+    /**
      * Serializer constructor.
      */
-    public function __construct(EntityUtilites $entityUtilites)
+    public function __construct(EntityUtilites $entityUtilites, LanguageCodes $languageCodes, EntityTypeManager $entityTypeManager)
     {
         $this->entityUtilites = $entityUtilites;
+        $this->languageCodes = $languageCodes;
+        $this->entityTypeManager = $entityTypeManager;
     }
 
     /**
@@ -155,11 +169,24 @@ class Serializer
                     $encodedEntityId = $this->encodeObject($entityId);
                 }
 
+                $data = [];
+                $languages = $obj->getLanguages();
+                foreach ($languages as $language) {
+                    $all = $obj->all($language);
+                    if (!$all) {
+                        $all = new \stdClass();
+                    }
+                    $data[$language] = $all;
+                }
+                if (!$data) {
+                    $data = new \stdClass();
+                }
+
                 return json_encode([
                     'id' => $encodedEntityId,
                     'type' => $obj->getEntityType(),
-                    'lang' => $obj->getLang(),
-                    'data' => $obj->all(),
+                    'lang' => $obj->getLanguage(),
+                    'data' => $data,
                 ]);
             default:
                 throw new WanderlusterException(sprintf(ErrorMessages::SERIALIZATION_ERROR, 'Invalid class: '.$class));
@@ -200,6 +227,10 @@ class Serializer
     protected function decodeEntity($string): Entity
     {
         $jsonData = json_decode($string, true);
+        if (is_null($jsonData)) {
+            throw new WanderlusterException(ErrorMessages::INVALID_JSON);
+        }
+
         $entityId = null;
 
         // decode entity id
@@ -222,16 +253,37 @@ class Serializer
         }
         $entityType = $jsonData['type'];
 
+        if (!$this->entityTypeManager->isValidType($entityType)) {
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_ENTITY_TYPE, $entityType));
+        }
+
         // decode data values
         if (!array_key_exists('data', $jsonData)) {
             throw new WanderlusterException(sprintf(ErrorMessages::DESERIALIZATION_ERROR, 'Missing parameter: data'));
         }
         $data = $jsonData['data'];
+        if (!is_array($data)) {
+            throw new WanderlusterException(ErrorMessages::INVALID_ENTITY_DATA);
+        }
 
-        $entity = new Entity($lang, $entityType, $data);
+        $entity = new Entity($lang, $entityType);
         if ($entityId) {
             $this->entityUtilites->setEntityId($entity, $entityId);
         }
+        foreach ($data as $lang => $langData) {
+            if (!is_array($langData)) {
+                throw new WanderlusterException(ErrorMessages::INVALID_ENTITY_DATA);
+            }
+            if (!$this->languageCodes->isValidLanguageCode($lang)) {
+                throw new WanderlusterException(ErrorMessages::INVALID_LANGUAGE_CODE);
+            }
+            foreach ($langData as $key => $value) {
+                $entity->set($key, $value, $lang);
+            }
+        }
+
+        // set language to null so user has to specify it
+        $entity->setLanguage(null);
 
         return $entity;
     }

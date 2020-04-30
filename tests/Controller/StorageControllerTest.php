@@ -8,7 +8,6 @@ use App\Controller\StorageController;
 use App\DataModel\Entity\EntityId;
 use App\DataModel\Entity\EntityTypes;
 use App\EntityManager\EntityManager;
-use App\FileStorage\FileAdapters\ChainFileAdapter;
 use App\Tests\FunctionalTest;
 use Exception;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -101,10 +100,10 @@ class StorageControllerTest extends FunctionalTest
 
         $this->assertArrayHasKey('id', $data);
         $entityId = new EntityId($data['id']);
-        $this->assertArrayHasKey('url', $data['data']);
+        $this->assertArrayHasKey('url', $data['data']['en']);
         $this->assertEquals(EntityTypes::FILE_IMAGE_JPG, $data['type']);
-        $this->assertEquals('image/jpeg', $data['data']['mime_type']);
-        $this->assertEquals(filesize($filename), $data['data']['file_size']);
+        $this->assertEquals('image/jpeg', $data['data']['en']['mime_type']);
+        $this->assertEquals(filesize($filename), $data['data']['en']['file_size']);
 
         // delete this file
         $client->request('DELETE', '/api/v1/storage/'.$entityId);
@@ -124,10 +123,10 @@ class StorageControllerTest extends FunctionalTest
         $this->assertArrayHasKey('id', $data);
         $this->assertArrayHasKey('type', $data);
         $entityId = new EntityId($data['id']);
-        $this->assertArrayHasKey('url', $data['data']);
+        $this->assertArrayHasKey('url', $data['data']['en']);
         $this->assertEquals(EntityTypes::FILE_IMAGE_PNG, $data['type']);
-        $this->assertEquals('image/png', $data['data']['mime_type']);
-        $this->assertEquals(filesize($filename), $data['data']['file_size']);
+        $this->assertEquals('image/png', $data['data']['en']['mime_type']);
+        $this->assertEquals(filesize($filename), $data['data']['en']['file_size']);
 
         // delete this file
         $client->request('DELETE', '/api/v1/storage/'.$entityId);
@@ -147,10 +146,10 @@ class StorageControllerTest extends FunctionalTest
         $this->assertArrayHasKey('id', $data);
         $this->assertArrayHasKey('type', $data);
         $entityId = new EntityId($data['id']);
-        $this->assertArrayHasKey('url', $data['data']);
+        $this->assertArrayHasKey('url', $data['data']['en']);
         $this->assertEquals(EntityTypes::FILE_IMAGE_GIF, $data['type']);
-        $this->assertEquals('image/gif', $data['data']['mime_type']);
-        $this->assertEquals(filesize($filename), $data['data']['file_size']);
+        $this->assertEquals('image/gif', $data['data']['en']['mime_type']);
+        $this->assertEquals(filesize($filename), $data['data']['en']['file_size']);
 
         // delete this file
         $client->request('DELETE', '/api/v1/storage/'.$entityId);
@@ -170,10 +169,10 @@ class StorageControllerTest extends FunctionalTest
         $this->assertArrayHasKey('id', $data);
         $this->assertArrayHasKey('type', $data);
         $entityId = new EntityId($data['id']);
-        $this->assertArrayHasKey('url', $data['data']);
+        $this->assertArrayHasKey('url', $data['data']['en']);
         $this->assertEquals(EntityTypes::FILE_IMAGE_WEBP, $data['type']);
-        $this->assertEquals('image/webp', $data['data']['mime_type']);
-        $this->assertEquals(filesize($filename), $data['data']['file_size']);
+        $this->assertEquals('image/webp', $data['data']['en']['mime_type']);
+        $this->assertEquals(filesize($filename), $data['data']['en']['file_size']);
 
         // delete this file
         $client->request('DELETE', '/api/v1/storage/'.$entityId);
@@ -193,10 +192,10 @@ class StorageControllerTest extends FunctionalTest
         $this->assertArrayHasKey('id', $data);
         $this->assertArrayHasKey('type', $data);
         $entityId = new EntityId($data['id']);
-        $this->assertArrayHasKey('url', $data['data']);
+        $this->assertArrayHasKey('url', $data['data']['en']);
         $this->assertEquals(EntityTypes::FILE_IMAGE_SVG, $data['type']);
-        $this->assertEquals('image/svg+xml', $data['data']['mime_type']);
-        $this->assertEquals(filesize($filename), $data['data']['file_size']);
+        $this->assertEquals('image/svg+xml', $data['data']['en']['mime_type']);
+        $this->assertEquals(filesize($filename), $data['data']['en']['file_size']);
 
         // delete this file
         $client->request('DELETE', '/api/v1/storage/'.$entityId);
@@ -216,10 +215,10 @@ class StorageControllerTest extends FunctionalTest
         $this->assertArrayHasKey('id', $data);
         $this->assertArrayHasKey('type', $data);
         $entityId = new EntityId($data['id']);
-        $this->assertArrayHasKey('url', $data['data']);
+        $this->assertArrayHasKey('url', $data['data']['en']);
         $this->assertEquals(EntityTypes::FILE_PDF, $data['type']);
-        $this->assertEquals('application/pdf', $data['data']['mime_type']);
-        $this->assertEquals(filesize($filename), $data['data']['file_size']);
+        $this->assertEquals('application/pdf', $data['data']['en']['mime_type']);
+        $this->assertEquals(filesize($filename), $data['data']['en']['file_size']);
 
         // delete this file
         $client->request('DELETE', '/api/v1/storage/'.$entityId);

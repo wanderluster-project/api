@@ -57,7 +57,7 @@ class SnapshotId implements StringInterface
     /**
      * Get the language associated with this snapshot.
      */
-    public function getLang(): string
+    public function getLanguage(): string
     {
         return $this->lang;
     }
@@ -75,7 +75,7 @@ class SnapshotId implements StringInterface
      */
     public function asString(): string
     {
-        return (string) $this->getEntityId().'.'.$this->getLang().'-'.$this->getVersion();
+        return (string) $this->getEntityId().'.'.$this->getLanguage().'-'.$this->getVersion();
     }
 
     /**

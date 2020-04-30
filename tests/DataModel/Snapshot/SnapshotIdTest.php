@@ -17,7 +17,7 @@ class SnapshotIdTest extends TestCase
         $snapshotId = new SnapshotId('79d20459-f79b-489d-97fd-22881fdf4fc9.en-100');
         $this->assertInstanceOf(EntityId::class, $snapshotId->getEntityId());
         $this->assertEquals('79d20459-f79b-489d-97fd-22881fdf4fc9', $snapshotId->getEntityId()->asString());
-        $this->assertEquals('en', $snapshotId->getLang());
+        $this->assertEquals('en', $snapshotId->getLanguage());
         $this->assertEquals(100, $snapshotId->getVersion());
     }
 

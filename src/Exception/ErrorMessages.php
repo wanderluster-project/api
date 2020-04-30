@@ -7,6 +7,7 @@ namespace App\Exception;
 class ErrorMessages
 {
     const INVALID_ENTITY_TYPE = 'Invalid Entity Type - %s';
+    const INVALID_ENTITY_DATA = 'Invalid Entity Data';
     const INVALID_EXT = 'Invalid File Extension - %s';
     const INVALID_MIMETYPE = 'Invalid MimeType - %s';
     const INVALID_S3_BUCKET = 'Invalid S3 Bucket - %s';
@@ -14,6 +15,7 @@ class ErrorMessages
     const INVALID_SNAPSHOT_ID = 'Invalid SnapshotId format - %s';
     const INVALID_LANGUAGE_CODE = 'Invalid language code -  %s';
     const INVALID_USERNAME = 'Invalid username - %s';
+    const INVALID_JSON = 'Invalid JSON passed as argument.';
 
     const REQUEST_MISSING_PARAMETER = 'Missing parameter: %s';
     const REQUEST_INVALID_FILE = 'Invalid or corrupt file uploaded.';
@@ -24,6 +26,7 @@ class ErrorMessages
     const DESERIALIZATION_ERROR = 'Error deserializing - %s';
 
     const METHOD_NOT_IMPLEMENTED = 'Method not implemented yet - %s';
+    const ENTITY_LANGUAGE_NOT_SET = 'Entity language not set.';
 
     const JWT_KEYS_MISSING = 'JWT Keys Missing.';
     const JWT_INVALID = 'Invalid JWT';

@@ -54,7 +54,7 @@ class EntityManager
     {
         $entityId = $entity->getEntityId();
         $entityType = $entity->getEntityType();
-        $lang = $entity->getLang();
+        $lang = $entity->getLanguage();
 
         if (is_null($lang) || !in_array($lang, $this->languageCodes->getLanguageCodes())) {
             throw new WanderlusterException(sprintf(ErrorMessages::INVALID_LANGUAGE_CODE, $lang));

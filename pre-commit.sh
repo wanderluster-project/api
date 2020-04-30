@@ -1,5 +1,6 @@
 #!/bin/bash
 
+php bin/console cache:clear --env=test
 rm -Rf /var/www/wanderluster/var/storage/*
 ./bin/php-cs-fixer fix /var/www/wanderluster/src --rules=@Symfony,declare_strict_types,date_time_immutable --allow-risky=yes
 ./bin/php-cs-fixer fix /var/www/wanderluster/tests --rules=@Symfony,declare_strict_types,date_time_immutable --allow-risky=yes

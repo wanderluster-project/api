@@ -13,23 +13,16 @@ class EntityTest extends WebTestCase
 {
     public function testConstuctor(): void
     {
-        // naked constructor
         $sut = new Entity(LanguageCodes::ENGLISH, EntityTypes::TEST_ENTITY_TYPE);
-        $this->assertEquals(LanguageCodes::ENGLISH, $sut->getLang());
+        $this->assertEquals(LanguageCodes::ENGLISH, $sut->getLanguage());
         $this->assertEquals(EntityTypes::TEST_ENTITY_TYPE, $sut->getEntityId());
-        $this->assertFalse($sut->has('foo'));
-
-        // initialization params
-        $sut = new Entity(LanguageCodes::ENGLISH, EntityTypes::TEST_ENTITY_TYPE, ['foo' => 'bar']);
-        $this->assertEquals(null, $sut->getEntityId());
-        $this->assertEquals(LanguageCodes::ENGLISH, $sut->getLang());
-        $this->assertTrue($sut->has('foo'));
+        $this->assertEmpty($sut->all());
     }
 
     public function testNoData(): void
     {
         $sut = new Entity(LanguageCodes::ENGLISH, EntityTypes::TEST_ENTITY_TYPE);
-        $this->assertEquals(LanguageCodes::ENGLISH, $sut->getLang());
+        $this->assertEquals(LanguageCodes::ENGLISH, $sut->getLanguage());
         $this->assertEquals(EntityTypes::TEST_ENTITY_TYPE, $sut->getEntityId());
         $this->assertNull($sut->getEntityId());
         $this->assertNull($sut->get('foo'));
@@ -40,11 +33,12 @@ class EntityTest extends WebTestCase
 
     public function testHasData(): void
     {
-        $sut = new Entity(LanguageCodes::ENGLISH, EntityTypes::TEST_ENTITY_TYPE, ['foo1' => 'bar1']);
+        $sut = new Entity(LanguageCodes::ENGLISH, EntityTypes::TEST_ENTITY_TYPE);
+        $sut->set('foo1', 'bar1');
 
-        $this->assertEquals(LanguageCodes::ENGLISH, $sut->getLang());
+        $this->assertEquals(LanguageCodes::ENGLISH, $sut->getLanguage());
         $this->assertEquals(EntityTypes::TEST_ENTITY_TYPE, $sut->getEntityId());
-        $this->assertEquals(LanguageCodes::ENGLISH, $sut->getLang());
+        $this->assertEquals(LanguageCodes::ENGLISH, $sut->getLanguage());
 
         // confirm using previous values
         $this->assertTrue($sut->has('foo1'));
