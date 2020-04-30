@@ -3,7 +3,7 @@ services:
     alias: 'App\DataModel\Serializer\Serializer'
     public: true
   test.file_adapter:
-    alias: 'App\FileStorage\FileAdapters\GenericFileAdapter'
+    alias: 'App\FileStorage\FileAdapters\ChainFileAdapter'
     public: true
   test.entity_manager:
     alias: 'App\EntityManager\EntityManager'

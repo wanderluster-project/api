@@ -6,6 +6,7 @@ namespace App\FileStorage;
 
 use App\DataModel\Entity\Entity;
 use App\DataModel\Entity\EntityId;
+use App\DataModel\Translation\LanguageCodes;
 use App\EntityManager\EntityManager;
 use App\EntityManager\EntityUtilites;
 use App\Exception\WanderlusterException;
@@ -54,17 +55,17 @@ class FileUtilities
             throw new BadRequestHttpException(sprintf('Invalid MIME type: %s', $mimeType));
         }
 
-        $entityId = $this->entityManager->allocateEntityId($file->getFilename(), $entityType);
+        $entityId = $this->entityManager->generateEntityId();
         $filename = $entityId.'.'.$fileExt;
         $this->remoteStorageAdapter->pushLocalFileToRemote($file->getRealPath(), $pathPrefix.'/'.$filename);
 
-        $entity = new Entity([
-            'mime_type' => $mimeType,
-            'file_size' => $file->getSize(),
-            'url' => $this->remoteStorageAdapter->generateFileUrl($pathPrefix.'/'.$filename),
-        ]);
+        $entity = new Entity(
+            $entityType);
 
-        $this->entityUtilities->setEntityType($entity, $entityType);
+        $entity->set('mime_type', $mimeType, LanguageCodes::ENGLISH)
+            ->set('file_size', $file->getSize(), LanguageCodes::ENGLISH)
+            ->set('url', $this->remoteStorageAdapter->generateFileUrl($pathPrefix.'/'.$filename), LanguageCodes::ENGLISH);
+
         $this->entityUtilities->setEntityId($entity, $entityId);
 
         return $entity;

@@ -15,11 +15,6 @@ class Snapshot
     protected $lang = null;
 
     /**
-     * @var int|null
-     */
-    protected $entityType = null;
-
-    /**
      * @var SnapshotId|null
      */
     protected $snapshotId = null;
@@ -42,13 +37,11 @@ class Snapshot
     /**
      * Snapshot constructor.
      *
-     * @param string|null $lang
-     * @param int|null    $entityType
+     * @param string $lang
      */
-    public function __construct(array $data = [], $lang = null, $entityType = null)
+    public function __construct($lang, array $data = [])
     {
         $this->lang = $lang;
-        $this->entityType = $entityType;
         foreach ($data as $key => $value) {
             $this->set($key, $value);
         }
@@ -60,11 +53,6 @@ class Snapshot
     public function getLanguage(): ?string
     {
         return $this->lang;
-    }
-
-    public function getEntityType(): ?int
-    {
-        return $this->entityType;
     }
 
     /**

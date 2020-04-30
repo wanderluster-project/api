@@ -6,7 +6,7 @@ namespace App\Tests;
 
 use App\DataModel\Serializer\Serializer;
 use App\EntityManager\EntityManager;
-use App\FileStorage\FileAdapters\GenericFileAdapter;
+use App\FileStorage\FileAdapters\ChainFileAdapter;
 use App\Security\JwtTokenUtilities;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -41,7 +41,7 @@ class FunctionalTest extends WebTestCase
         return self::$container->get('test.serializer');
     }
 
-    protected function getFileAdapter(): GenericFileAdapter
+    protected function getFileAdapter(): ChainFileAdapter
     {
         self::bootKernel();
 

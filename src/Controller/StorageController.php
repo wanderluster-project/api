@@ -6,11 +6,10 @@ namespace App\Controller;
 
 use App\DataModel\Entity\EntityId;
 use App\DataModel\Serializer\Serializer;
-use App\DataModel\Translation\LanguageCodes;
 use App\EntityManager\EntityManager;
 use App\Exception\ErrorMessages;
 use App\Exception\InvalidEntityIdFormatException;
-use App\FileStorage\FileAdapters\GenericFileAdapter;
+use App\FileStorage\FileAdapters\ChainFileAdapter;
 use Exception;
 use League\Flysystem\FileNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -26,7 +25,7 @@ class StorageController
     /**
      * @Route("/api/v1/storage", methods={"POST"})
      */
-    public function uploadFile(Request $request, GenericFileAdapter $fileStorage, Serializer $serializer, EntityManager $entityManager): Response
+    public function uploadFile(Request $request, ChainFileAdapter $fileAdapter, Serializer $serializer, EntityManager $entityManager): Response
     {
         if (!$request->files->has('file')) {
             throw new BadRequestHttpException(sprintf(ErrorMessages::REQUEST_MISSING_PARAMETER, 'file'));
@@ -39,8 +38,8 @@ class StorageController
         }
 
         try {
-            $entity = $fileStorage->saveFileToRemote($file);
-            $entityManager->commit($entity, LanguageCodes::ENGLISH);
+            $entity = $fileAdapter->saveFileToRemote($file);
+            $entityManager->commit($entity);
 
             return new JsonResponse($serializer->encode($entity), Response::HTTP_OK, [], true);
         } catch (Exception $e) {
@@ -53,11 +52,12 @@ class StorageController
      *
      * @param string $entityId
      */
-    public function deleteFile($entityId, Request $request, GenericFileAdapter $fileStorage): Response
+    public function deleteFile($entityId, Request $request, ChainFileAdapter $fileAdapter): Response
     {
         try {
             $entityId = new EntityId($entityId);
-            $fileStorage->deleteRemoteFile($entityId);
+            // @todo pull entity to find out the file extension.
+//            $fileAdapter->deleteRemoteFile($entityId,'png');
 
             return new JsonResponse(
                 ['status' => 'success']

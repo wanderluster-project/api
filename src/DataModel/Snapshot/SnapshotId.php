@@ -11,12 +11,17 @@ use App\Exception\WanderlusterException;
 
 class SnapshotId implements StringInterface
 {
-    const PATTERN = '/^[0-9]*-[0-9]*-[0-9A-Fa-f]{16}\.[0-9]*$/';
+    const PATTERN = '/^(.*)\.([a-z]{2})-([0-9]+)$/';
 
     /**
      * @var EntityId
      */
     protected $entityId;
+
+    /**
+     * @var string
+     */
+    protected $lang;
 
     /**
      * @var int
@@ -34,13 +39,15 @@ class SnapshotId implements StringInterface
             throw new WanderlusterException(sprintf(ErrorMessages::INVALID_SNAPSHOT_ID, $snapshotIdString));
         }
 
-        $parts = explode('.', $snapshotIdString);
-        $this->entityId = new EntityId($parts[0]);
-        $this->version = (int) $parts[1];
+        preg_match(self::PATTERN, $snapshotIdString, $matches);
+
+        $this->entityId = new EntityId($matches[1]);
+        $this->lang = $matches[2];
+        $this->version = (int) $matches[3];
     }
 
     /**
-     * Get the EntityID associated with this Snapshot.
+     * Get the UUID of the entity associated with this snapshot.
      */
     public function getEntityId(): EntityId
     {
@@ -48,7 +55,15 @@ class SnapshotId implements StringInterface
     }
 
     /**
-     * Get the version associated with this Snapshot.
+     * Get the language associated with this snapshot.
+     */
+    public function getLanguage(): string
+    {
+        return $this->lang;
+    }
+
+    /**
+     * Get the version associated with this snapshot.
      */
     public function getVersion(): int
     {
@@ -58,16 +73,16 @@ class SnapshotId implements StringInterface
     /**
      * Convert to string.
      */
-    public function __toString(): string
+    public function asString(): string
     {
-        return $this->asString();
+        return (string) $this->getEntityId().'.'.$this->getLanguage().'-'.$this->getVersion();
     }
 
     /**
      * Convert to string.
      */
-    public function asString(): string
+    public function __toString(): string
     {
-        return (string) $this->getEntityId().'.'.$this->getVersion();
+        return $this->asString();
     }
 }

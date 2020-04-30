@@ -11,64 +11,36 @@ use App\Exception\WanderlusterException;
 
 class EntityId implements StringInterface
 {
-    const PATTERN = '/^[0-9]*-[0-9]*-[0-9A-Fa-f]{16}$/';
+    /**
+     * UUID Pattern with 8-4-4-4-12 hexdigits.
+     * ex: c0db5fe7-24be-4e77-ad4c-ce1aaa5c7682.
+     */
+    const PATTERN = '/^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$/';
 
     /**
      * @SerializedName("customer_name")
      *
-     * @var int
-     */
-    protected $shard;
-
-    /**
-     * @var int
-     */
-    protected $type;
-
-    /**
      * @var string
      */
-    protected $identifier;
+    protected $uuid;
 
     /**
      * EntityId constructor.
      *
      * @throws WanderlusterException
      */
-    public function __construct(string $entityIdString)
+    public function __construct(string $uuid)
     {
-        if (!preg_match(self::PATTERN, $entityIdString)) {
-            throw new InvalidEntityIdFormatException(sprintf(ErrorMessages::INVALID_ENTITY_ID, $entityIdString));
+        if (!preg_match(self::PATTERN, $uuid)) {
+            throw new InvalidEntityIdFormatException(sprintf(ErrorMessages::INVALID_ENTITY_ID, $uuid));
         }
 
-        $parts = explode('-', $entityIdString);
-        $this->shard = (int) $parts[0];
-        $this->type = (int) $parts[1];
-        $this->identifier = $parts[2];
+        $this->uuid = $uuid;
     }
 
-    /**
-     * Get the shard where this object is stored.
-     */
-    public function getShard(): int
+    public function getUuid(): string
     {
-        return $this->shard;
-    }
-
-    /**
-     * Get the type of this object.
-     */
-    public function getEntityType(): int
-    {
-        return $this->type;
-    }
-
-    /**
-     * Get the Identifier for this object.
-     */
-    public function getIdentifier(): string
-    {
-        return $this->identifier;
+        return $this->uuid;
     }
 
     /**
@@ -76,7 +48,7 @@ class EntityId implements StringInterface
      */
     public function asString(): string
     {
-        return $this->getShard().'-'.$this->getEntityType().'-'.$this->getIdentifier();
+        return $this->getUuid();
     }
 
     /**
@@ -84,6 +56,6 @@ class EntityId implements StringInterface
      */
     public function __toString(): string
     {
-        return $this->asString();
+        return $this->getUuid();
     }
 }
