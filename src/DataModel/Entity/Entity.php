@@ -14,19 +14,30 @@ class Entity
     protected $entityId = null;
 
     /**
-     * @var Snapshot
+     * @var int
      */
-    protected $snapshot;
+    protected $entityType = null;
+
+    /**
+     * @var Snapshot[]
+     */
+    protected $snapshots;
+
+    /**
+     * @var string
+     */
+    protected $currentLang;
 
     /**
      * Entity constructor.
      *
-     * @param string|null $lang
-     * @param int|null    $entityType
+     * @param string $lang
      */
-    public function __construct(array $data = [], $lang = null, $entityType = null)
+    public function __construct($lang, int $entityType, array $data = [])
     {
-        $this->snapshot = new Snapshot($data, $lang, $entityType);
+        $this->currentLang = $lang;
+        $this->entityType = $entityType;
+        $this->setSnapshot($this->currentLang, new Snapshot($lang, $data));
     }
 
     /**
@@ -34,7 +45,7 @@ class Entity
      */
     public function getLang(): ?string
     {
-        return $this->snapshot->getLanguage();
+        return $this->currentLang;
     }
 
     /**
@@ -42,7 +53,15 @@ class Entity
      */
     public function getEntityType(): ?int
     {
-        return $this->snapshot->getEntityType();
+        return $this->entityType;
+    }
+
+    /**
+     * Set the EntityType for this Entity.
+     */
+    public function setEntityType(int $entityType): void
+    {
+        $this->entityType = $entityType;
     }
 
     /**
@@ -60,7 +79,7 @@ class Entity
      */
     public function get($key): ?string
     {
-        return $this->snapshot->get($key);
+        return $this->getSnapshot()->get($key);
     }
 
     /**
@@ -71,7 +90,7 @@ class Entity
      */
     public function set($key, $value): void
     {
-        $this->snapshot->set($key, $value);
+        $this->getSnapshot()->set($key, $value);
     }
 
     /**
@@ -82,11 +101,11 @@ class Entity
      */
     public function has($key): bool
     {
-        if ($this->snapshot->wasDeleted($key)) {
+        if ($this->getSnapshot()->wasDeleted($key)) {
             return false;
         }
 
-        return $this->snapshot->has($key);
+        return $this->getSnapshot()->has($key);
     }
 
     /**
@@ -96,7 +115,7 @@ class Entity
      */
     public function del($key): void
     {
-        $this->snapshot->del($key);
+        $this->getSnapshot()->del($key);
     }
 
     /**
@@ -104,7 +123,7 @@ class Entity
      */
     public function all(): array
     {
-        return $this->snapshot->all();
+        return $this->getSnapshot()->all();
     }
 
     /**
@@ -112,7 +131,7 @@ class Entity
      */
     public function keys(): array
     {
-        return $this->snapshot->keys();
+        return $this->getSnapshot()->keys();
     }
 
     /**
@@ -122,7 +141,7 @@ class Entity
      */
     public function wasDeleted($key): bool
     {
-        return $this->snapshot->wasDeleted($key);
+        return $this->getSnapshot()->wasDeleted($key);
     }
 
     /**
@@ -130,6 +149,28 @@ class Entity
      */
     public function getDeletedKeys(): array
     {
-        return $this->snapshot->getDeletedKeys();
+        return $this->getSnapshot()->getDeletedKeys();
+    }
+
+    /**
+     * Get the snapshot associated with a language.
+     *
+     * @param string|null $lang
+     */
+    protected function getSnapshot($lang = null): Snapshot
+    {
+        $lang = $lang ? $lang : $this->currentLang;
+
+        return $this->snapshots[$lang];
+    }
+
+    /**
+     * Set the snapshot associated with a language.
+     *
+     * @param string $lang
+     */
+    protected function setSnapshot($lang, Snapshot $snapshot): void
+    {
+        $this->snapshots[$lang] = $snapshot;
     }
 }

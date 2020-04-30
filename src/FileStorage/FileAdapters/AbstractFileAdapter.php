@@ -56,6 +56,14 @@ abstract class AbstractFileAdapter implements FileAdapterInterface
     /**
      * {@inheritdoc}
      */
+    public function isSupportedExt($ext): bool
+    {
+        return $ext === $this->getFileExt();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function saveFileToRemote(File $file): Entity
     {
         return $this->fileUtilities->saveFileToRemote(
@@ -70,16 +78,16 @@ abstract class AbstractFileAdapter implements FileAdapterInterface
     /**
      * {@inheritdoc}
      */
-    public function generateFileUrl(EntityId $entityId): string
+    public function generateFileUrl(EntityId $entityId, $ext): string
     {
-        return $this->fileUtilities->generateFileUrl($entityId, $this->getFileExt(), $this->getPathPrefix());
+        return $this->fileUtilities->generateFileUrl($entityId, $ext, $this->getPathPrefix());
     }
 
     /**
      * {@inheritdoc}
      */
-    public function deleteRemoteFile(EntityId $entityId): void
+    public function deleteRemoteFile(EntityId $entityId, $ext): void
     {
-        $this->fileUtilities->deleteRemoteFile($entityId, $this->getFileExt(), $this->getPathPrefix());
+        $this->fileUtilities->deleteRemoteFile($entityId, $ext, $this->getPathPrefix());
     }
 }

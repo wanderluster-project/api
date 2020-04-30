@@ -14,9 +14,10 @@ class SnapshotIdTest extends TestCase
 {
     public function testConstructor(): void
     {
-        $snapshotId = new SnapshotId('10-3-3858f62230ac3c91.100');
+        $snapshotId = new SnapshotId('79d20459-f79b-489d-97fd-22881fdf4fc9.en-100');
         $this->assertInstanceOf(EntityId::class, $snapshotId->getEntityId());
-        $this->assertEquals('10-3-3858f62230ac3c91', $snapshotId->getEntityId()->asString());
+        $this->assertEquals('79d20459-f79b-489d-97fd-22881fdf4fc9', $snapshotId->getEntityId()->asString());
+        $this->assertEquals('en', $snapshotId->getLang());
         $this->assertEquals(100, $snapshotId->getVersion());
     }
 
@@ -33,8 +34,8 @@ class SnapshotIdTest extends TestCase
 
     public function testToString(): void
     {
-        $snapshotId = new SnapshotId('10-3-3858f62230ac3c91.100');
-        $this->assertEquals('10-3-3858f62230ac3c91.100', (string) $snapshotId);
-        $this->assertEquals('10-3-3858f62230ac3c91.100', $snapshotId->asString());
+        $snapshotId = new SnapshotId('bc9884b3-a0a2-4ec9-ac65-c14b5cc2908c.en-100');
+        $this->assertEquals('bc9884b3-a0a2-4ec9-ac65-c14b5cc2908c.en-100', (string) $snapshotId);
+        $this->assertEquals('bc9884b3-a0a2-4ec9-ac65-c14b5cc2908c.en-100', $snapshotId->asString());
     }
 }

@@ -157,6 +157,7 @@ class Serializer
 
                 return json_encode([
                     'id' => $encodedEntityId,
+                    'type' => $obj->getEntityType(),
                     'lang' => $obj->getLang(),
                     'data' => $obj->all(),
                 ]);
@@ -215,13 +216,19 @@ class Serializer
         }
         $lang = $jsonData['lang'];
 
+        // decode entity type
+        if (!array_key_exists('type', $jsonData)) {
+            throw new WanderlusterException(sprintf(ErrorMessages::DESERIALIZATION_ERROR, 'Missing parameter: type'));
+        }
+        $entityType = $jsonData['type'];
+
         // decode data values
         if (!array_key_exists('data', $jsonData)) {
             throw new WanderlusterException(sprintf(ErrorMessages::DESERIALIZATION_ERROR, 'Missing parameter: data'));
         }
         $data = $jsonData['data'];
 
-        $entity = new Entity($data, $lang);
+        $entity = new Entity($lang, $entityType, $data);
         if ($entityId) {
             $this->entityUtilites->setEntityId($entity, $entityId);
         }

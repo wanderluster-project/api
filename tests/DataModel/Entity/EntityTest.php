@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\DataModel\Entity;
 
 use App\DataModel\Entity\Entity;
+use App\DataModel\Entity\EntityTypes;
 use App\DataModel\Translation\LanguageCodes;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -13,13 +14,13 @@ class EntityTest extends WebTestCase
     public function testConstuctor(): void
     {
         // naked constructor
-        $sut = new Entity();
-        $this->assertNull($sut->getLang());
-        $this->assertNull($sut->getEntityId());
+        $sut = new Entity(LanguageCodes::ENGLISH, EntityTypes::TEST_ENTITY_TYPE);
+        $this->assertEquals(LanguageCodes::ENGLISH, $sut->getLang());
+        $this->assertEquals(EntityTypes::TEST_ENTITY_TYPE, $sut->getEntityId());
         $this->assertFalse($sut->has('foo'));
 
         // initialization params
-        $sut = new Entity(['foo' => 'bar'], LanguageCodes::ENGLISH);
+        $sut = new Entity(LanguageCodes::ENGLISH, EntityTypes::TEST_ENTITY_TYPE, ['foo' => 'bar']);
         $this->assertEquals(null, $sut->getEntityId());
         $this->assertEquals(LanguageCodes::ENGLISH, $sut->getLang());
         $this->assertTrue($sut->has('foo'));
@@ -27,10 +28,10 @@ class EntityTest extends WebTestCase
 
     public function testNoData(): void
     {
-        $sut = new Entity();
-        $this->assertNull($sut->getLang());
+        $sut = new Entity(LanguageCodes::ENGLISH, EntityTypes::TEST_ENTITY_TYPE);
+        $this->assertEquals(LanguageCodes::ENGLISH, $sut->getLang());
+        $this->assertEquals(EntityTypes::TEST_ENTITY_TYPE, $sut->getEntityId());
         $this->assertNull($sut->getEntityId());
-        $this->assertNull($sut->getEntityType());
         $this->assertNull($sut->get('foo'));
         $this->assertFalse($sut->has('foo'));
         $sut->set('foo', 'bar');
@@ -39,10 +40,10 @@ class EntityTest extends WebTestCase
 
     public function testHasData(): void
     {
-        $sut = new Entity(['foo1' => 'bar1'], LanguageCodes::ENGLISH);
+        $sut = new Entity(LanguageCodes::ENGLISH, EntityTypes::TEST_ENTITY_TYPE, ['foo1' => 'bar1']);
 
-        $this->assertNull($sut->getEntityId());
-        $this->assertNull($sut->getEntityType());
+        $this->assertEquals(LanguageCodes::ENGLISH, $sut->getLang());
+        $this->assertEquals(EntityTypes::TEST_ENTITY_TYPE, $sut->getEntityId());
         $this->assertEquals(LanguageCodes::ENGLISH, $sut->getLang());
 
         // confirm using previous values
@@ -61,7 +62,7 @@ class EntityTest extends WebTestCase
     public function testSetGetHasAll(): void
     {
         // Empty entity
-        $sut = new Entity();
+        $sut = new Entity(LanguageCodes::ENGLISH, EntityTypes::TEST_ENTITY_TYPE);
         $this->assertNull($sut->get('foo'));
         $this->assertFalse($sut->has('foo'));
         $this->assertEquals([], $sut->all());
@@ -94,7 +95,7 @@ class EntityTest extends WebTestCase
     public function testDel(): void
     {
         // Empty entity
-        $sut = new Entity();
+        $sut = new Entity(LanguageCodes::ENGLISH, EntityTypes::TEST_ENTITY_TYPE);
         $this->assertEquals([], $sut->keys());
 
         // add value
@@ -125,7 +126,7 @@ class EntityTest extends WebTestCase
     public function testKeys(): void
     {
         // Empty entity
-        $sut = new Entity();
+        $sut = new Entity(LanguageCodes::ENGLISH, EntityTypes::TEST_ENTITY_TYPE);
         $this->assertEquals([], $sut->keys());
 
         // add value

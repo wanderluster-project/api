@@ -13,17 +13,17 @@ class SnapshotTest extends TestCase
     public function testConstructor(): void
     {
         // naked constructor
-        $sut = new Snapshot();
-        $this->assertNull($sut->getLanguage());
+        $sut = new Snapshot(LanguageCodes::ENGLISH);
+        $this->assertEquals(LanguageCodes::ENGLISH, $sut->getLanguage());
 
         // passing along language
-        $sut = new Snapshot([], LanguageCodes::ENGLISH);
+        $sut = new Snapshot(LanguageCodes::ENGLISH, []);
         $this->assertEquals(LanguageCodes::ENGLISH, $sut->getLanguage());
     }
 
     public function testSetGet(): void
     {
-        $sut = new Snapshot();
+        $sut = new Snapshot(LanguageCodes::ENGLISH);
         $this->assertFalse($sut->has('foo'));
         $sut->set('foo', 'bar');
         $this->assertEquals('bar', $sut->get('foo'));
@@ -32,7 +32,7 @@ class SnapshotTest extends TestCase
 
     public function testDel(): void
     {
-        $sut = new Snapshot();
+        $sut = new Snapshot(LanguageCodes::ENGLISH);
         $this->assertFalse($sut->has('foo'));
         $sut->set('foo', 'bar');
         $this->assertTrue($sut->has('foo'));
@@ -42,7 +42,7 @@ class SnapshotTest extends TestCase
 
     public function testKeys(): void
     {
-        $sut = new Snapshot();
+        $sut = new Snapshot(LanguageCodes::ENGLISH);
         $this->assertEquals([], $sut->keys());
         $sut->set('foo1', 'bar1');
         $sut->set('foo2', 'bar2');
@@ -54,7 +54,7 @@ class SnapshotTest extends TestCase
 
     public function testAll(): void
     {
-        $sut = new Snapshot();
+        $sut = new Snapshot(LanguageCodes::ENGLISH);
         $this->assertEquals([], $sut->all());
         $sut->set('foo1', 'bar1');
         $sut->set('foo2', 'bar2');
@@ -66,7 +66,7 @@ class SnapshotTest extends TestCase
 
     public function testWasDeleted(): void
     {
-        $sut = new Snapshot();
+        $sut = new Snapshot(LanguageCodes::ENGLISH);
         $this->assertFalse($sut->wasDeleted('foo1'));
         $sut->set('foo1', 'bar1');
         $this->assertFalse($sut->wasDeleted('foo1'));
@@ -76,7 +76,7 @@ class SnapshotTest extends TestCase
 
     public function testGetDeletedKeys(): void
     {
-        $sut = new Snapshot();
+        $sut = new Snapshot(LanguageCodes::ENGLISH);
         $sut->set('foo1', 'bar1');
         $sut->del('foo1');
         $this->assertEquals(['foo1'], $sut->getDeletedKeys());

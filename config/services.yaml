@@ -29,8 +29,8 @@ services:
     # please note that last definitions always *replace* previous ones
 
     # FACTORIES
-    App\FileStorage\FileAdapterRegistry:
-        factory: ['App\Factory\FileAdapterRegistryFactory', 'create']
+    App\FileStorage\FileAdapters\ChainFileAdapter:
+        factory: ['App\Factory\ChainFileAdapterFactory', 'create']
 
     App\FileStorage\FileSystemAdapters\StorageAdapterInterface:
         factory: ['App\Factory\FileSystemAdapterFactory', 'create']

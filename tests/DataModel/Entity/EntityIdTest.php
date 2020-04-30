@@ -13,21 +13,19 @@ class EntityIdTest extends TestCase
 {
     public function testConstructor(): void
     {
-        $entityIdString = '10-3-'.substr(md5('foobar'), 0, 16);
-        $sut = new EntityId($entityIdString);
+        $uuid = '9a1f64b2-47bf-441d-a9ac-47094e852af5';
+        $sut = new EntityId($uuid);
 
-        $this->assertEquals(10, $sut->getShard());
-        $this->assertEquals(3, $sut->getEntityType());
-        $this->assertEquals('3858f62230ac3c91', $sut->getIdentifier());
+        $this->assertEquals($uuid, $sut->getUuid());
     }
 
     public function testToString(): void
     {
-        $entityIdString = '10-3-'.substr(md5('foobar'), 0, 16);
-        $sut = new EntityId($entityIdString);
+        $uuid = 'dd25eacd-0ca9-4b26-87f8-7cceca184b03';
+        $sut = new EntityId($uuid);
 
-        $this->assertEquals('10-3-3858f62230ac3c91', (string) $sut);
-        $this->assertEquals('10-3-3858f62230ac3c91', $sut->asString());
+        $this->assertEquals($uuid, (string) $sut);
+        $this->assertEquals($uuid, $sut->asString());
     }
 
     public function testInvalidEntityIdFormat(): void

@@ -28,18 +28,13 @@ class EntityUtilites
     public function setEntityType(Entity $entity, int $entityType): void
     {
         $entityRefl = new ReflectionClass(Entity::class);
-        $snapshotRefl = new ReflectionClass(Snapshot::class);
-
-        $snapshotProp = $entityRefl->getProperty('snapshot');
-        $snapshotProp->setAccessible(true);
-        $entityTypeProp = $snapshotRefl->getProperty('entityType');
+        $entityTypeProp = $entityRefl->getProperty('entityType');
         $entityTypeProp->setAccessible(true);
 
-        /**
+        /*
          * @var Snapshot $snapshot
          */
-        $snapshot = $snapshotProp->getValue($entity);
-        $entityTypeProp->setValue($snapshot, $entityType);
+        $entityTypeProp->setValue($entity, $entityType);
     }
 
     /**
