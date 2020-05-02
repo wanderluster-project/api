@@ -17,6 +17,9 @@ class ErrorMessages
     const INVALID_USERNAME = 'Invalid username - %s';
     const INVALID_JSON = 'Invalid JSON passed as argument.';
 
+    const INVALID_DATATYPE_VALUE = 'Invalid value passed to %s data type.';
+    const ERROR_HYDRATING_DATATYPE = 'Error hydrating %s data type - %s';
+
     const REQUEST_MISSING_PARAMETER = 'Missing parameter: %s';
     const REQUEST_INVALID_FILE = 'Invalid or corrupt file uploaded.';
     const SERVER_ERROR_UPLOADING = 'Error encountered saving file.  Please try again later.';
