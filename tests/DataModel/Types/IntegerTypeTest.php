@@ -34,8 +34,8 @@ class IntegerTypeTest extends TestCase implements TypeTestInterface
 
     public function testTranslations(): void
     {
-        $sut = new IntegerType();
-        $this->assertFalse($sut->supportsTranslations());
+        // boolean doesn't support translations
+        $this->assertFalse(false);
     }
 
     public function testToArray(): void

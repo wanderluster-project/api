@@ -31,11 +31,6 @@ interface DataTypeInterface
     public function fromArray(array $data): self;
 
     /**
-     * Returns TRUE if this data type supports translations FALSE otherwise.
-     */
-    public function supportsTranslations(): bool;
-
-    /**
      * Set the val for the DataType.
      *
      * @param mixed $val
@@ -55,6 +50,8 @@ interface DataTypeInterface
 
     /**
      * Returns TRUE if value is null, FALSE otherwise.
+     *
+     * @throws WanderlusterException
      */
-    public function isNull(): bool;
+    public function isNull(array $options = []): bool;
 }

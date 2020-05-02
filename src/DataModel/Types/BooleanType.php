@@ -70,14 +70,6 @@ class BooleanType implements DataTypeInterface
     /**
      * {@inheritdoc}
      */
-    public function supportsTranslations(): bool
-    {
-        return false;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function setValue($val, array $options = []): DataTypeInterface
     {
         if (!is_bool($val) && !is_null($val)) {
@@ -100,8 +92,8 @@ class BooleanType implements DataTypeInterface
     /**
      * {@inheritdoc}
      */
-    public function isNull(): bool
+    public function isNull(array $options = []): bool
     {
-        return is_null($this->val);
+        return is_null($this->getValue($options));
     }
 }

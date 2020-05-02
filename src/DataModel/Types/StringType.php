@@ -8,23 +8,25 @@ use App\Exception\ErrorMessages;
 use App\Exception\TypeError;
 use App\Exception\WanderlusterException;
 
-class NumericType implements DataTypeInterface
+class StringType implements DataTypeInterface
 {
     /**
-     * @var int|float|null
+     * Associative array identifying languageCode => translation.
+     *
+     * @var string[]|null
      */
-    protected $val;
+    protected $trans;
 
     /**
-     * Numeric constructor.
+     * Boolean constructor.
      *
-     * @param float|int|null $val
-     *
-     * @throws WanderlusterException
+     * @param string[] $trans
      */
-    public function __construct($val = null, array $options = [])
+    public function __construct(array $trans = [])
     {
-        $this->setValue($val, $options);
+        foreach ($trans as $lang => $val) {
+            $this->setValue($val, ['lang' => $lang]);
+        }
     }
 
     /**
@@ -32,7 +34,7 @@ class NumericType implements DataTypeInterface
      */
     public function getTypeId(): string
     {
-        return 'NUM';
+        return 'STRING';
     }
 
     /**
@@ -42,7 +44,7 @@ class NumericType implements DataTypeInterface
     {
         return [
             'type' => $this->getTypeId(),
-            'val' => $this->val,
+            'trans' => $this->trans,
         ];
     }
 
@@ -51,7 +53,7 @@ class NumericType implements DataTypeInterface
      */
     public function fromArray(array $data): DataTypeInterface
     {
-        $fields = ['type', 'val'];
+        $fields = ['type', 'trans'];
         foreach ($fields as $field) {
             if (!array_key_exists($field, $data)) {
                 throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Missing Field: '.$field));
@@ -59,12 +61,15 @@ class NumericType implements DataTypeInterface
         }
 
         $type = $data['type'];
-        $val = $data['val'];
+        $trans = $data['trans'];
 
         if ($type !== $this->getTypeId()) {
             throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Invalid Type: '.$type));
         }
-        $this->setValue($val);
+
+        foreach ($trans as $lang => $val) {
+            $this->setValue($val, ['lang' => $lang]);
+        }
 
         return $this;
     }
@@ -74,11 +79,14 @@ class NumericType implements DataTypeInterface
      */
     public function setValue($val, array $options = []): DataTypeInterface
     {
-        if (!is_int($val) && !is_float($val) && !is_null($val)) {
+        if (!is_string($val) && !is_null($val)) {
             throw new TypeError(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId()));
         }
-
-        $this->val = $val;
+        $lang = isset($options['lang']) ? $options['lang'] : null;
+        if (!$lang) {
+            throw new WanderlusterException(sprintf(ErrorMessages::OPTION_REQUIRED, $lang));
+        }
+        $this->trans[$lang] = $val;
 
         return $this;
     }
@@ -88,7 +96,13 @@ class NumericType implements DataTypeInterface
      */
     public function getValue(array $options = [])
     {
-        return $this->val;
+        $lang = isset($options['lang']) ? $options['lang'] : null;
+        if (!$lang) {
+            throw new WanderlusterException(sprintf(ErrorMessages::OPTION_REQUIRED, $lang));
+        }
+        $val = isset($this->trans[$lang]) ? $this->trans[$lang] : null;
+
+        return $val;
     }
 
     /**

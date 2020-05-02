@@ -39,8 +39,8 @@ class NumericTypeTest extends TestCase implements TypeTestInterface
 
     public function testTranslations(): void
     {
-        $sut = new NumericType();
-        $this->assertFalse($sut->supportsTranslations());
+        // boolean doesn't support translations
+        $this->assertFalse(false);
     }
 
     public function testToArray(): void
