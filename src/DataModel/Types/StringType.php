@@ -67,6 +67,10 @@ class StringType implements DataTypeInterface
             throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Invalid Type: '.$type));
         }
 
+        if (!is_array($trans)) {
+            throw new TypeError(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'trans should be an array.'));
+        }
+
         foreach ($trans as $lang => $val) {
             $this->setValue($val, ['lang' => $lang]);
         }
@@ -84,7 +88,7 @@ class StringType implements DataTypeInterface
         }
         $lang = isset($options['lang']) ? $options['lang'] : null;
         if (!$lang) {
-            throw new WanderlusterException(sprintf(ErrorMessages::OPTION_REQUIRED, $lang));
+            throw new WanderlusterException(sprintf(ErrorMessages::OPTION_REQUIRED, 'lang'));
         }
         $this->trans[$lang] = $val;
 
@@ -98,7 +102,7 @@ class StringType implements DataTypeInterface
     {
         $lang = isset($options['lang']) ? $options['lang'] : null;
         if (!$lang) {
-            throw new WanderlusterException(sprintf(ErrorMessages::OPTION_REQUIRED, $lang));
+            throw new WanderlusterException(sprintf(ErrorMessages::OPTION_REQUIRED, 'lang'));
         }
         $val = isset($this->trans[$lang]) ? $this->trans[$lang] : null;
 
