@@ -133,7 +133,7 @@ class StringTypeTest extends TestCase implements TypeTestInterface
             $sut->setValue(123, ['lang' => 'en']);
             $this->fail('Exception not thrown.');
         } catch (TypeError $e) {
-            $this->assertEquals('Invalid value passed to STRING data type.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to STRING data type - String required.', $e->getMessage());
         }
     }
 }

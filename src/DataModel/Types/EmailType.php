@@ -8,21 +8,21 @@ use App\Exception\ErrorMessages;
 use App\Exception\TypeError;
 use App\Exception\WanderlusterException;
 
-class IntegerType implements DataTypeInterface
+class EmailType implements DataTypeInterface
 {
     /**
-     * @var int|null
+     * @var string|null
      */
     protected $val;
 
     /**
-     * Integer constructor.
+     * EmailType constructor.
      *
-     * @param int|null $val
+     * @param string|null $val
      */
-    public function __construct($val = null, array $options = [])
+    public function __construct($val = null)
     {
-        $this->setValue($val, $options);
+        $this->setValue($val);
     }
 
     /**
@@ -30,7 +30,7 @@ class IntegerType implements DataTypeInterface
      */
     public function getTypeId(): string
     {
-        return 'INT';
+        return 'EMAIL';
     }
 
     /**
@@ -72,8 +72,14 @@ class IntegerType implements DataTypeInterface
      */
     public function setValue($val, array $options = []): DataTypeInterface
     {
-        if (!is_int($val) && !is_null($val)) {
-            throw new TypeError(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'Integer required'));
+        if (!is_string($val) && !is_null($val)) {
+            throw new TypeError(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'String required'));
+        }
+
+        if (is_string($val)) {
+            if (!filter_var($val, FILTER_VALIDATE_EMAIL)) {
+                throw new TypeError(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'Invalid Email'));
+            }
         }
 
         $this->val = $val;

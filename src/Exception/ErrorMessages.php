@@ -18,7 +18,7 @@ class ErrorMessages
     const INVALID_JSON = 'Invalid JSON passed as argument.';
     const OPTION_REQUIRED = 'Configuration option missing - %s';
 
-    const INVALID_DATATYPE_VALUE = 'Invalid value passed to %s data type.';
+    const INVALID_DATATYPE_VALUE = 'Invalid value passed to %s data type - %s.';
     const ERROR_HYDRATING_DATATYPE = 'Error hydrating %s data type - %s';
 
     const REQUEST_MISSING_PARAMETER = 'Missing parameter: %s';

@@ -81,7 +81,7 @@ class DateTimeType implements DataTypeInterface
             try {
                 $val = new DateTimeImmutable($val);
             } catch (Exception $e) {
-                throw new TypeError(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId()));
+                throw new TypeError(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'Invalid date string'));
             }
         }
 
@@ -90,7 +90,7 @@ class DateTimeType implements DataTypeInterface
         }
 
         if (!($val instanceof DateTimeImmutable) && !is_null($val)) {
-            throw new TypeError(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId()));
+            throw new TypeError(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'DateTime required'));
         }
 
         $this->val = $val;

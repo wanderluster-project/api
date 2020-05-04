@@ -39,7 +39,7 @@ class NumericTypeTest extends TestCase implements TypeTestInterface
 
     public function testTranslations(): void
     {
-        // boolean doesn't support translations
+        // numeric doesn't support translations
         $this->assertFalse(false);
     }
 
@@ -94,7 +94,7 @@ class NumericTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['type' => 'NUM', 'val' => 'I AM INVALID']);
             $this->fail('Exception not thrown.');
         } catch (TypeError $e) {
-            $this->assertEquals('Invalid value passed to NUM data type.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to NUM data type - Numeric required.', $e->getMessage());
         }
     }
 
@@ -136,7 +136,7 @@ class NumericTypeTest extends TestCase implements TypeTestInterface
             $sut->setValue('I am a string');
             $this->fail('Exception not thrown.');
         } catch (TypeError $e) {
-            $this->assertEquals('Invalid value passed to NUM data type.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to NUM data type - Numeric required.', $e->getMessage());
         }
     }
 }

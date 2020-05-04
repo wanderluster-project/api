@@ -93,7 +93,7 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['type' => 'BOOL', 'val' => 'I am invalid']);
             $this->fail('Exception not thrown.');
         } catch (TypeError $e) {
-            $this->assertEquals('Invalid value passed to BOOL data type.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to BOOL data type - Boolean required.', $e->getMessage());
         }
     }
 
@@ -135,7 +135,7 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
             $sut->setValue('I am a string');
             $this->fail('Exception not thrown.');
         } catch (TypeError $e) {
-            $this->assertEquals('Invalid value passed to BOOL data type.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to BOOL data type - Boolean required.', $e->getMessage());
         }
     }
 }

@@ -47,7 +47,7 @@ class DateTimeTypeTest extends TestCase implements TypeTestInterface
 
     public function testTranslations(): void
     {
-        // boolean doesn't support translations
+        // datetime doesn't support translations
         $this->assertFalse(false);
     }
 
@@ -103,7 +103,7 @@ class DateTimeTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['type' => 'DATE_TIME', 'val' => 'I am invalid']);
             $this->fail('Exception not thrown.');
         } catch (TypeError $e) {
-            $this->assertEquals('Invalid value passed to DATE_TIME data type.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to DATE_TIME data type - Invalid date string.', $e->getMessage());
         }
     }
 
@@ -144,7 +144,7 @@ class DateTimeTypeTest extends TestCase implements TypeTestInterface
             $sut->setValue('I am a string');
             $this->fail('Exception not thrown.');
         } catch (TypeError $e) {
-            $this->assertEquals('Invalid value passed to DATE_TIME data type.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to DATE_TIME data type - Invalid date string.', $e->getMessage());
         }
     }
 }

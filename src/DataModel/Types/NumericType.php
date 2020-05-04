@@ -75,7 +75,7 @@ class NumericType implements DataTypeInterface
     public function setValue($val, array $options = []): DataTypeInterface
     {
         if (!is_int($val) && !is_float($val) && !is_null($val)) {
-            throw new TypeError(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId()));
+            throw new TypeError(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'Numeric required'));
         }
 
         $this->val = $val;

@@ -34,7 +34,7 @@ class IntegerTypeTest extends TestCase implements TypeTestInterface
 
     public function testTranslations(): void
     {
-        // boolean doesn't support translations
+        // integer doesn't support translations
         $this->assertFalse(false);
     }
 
@@ -89,7 +89,7 @@ class IntegerTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['type' => 'INT', 'val' => 3.14]);
             $this->fail('Exception not thrown.');
         } catch (TypeError $e) {
-            $this->assertEquals('Invalid value passed to INT data type.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to INT data type - Integer required.', $e->getMessage());
         }
     }
 
@@ -128,7 +128,7 @@ class IntegerTypeTest extends TestCase implements TypeTestInterface
             $sut->setValue('I am a string');
             $this->fail('Exception not thrown.');
         } catch (TypeError $e) {
-            $this->assertEquals('Invalid value passed to INT data type.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to INT data type - Integer required.', $e->getMessage());
         }
     }
 }

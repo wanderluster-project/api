@@ -84,7 +84,7 @@ class StringType implements DataTypeInterface
     public function setValue($val, array $options = []): DataTypeInterface
     {
         if (!is_string($val) && !is_null($val)) {
-            throw new TypeError(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId()));
+            throw new TypeError(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'String required'));
         }
         $lang = isset($options['lang']) ? $options['lang'] : null;
         if (!$lang) {

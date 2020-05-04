@@ -73,7 +73,7 @@ class BooleanType implements DataTypeInterface
     public function setValue($val, array $options = []): DataTypeInterface
     {
         if (!is_bool($val) && !is_null($val)) {
-            throw new TypeError(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId()));
+            throw new TypeError(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'Boolean required'));
         }
 
         $this->val = $val;
