@@ -96,7 +96,7 @@ class JwtTokenUtilities
      */
     protected function getPublicKey()
     {
-        $contents = file_get_contents(__DIR__.'/../../config/certs/jwt.cert');
+        $contents = file_get_contents(__DIR__.'/../../config/certs/jwt.crt');
 
         if (!$contents) {
             throw new WanderlusterException(ErrorMessages::JWT_KEYS_MISSING);
