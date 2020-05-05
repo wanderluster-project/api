@@ -25,4 +25,6 @@ interface TypeTestInterface
     public function testSetGetNull(): void;
 
     public function testInvalidSetValue(): void;
+
+    public function testGetLanguages(): void;
 }

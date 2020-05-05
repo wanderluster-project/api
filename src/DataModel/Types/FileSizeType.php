@@ -158,6 +158,7 @@ class FileSizeType implements DataTypeInterface
         $num = $matches[1];
         $unit = $matches[2];
 
+        $bytes = 0;
         if ('GB' === $unit) {
             $bytes = self::GB_BYTES * $num;
         } elseif ('MB' === $unit) {
@@ -171,5 +172,13 @@ class FileSizeType implements DataTypeInterface
         }
 
         return (int) floor($bytes);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLanguages(): array
+    {
+        return ['*'];
     }
 }

@@ -131,4 +131,10 @@ class UrlTypeTest extends TestCase implements TypeTestInterface
             $this->assertEquals('Invalid value passed to URL data type - Invalid URL.', $e->getMessage());
         }
     }
+
+    public function testGetLanguages(): void
+    {
+        $sut = new UrlType();
+        $this->assertEquals(['*'], $sut->getLanguages());
+    }
 }

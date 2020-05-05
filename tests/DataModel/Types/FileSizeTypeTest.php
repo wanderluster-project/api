@@ -189,4 +189,10 @@ class FileSizeTypeTest extends TestCase implements TypeTestInterface
             $this->assertEquals('Invalid value passed to FILE_SIZE data type - Invalid file size string.', $e->getMessage());
         }
     }
+
+    public function testGetLanguages(): void
+    {
+        $sut = new FileSizeType();
+        $this->assertEquals(['*'], $sut->getLanguages());
+    }
 }

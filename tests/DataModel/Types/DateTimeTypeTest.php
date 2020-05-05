@@ -147,4 +147,10 @@ class DateTimeTypeTest extends TestCase implements TypeTestInterface
             $this->assertEquals('Invalid value passed to DATE_TIME data type - Invalid date string.', $e->getMessage());
         }
     }
+
+    public function testGetLanguages(): void
+    {
+        $sut = new DateTimeType();
+        $this->assertEquals(['*'], $sut->getLanguages());
+    }
 }

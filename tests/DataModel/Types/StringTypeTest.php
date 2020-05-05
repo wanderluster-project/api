@@ -136,4 +136,10 @@ class StringTypeTest extends TestCase implements TypeTestInterface
             $this->assertEquals('Invalid value passed to STRING data type - String required.', $e->getMessage());
         }
     }
+
+    public function testGetLanguages(): void
+    {
+        $sut = new StringType(['en' => 'The quick brown fox jumps over the lazy dog', 'es' => 'El rápido zorro marrón salta sobre el perro perezoso']);
+        $this->assertEquals(['en', 'es'], $sut->getLanguages());
+    }
 }

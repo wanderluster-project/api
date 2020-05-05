@@ -98,4 +98,12 @@ class NumericType implements DataTypeInterface
     {
         return is_null($this->getValue($options));
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLanguages(): array
+    {
+        return ['*'];
+    }
 }

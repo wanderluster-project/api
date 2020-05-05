@@ -138,4 +138,10 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
             $this->assertEquals('Invalid value passed to BOOL data type - Boolean required.', $e->getMessage());
         }
     }
+
+    public function testGetLanguages(): void
+    {
+        $sut = new BooleanType();
+        $this->assertEquals(['*'], $sut->getLanguages());
+    }
 }

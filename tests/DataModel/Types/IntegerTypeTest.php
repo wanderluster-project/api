@@ -131,4 +131,10 @@ class IntegerTypeTest extends TestCase implements TypeTestInterface
             $this->assertEquals('Invalid value passed to INT data type - Integer required.', $e->getMessage());
         }
     }
+
+    public function testGetLanguages(): void
+    {
+        $sut = new IntegerType();
+        $this->assertEquals(['*'], $sut->getLanguages());
+    }
 }

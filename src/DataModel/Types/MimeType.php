@@ -8,21 +8,23 @@ use App\Exception\ErrorMessages;
 use App\Exception\TypeError;
 use App\Exception\WanderlusterException;
 
-class UrlType implements DataTypeInterface
+class MimeType implements DataTypeInterface
 {
+    const PATTERN = '/^[-\w]+\/[-\w\.\+]+$/';
+
     /**
      * @var string|null
      */
     protected $val;
 
     /**
-     * UrlType constructor.
+     * MimeType constructor.
      *
      * @param string|null $val
      */
-    public function __construct($val = null)
+    public function __construct($val = null, array $options = [])
     {
-        $this->setValue($val);
+        $this->setValue($val, $options);
     }
 
     /**
@@ -30,7 +32,7 @@ class UrlType implements DataTypeInterface
      */
     public function getTypeId(): string
     {
-        return 'URL';
+        return 'MIME_TYPE';
     }
 
     /**
@@ -77,8 +79,8 @@ class UrlType implements DataTypeInterface
         }
 
         if (is_string($val)) {
-            if (!filter_var($val, FILTER_VALIDATE_URL)) {
-                throw new TypeError(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'Invalid URL'));
+            if (!preg_match(self::PATTERN, $val)) {
+                throw new TypeError(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'Invalid MimeType'));
             }
         }
 

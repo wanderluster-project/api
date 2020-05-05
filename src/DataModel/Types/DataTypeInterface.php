@@ -54,4 +54,9 @@ interface DataTypeInterface
      * @throws WanderlusterException
      */
     public function isNull(array $options = []): bool;
+
+    /**
+     * Returns array of language codes represented by the value of this data type.
+     */
+    public function getLanguages(): array;
 }

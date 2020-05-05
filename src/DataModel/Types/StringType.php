@@ -116,4 +116,15 @@ class StringType implements DataTypeInterface
     {
         return is_null($this->getValue($options));
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLanguages(): array
+    {
+        $langauges = array_keys($this->trans);
+        sort($langauges);
+
+        return $langauges;
+    }
 }

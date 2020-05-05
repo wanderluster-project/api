@@ -139,4 +139,10 @@ class NumericTypeTest extends TestCase implements TypeTestInterface
             $this->assertEquals('Invalid value passed to NUM data type - Numeric required.', $e->getMessage());
         }
     }
+
+    public function testGetLanguages(): void
+    {
+        $sut = new NumericType();
+        $this->assertEquals(['*'], $sut->getLanguages());
+    }
 }

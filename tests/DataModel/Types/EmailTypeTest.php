@@ -131,4 +131,10 @@ class EmailTypeTest extends TestCase implements TypeTestInterface
             $this->assertEquals('Invalid value passed to EMAIL data type - Invalid Email.', $e->getMessage());
         }
     }
+
+    public function testGetLanguages(): void
+    {
+        $sut = new EmailType();
+        $this->assertEquals(['*'], $sut->getLanguages());
+    }
 }

@@ -56,13 +56,16 @@ Lets recreate the information for Mount Rainier using our PHP classes.
     $cascades = $em->find(EntityTypes::MOUNTAIN_RANGE,'cascades');
     $stratovolcano = $em->find(EntityTypes::MOUNTAIN_TYPE,'stratovolcano');
     
-    $mtRainier = new Entity(EntityTypes::MOUNTAIN);
+    // Create new entity
+    $mtRainier = $em->create(EntityTypes::MOUNTAIN);
     $mtRainier->set('name', new Text('Mount Rainier',LanguageCodes::ENGLISH));
-    $mtRainier->set('elevation', new Distance(14411,'ft'))
-    $mtRainier->set('wikipedia_url', new Url('https://en.wikipedia.org/wiki/Mount_Rainier',LanguageCodes::ENGLISH))
-    $mtRainier->set('mountain_range',$cascades)
-    $mtRainier->set('mountain_type',$stratovolcano)
-    $em->commit($mtRainer);
+    $mtRainier->set('elevation', new Distance(14411,'ft'));
+    $mtRainier->set('wikipedia_url', new Url('https://en.wikipedia.org/wiki/Mount_Rainier',LanguageCodes::ENGLISH));
+    $mtRainier->set('mountain_range',$cascades);
+    $mtRainier->set('mountain_type',$stratovolcano);
+    
+    // Commit changes
+    $em->commit();
 
     
 
