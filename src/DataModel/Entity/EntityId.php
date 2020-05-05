@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace App\DataModel\Entity;
 
-use App\DataModel\StringInterface;
 use App\Exception\ErrorMessages;
 use App\Exception\InvalidEntityIdFormatException;
 use App\Exception\WanderlusterException;
 
-class EntityId implements StringInterface
+class EntityId
 {
     /**
      * UUID Pattern with 8-4-4-4-12 hexdigits.

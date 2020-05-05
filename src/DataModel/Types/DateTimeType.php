@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\DataModel\Types;
 
+use App\DataModel\Serializer\SerializableInterface;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 use DateTime;
 use DateTimeImmutable;
 use Exception;
 
-class DateTimeType implements DataTypeInterface
+class DateTimeType implements TypeInterface
 {
     /**
      * @var DateTimeImmutable|null
@@ -51,7 +52,7 @@ class DateTimeType implements DataTypeInterface
     /**
      * {@inheritdoc}
      */
-    public function fromArray(array $data): DataTypeInterface
+    public function fromArray(array $data): SerializableInterface
     {
         $fields = ['type', 'val'];
         foreach ($fields as $field) {
@@ -74,7 +75,7 @@ class DateTimeType implements DataTypeInterface
     /**
      * {@inheritdoc}
      */
-    public function setValue($val, array $options = []): DataTypeInterface
+    public function setValue($val, array $options = []): TypeInterface
     {
         if (is_string($val)) {
             try {

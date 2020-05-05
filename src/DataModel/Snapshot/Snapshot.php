@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\DataModel\Snapshot;
 
+use App\DataModel\Serializer\SerializableInterface;
 use App\Security\User;
 use DateTimeImmutable;
 
-class Snapshot
+class Snapshot implements SerializableInterface
 {
     /**
      * @var string|null
@@ -180,5 +181,20 @@ class Snapshot
         ksort($return);
 
         return $return;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'type' => 'SNAPSHOT',
+            'snapshot_id' => (string) $this->snapshotId,
+            'data' => $this->all(),
+        ];
+    }
+
+    public function fromArray(array $data): SerializableInterface
+    {
+        // TODO: Implement fromArray() method.
+        return $this;
     }
 }

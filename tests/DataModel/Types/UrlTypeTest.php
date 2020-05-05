@@ -149,7 +149,6 @@ class UrlTypeTest extends TestCase implements TypeTestInterface
         }
     }
 
-
     public function testGetLanguages(): void
     {
         $sut = new UrlType();

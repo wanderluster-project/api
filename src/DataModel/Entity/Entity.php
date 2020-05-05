@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\DataModel\Entity;
 
+use App\DataModel\Serializer\SerializableInterface;
 use App\DataModel\Snapshot\Snapshot;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 
-class Entity
+class Entity implements SerializableInterface
 {
     /**
      * @var EntityId|null
@@ -156,6 +157,27 @@ class Entity
     public function getDeletedKeys($lang): array
     {
         return $this->getSnapshot($lang)->getDeletedKeys();
+    }
+
+    public function toArray(): array
+    {
+        $snapshots = [];
+        foreach ($this->snapshots as $key => $value) {
+            $snapshots[$key] = $value->toArray();
+        }
+
+        return [
+            'type' => 'ENTITY',
+            'entity_id' => (string) $this->getEntityId(),
+            'entity_type' => (string) $this->getEntityType(),
+            'snapshots' => $snapshots,
+        ];
+    }
+
+    public function fromArray(array $data): SerializableInterface
+    {
+        // TODO: Implement fromArray() method.
+        return $this;
     }
 
     /**

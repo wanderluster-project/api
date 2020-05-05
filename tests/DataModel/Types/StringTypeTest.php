@@ -178,7 +178,6 @@ class StringTypeTest extends TestCase implements TypeTestInterface
         }
     }
 
-
     public function testGetLanguages(): void
     {
         $sut = new StringType(['en' => 'The quick brown fox jumps over the lazy dog', 'es' => 'El rápido zorro marrón salta sobre el perro perezoso']);

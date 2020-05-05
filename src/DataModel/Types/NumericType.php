@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\DataModel\Types;
 
+use App\DataModel\Serializer\SerializableInterface;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 
-class NumericType implements DataTypeInterface
+class NumericType implements TypeInterface
 {
     /**
      * @var int|float|null
@@ -48,7 +49,7 @@ class NumericType implements DataTypeInterface
     /**
      * {@inheritdoc}
      */
-    public function fromArray(array $data): DataTypeInterface
+    public function fromArray(array $data): SerializableInterface
     {
         $fields = ['type', 'val'];
         foreach ($fields as $field) {
@@ -71,7 +72,7 @@ class NumericType implements DataTypeInterface
     /**
      * {@inheritdoc}
      */
-    public function setValue($val, array $options = []): DataTypeInterface
+    public function setValue($val, array $options = []): TypeInterface
     {
         if (!is_int($val) && !is_float($val) && !is_null($val)) {
             throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'Numeric required'));

@@ -4,30 +4,15 @@ declare(strict_types=1);
 
 namespace App\DataModel\Types;
 
+use App\DataModel\Serializer\SerializableInterface;
 use App\Exception\WanderlusterException;
 
-interface DataTypeInterface
+interface TypeInterface extends SerializableInterface
 {
     /**
      * Returns the identifier for this data type.
      */
     public function getTypeId(): string;
-
-    /**
-     * Converts data type to array to be serialized.
-     *
-     * @throws WanderlusterException
-     */
-    public function toArray(): array;
-
-    /**
-     * Hydrates values from array.
-     *
-     * @throws WanderlusterException
-     *
-     * @return DataTypeInterface
-     */
-    public function fromArray(array $data): self;
 
     /**
      * Set the val for the DataType.

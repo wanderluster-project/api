@@ -43,7 +43,6 @@ class IntegerTypeTest extends TestCase implements TypeTestInterface
         $this->assertFalse(false);
     }
 
-
     public function testToArray(): void
     {
         // null
@@ -149,7 +148,6 @@ class IntegerTypeTest extends TestCase implements TypeTestInterface
             $this->assertEquals('Invalid value passed to INT data type - Integer required.', $e->getMessage());
         }
     }
-
 
     public function testGetLanguages(): void
     {

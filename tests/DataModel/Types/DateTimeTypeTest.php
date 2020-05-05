@@ -174,7 +174,6 @@ class DateTimeTypeTest extends TestCase implements TypeTestInterface
         }
     }
 
-
     public function testGetLanguages(): void
     {
         $sut = new DateTimeType();

@@ -156,7 +156,6 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
         }
     }
 
-
     public function testGetLanguages(): void
     {
         $sut = new BooleanType();

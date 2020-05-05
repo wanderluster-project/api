@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\DataModel\Types;
 
+use App\DataModel\Serializer\SerializableInterface;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 
-class BooleanType implements DataTypeInterface
+class BooleanType implements TypeInterface
 {
     /**
      * @var bool|null
@@ -46,7 +47,7 @@ class BooleanType implements DataTypeInterface
     /**
      * {@inheritdoc}
      */
-    public function fromArray(array $data): DataTypeInterface
+    public function fromArray(array $data): SerializableInterface
     {
         $fields = ['type', 'val'];
         foreach ($fields as $field) {
@@ -69,7 +70,7 @@ class BooleanType implements DataTypeInterface
     /**
      * {@inheritdoc}
      */
-    public function setValue($val, array $options = []): DataTypeInterface
+    public function setValue($val, array $options = []): TypeInterface
     {
         if (!is_bool($val) && !is_null($val)) {
             throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'Boolean required'));

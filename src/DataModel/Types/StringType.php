@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\DataModel\Types;
 
+use App\DataModel\Serializer\SerializableInterface;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 
-class StringType implements DataTypeInterface
+class StringType implements TypeInterface
 {
     /**
      * Associative array identifying languageCode => translation.
@@ -50,7 +51,7 @@ class StringType implements DataTypeInterface
     /**
      * {@inheritdoc}
      */
-    public function fromArray(array $data): DataTypeInterface
+    public function fromArray(array $data): SerializableInterface
     {
         $fields = ['type', 'trans'];
         foreach ($fields as $field) {
@@ -80,7 +81,7 @@ class StringType implements DataTypeInterface
     /**
      * {@inheritdoc}
      */
-    public function setValue($val, array $options = []): DataTypeInterface
+    public function setValue($val, array $options = []): TypeInterface
     {
         if (!is_string($val) && !is_null($val)) {
             throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'String required'));

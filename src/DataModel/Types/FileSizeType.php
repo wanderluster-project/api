@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\DataModel\Types;
 
+use App\DataModel\Serializer\SerializableInterface;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 use Exception;
 
-class FileSizeType implements DataTypeInterface
+class FileSizeType implements TypeInterface
 {
     const GB_BYTES = 1073741824;
     const MB_BYTES = 1048576;
@@ -51,7 +52,7 @@ class FileSizeType implements DataTypeInterface
     /**
      * {@inheritdoc}
      */
-    public function fromArray(array $data): DataTypeInterface
+    public function fromArray(array $data): SerializableInterface
     {
         $fields = ['type', 'val'];
         foreach ($fields as $field) {
@@ -74,7 +75,7 @@ class FileSizeType implements DataTypeInterface
     /**
      * {@inheritdoc}
      */
-    public function setValue($val, array $options = []): DataTypeInterface
+    public function setValue($val, array $options = []): TypeInterface
     {
         if (is_string($val)) {
             try {

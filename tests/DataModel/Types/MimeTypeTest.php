@@ -44,7 +44,6 @@ class MimeTypeTest extends TestCase implements TypeTestInterface
         $this->assertFalse(false);
     }
 
-
     public function testToArray(): void
     {
         // null
@@ -151,7 +150,6 @@ class MimeTypeTest extends TestCase implements TypeTestInterface
             $this->assertEquals('Invalid value passed to MIME_TYPE data type - Invalid MimeType.', $e->getMessage());
         }
     }
-
 
     public function testGetLanguages(): void
     {

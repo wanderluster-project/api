@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace App\DataModel\Snapshot;
 
 use App\DataModel\Entity\EntityId;
-use App\DataModel\StringInterface;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 
-class SnapshotId implements StringInterface
+class SnapshotId
 {
     const PATTERN = '/^(.*)\.([a-z]{2})-([0-9]+)$/';
 

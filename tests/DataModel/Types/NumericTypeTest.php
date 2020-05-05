@@ -157,7 +157,6 @@ class NumericTypeTest extends TestCase implements TypeTestInterface
         }
     }
 
-
     public function testGetLanguages(): void
     {
         $sut = new NumericType();
