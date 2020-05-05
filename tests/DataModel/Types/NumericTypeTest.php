@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\DataModel\Types;
 
 use App\DataModel\Types\NumericType;
-use App\Exception\TypeError;
 use App\Exception\WanderlusterException;
 use PHPUnit\Framework\TestCase;
 
@@ -38,6 +37,12 @@ class NumericTypeTest extends TestCase implements TypeTestInterface
     }
 
     public function testTranslations(): void
+    {
+        // numeric doesn't support translations
+        $this->assertFalse(false);
+    }
+
+    public function testTranslationsException(): void
     {
         // numeric doesn't support translations
         $this->assertFalse(false);
@@ -76,7 +81,7 @@ class NumericTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['val' => 140]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Error hydrating NUM data type - Missing Field: type', $e->getMessage());
+            $this->assertEquals('Error hydrating NUM data type - Missing Field: type.', $e->getMessage());
         }
 
         // missing value
@@ -85,7 +90,7 @@ class NumericTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['type' => 'NUM']);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Error hydrating NUM data type - Missing Field: val', $e->getMessage());
+            $this->assertEquals('Error hydrating NUM data type - Missing Field: val.', $e->getMessage());
         }
 
         // invalid value
@@ -93,8 +98,17 @@ class NumericTypeTest extends TestCase implements TypeTestInterface
         try {
             $sut->fromArray(['type' => 'NUM', 'val' => 'I AM INVALID']);
             $this->fail('Exception not thrown.');
-        } catch (TypeError $e) {
+        } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to NUM data type - Numeric required.', $e->getMessage());
+        }
+
+        // invalid TYPE
+        $sut = new NumericType();
+        try {
+            $sut->fromArray(['type' => 'FOO', 'val' => 3.14]);
+            $this->fail('Exception not thrown.');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Error hydrating NUM data type - Invalid Type: FOO.', $e->getMessage());
         }
     }
 
@@ -124,21 +138,25 @@ class NumericTypeTest extends TestCase implements TypeTestInterface
     public function testInvalidSetValue(): void
     {
         try {
-            // @phpstan-ignore-next-line
-            $sut = new NumericType('I am a string');
-            $this->fail('Exception not thrown');
-        } catch (TypeError $e) {
-            $this->assertInstanceOf(TypeError::class, $e);
-        }
-
-        try {
             $sut = new NumericType();
             $sut->setValue('I am a string');
             $this->fail('Exception not thrown.');
-        } catch (TypeError $e) {
+        } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to NUM data type - Numeric required.', $e->getMessage());
         }
     }
+
+    public function testInvalidConstructorValue(): void
+    {
+        try {
+            // @phpstan-ignore-next-line
+            $sut = new NumericType('I am a string');
+            $this->fail('Exception not thrown');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Invalid value passed to NUM data type - Numeric required.', $e->getMessage());
+        }
+    }
+
 
     public function testGetLanguages(): void
     {

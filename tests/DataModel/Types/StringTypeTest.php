@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\DataModel\Types;
 
 use App\DataModel\Types\StringType;
-use App\Exception\TypeError;
 use App\Exception\WanderlusterException;
 use PHPUnit\Framework\TestCase;
 
@@ -37,6 +36,36 @@ class StringTypeTest extends TestCase implements TypeTestInterface
         $sut = new StringType(['en' => 'The quick brown fox jumps over the lazy dog', 'es' => 'El rápido zorro marrón salta sobre el perro perezoso']);
         $this->assertEquals('The quick brown fox jumps over the lazy dog', $sut->getValue(['lang' => 'en']));
         $this->assertEquals('El rápido zorro marrón salta sobre el perro perezoso', $sut->getValue(['lang' => 'es']));
+    }
+
+    public function testTranslationsException(): void
+    {
+        // setting without a lang parameter
+        try {
+            $sut = new StringType();
+            $sut->setValue('The quick brown fox jumps over the lazy dog');
+            $this->fail('Exception not thrown.');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Configuration option missing - lang.', $e->getMessage());
+        }
+
+        try {
+            $sut = new StringType();
+            $sut->setValue('The quick brown fox jumps over the lazy dog', ['lang' => '']);
+            $this->fail('Exception not thrown.');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Configuration option missing - lang.', $e->getMessage());
+        }
+
+        // getting without a lang parameter
+        try {
+            $sut = new StringType();
+            $sut->setValue('The quick brown fox jumps over the lazy dog', ['lang' => 'en']);
+            $sut->getValue();
+            $this->fail('Exception not thrown.');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Configuration option missing - lang.', $e->getMessage());
+        }
     }
 
     public function testToArray(): void
@@ -76,7 +105,7 @@ class StringTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray([]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Error hydrating STRING data type - Missing Field: type', $e->getMessage());
+            $this->assertEquals('Error hydrating STRING data type - Missing Field: type.', $e->getMessage());
         }
 
         // missing value
@@ -85,7 +114,7 @@ class StringTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['type' => 'STRING']);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Error hydrating STRING data type - Missing Field: trans', $e->getMessage());
+            $this->assertEquals('Error hydrating STRING data type - Missing Field: trans.', $e->getMessage());
         }
 
         // invalid value
@@ -93,8 +122,17 @@ class StringTypeTest extends TestCase implements TypeTestInterface
         try {
             $sut->fromArray(['type' => 'STRING', 'trans' => 'I AM INVALID']);
             $this->fail('Exception not thrown.');
-        } catch (TypeError $e) {
+        } catch (WanderlusterException $e) {
             $this->assertEquals('Error hydrating STRING data type - trans should be an array.', $e->getMessage());
+        }
+
+        // invalid value
+        $sut = new StringType();
+        try {
+            $sut->fromArray(['type' => 'FOO', 'trans' => ['en' => 'The quick brown fox jumps over the lazy dog']]);
+            $this->fail('Exception not thrown.');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Error hydrating STRING data type - Invalid Type: FOO.', $e->getMessage());
         }
     }
 
@@ -121,21 +159,25 @@ class StringTypeTest extends TestCase implements TypeTestInterface
     public function testInvalidSetValue(): void
     {
         try {
-            // @phpstan-ignore-next-line
-            $sut = new StringType(['en' => 123]);
-            $this->fail('Exception not thrown');
-        } catch (TypeError $e) {
-            $this->assertInstanceOf(TypeError::class, $e);
-        }
-
-        try {
             $sut = new StringType();
             $sut->setValue(123, ['lang' => 'en']);
             $this->fail('Exception not thrown.');
-        } catch (TypeError $e) {
+        } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to STRING data type - String required.', $e->getMessage());
         }
     }
+
+    public function testInvalidConstructorValue(): void
+    {
+        try {
+            // @phpstan-ignore-next-line
+            $sut = new StringType(['en' => 123]);
+            $this->fail('Exception not thrown');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Invalid value passed to STRING data type - String required.', $e->getMessage());
+        }
+    }
+
 
     public function testGetLanguages(): void
     {

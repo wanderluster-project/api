@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\DataModel\Types;
 
 use App\Exception\ErrorMessages;
-use App\Exception\TypeError;
 use App\Exception\WanderlusterException;
 
 class BooleanType implements DataTypeInterface
@@ -73,7 +72,7 @@ class BooleanType implements DataTypeInterface
     public function setValue($val, array $options = []): DataTypeInterface
     {
         if (!is_bool($val) && !is_null($val)) {
-            throw new TypeError(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'Boolean required'));
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'Boolean required'));
         }
 
         $this->val = $val;

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\DataModel\Types;
 
-use App\Exception\TypeError;
 use App\Exception\WanderlusterException;
 
 interface DataTypeInterface
@@ -35,7 +34,7 @@ interface DataTypeInterface
      *
      * @param mixed $val
      *
-     * @throws TypeError
+     * @throws WanderlusterException
      */
     public function setValue($val, array $options = []): self;
 

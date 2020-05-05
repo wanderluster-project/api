@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\DataModel\Types;
 
 use App\Exception\ErrorMessages;
-use App\Exception\TypeError;
 use App\Exception\WanderlusterException;
 use DateTime;
 use DateTimeImmutable;
@@ -81,7 +80,7 @@ class DateTimeType implements DataTypeInterface
             try {
                 $val = new DateTimeImmutable($val);
             } catch (Exception $e) {
-                throw new TypeError(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'Invalid date string'));
+                throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'Invalid date string'));
             }
         }
 
@@ -90,7 +89,7 @@ class DateTimeType implements DataTypeInterface
         }
 
         if (!($val instanceof DateTimeImmutable) && !is_null($val)) {
-            throw new TypeError(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'DateTime required'));
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'DateTime required'));
         }
 
         $this->val = $val;

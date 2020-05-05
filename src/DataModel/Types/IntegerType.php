@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\DataModel\Types;
 
 use App\Exception\ErrorMessages;
-use App\Exception\TypeError;
 use App\Exception\WanderlusterException;
 
 class IntegerType implements DataTypeInterface
@@ -73,7 +72,7 @@ class IntegerType implements DataTypeInterface
     public function setValue($val, array $options = []): DataTypeInterface
     {
         if (!is_int($val) && !is_null($val)) {
-            throw new TypeError(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'Integer required'));
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'Integer required'));
         }
 
         $this->val = $val;

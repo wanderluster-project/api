@@ -19,6 +19,10 @@ class SnapshotTest extends TestCase
         // passing along language
         $sut = new Snapshot(LanguageCodes::ENGLISH, []);
         $this->assertEquals(LanguageCodes::ENGLISH, $sut->getLanguage());
+
+        // passing along data
+        $sut = new Snapshot(LanguageCodes::ENGLISH, ['foo' => 'bar']);
+        $this->assertEquals(LanguageCodes::ENGLISH, $sut->getLanguage());
     }
 
     public function testSetGet(): void

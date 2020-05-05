@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\DataModel\Types;
 
 use App\DataModel\Types\EmailType;
-use App\Exception\TypeError;
 use App\Exception\WanderlusterException;
 use PHPUnit\Framework\TestCase;
 
@@ -39,6 +38,12 @@ class EmailTypeTest extends TestCase implements TypeTestInterface
         $this->assertFalse(false);
     }
 
+    public function testTranslationsException(): void
+    {
+        // email doesn't support translations
+        $this->assertFalse(false);
+    }
+
     public function testToArray(): void
     {
         $sut = new EmailType();
@@ -66,7 +71,7 @@ class EmailTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray([]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Error hydrating EMAIL data type - Missing Field: type', $e->getMessage());
+            $this->assertEquals('Error hydrating EMAIL data type - Missing Field: type.', $e->getMessage());
         }
 
         // missing value
@@ -75,7 +80,7 @@ class EmailTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['type' => 'EMAIL']);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Error hydrating EMAIL data type - Missing Field: val', $e->getMessage());
+            $this->assertEquals('Error hydrating EMAIL data type - Missing Field: val.', $e->getMessage());
         }
 
         // invalid value
@@ -83,7 +88,7 @@ class EmailTypeTest extends TestCase implements TypeTestInterface
         try {
             $sut->fromArray(['type' => 'EMAIL', 'val' => 3.14]);
             $this->fail('Exception not thrown.');
-        } catch (TypeError $e) {
+        } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to EMAIL data type - String required.', $e->getMessage());
         }
 
@@ -92,8 +97,17 @@ class EmailTypeTest extends TestCase implements TypeTestInterface
         try {
             $sut->fromArray(['type' => 'EMAIL', 'val' => 'simpkevin']);
             $this->fail('Exception not thrown.');
-        } catch (TypeError $e) {
+        } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to EMAIL data type - Invalid Email.', $e->getMessage());
+        }
+
+        // invalid type
+        $sut = new EmailType();
+        try {
+            $sut->fromArray(['type' => 'FOO', 'val' => 'simpkevin@gmail.com']);
+            $this->fail('Exception not thrown.');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Error hydrating EMAIL data type - Invalid Type: FOO.', $e->getMessage());
         }
     }
 
@@ -117,20 +131,24 @@ class EmailTypeTest extends TestCase implements TypeTestInterface
     public function testInvalidSetValue(): void
     {
         try {
-            $sut = new EmailType('I am a string');
-            $this->fail('Exception not thrown');
-        } catch (TypeError $e) {
-            $this->assertInstanceOf(TypeError::class, $e);
-        }
-
-        try {
             $sut = new EmailType();
             $sut->setValue('I am a string');
             $this->fail('Exception not thrown.');
-        } catch (TypeError $e) {
+        } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to EMAIL data type - Invalid Email.', $e->getMessage());
         }
     }
+
+    public function testInvalidConstructorValue(): void
+    {
+        try {
+            $sut = new EmailType('I am a string');
+            $this->fail('Exception not thrown');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Invalid value passed to EMAIL data type - Invalid Email.', $e->getMessage());
+        }
+    }
+
 
     public function testGetLanguages(): void
     {

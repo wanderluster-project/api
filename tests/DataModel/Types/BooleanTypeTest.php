@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\DataModel\Types;
 
 use App\DataModel\Types\BooleanType;
-use App\Exception\TypeError;
 use App\Exception\WanderlusterException;
 use PHPUnit\Framework\TestCase;
 
@@ -37,6 +36,12 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
     }
 
     public function testTranslations(): void
+    {
+        // boolean doesn't support translations
+        $this->assertFalse(false);
+    }
+
+    public function testTranslationsException(): void
     {
         // boolean doesn't support translations
         $this->assertFalse(false);
@@ -75,7 +80,7 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['val' => true]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Error hydrating BOOL data type - Missing Field: type', $e->getMessage());
+            $this->assertEquals('Error hydrating BOOL data type - Missing Field: type.', $e->getMessage());
         }
 
         // missing value
@@ -84,7 +89,7 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['type' => 'BOOL']);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Error hydrating BOOL data type - Missing Field: val', $e->getMessage());
+            $this->assertEquals('Error hydrating BOOL data type - Missing Field: val.', $e->getMessage());
         }
 
         // invalid value
@@ -92,8 +97,17 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
         try {
             $sut->fromArray(['type' => 'BOOL', 'val' => 'I am invalid']);
             $this->fail('Exception not thrown.');
-        } catch (TypeError $e) {
+        } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to BOOL data type - Boolean required.', $e->getMessage());
+        }
+
+        // invalid type
+        $sut = new BooleanType();
+        try {
+            $sut->fromArray(['type' => 'FOO', 'val' => true]);
+            $this->fail('Exception not thrown.');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Error hydrating BOOL data type - Invalid Type: FOO.', $e->getMessage());
         }
     }
 
@@ -123,21 +137,25 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
     public function testInvalidSetValue(): void
     {
         try {
-            // @phpstan-ignore-next-line
-            $sut = new BooleanType('I am a string');
-            $this->fail('Exception not thrown');
-        } catch (TypeError $e) {
-            $this->assertInstanceOf(TypeError::class, $e);
-        }
-
-        try {
             $sut = new BooleanType();
             $sut->setValue('I am a string');
             $this->fail('Exception not thrown.');
-        } catch (TypeError $e) {
+        } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to BOOL data type - Boolean required.', $e->getMessage());
         }
     }
+
+    public function testInvalidConstructorValue(): void
+    {
+        try {
+            // @phpstan-ignore-next-line
+            $sut = new BooleanType('I am a string');
+            $this->fail('Exception not thrown');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Invalid value passed to BOOL data type - Boolean required.', $e->getMessage());
+        }
+    }
+
 
     public function testGetLanguages(): void
     {

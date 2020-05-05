@@ -35,7 +35,7 @@ class EntityIdTest extends TestCase
             $this->fail('Exception not thrown');
         } catch (Exception $e) {
             $this->assertInstanceOf(WanderlusterException::class, $e);
-            $this->assertEquals('Invalid EntityID format - kevin', $e->getMessage());
+            $this->assertEquals('Invalid EntityID format - kevin.', $e->getMessage());
         }
 
         try {
@@ -43,7 +43,7 @@ class EntityIdTest extends TestCase
             $this->fail('Exception not thrown');
         } catch (Exception $e) {
             $this->assertInstanceOf(WanderlusterException::class, $e);
-            $this->assertEquals('Invalid EntityID format - 01-01-kevin', $e->getMessage());
+            $this->assertEquals('Invalid EntityID format - 01-01-kevin.', $e->getMessage());
         }
     }
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\DataModel\Types;
 
 use App\Exception\ErrorMessages;
-use App\Exception\TypeError;
 use App\Exception\WanderlusterException;
 
 class MimeType implements DataTypeInterface
@@ -75,12 +74,12 @@ class MimeType implements DataTypeInterface
     public function setValue($val, array $options = []): DataTypeInterface
     {
         if (!is_string($val) && !is_null($val)) {
-            throw new TypeError(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'String required'));
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'String required'));
         }
 
         if (is_string($val)) {
             if (!preg_match(self::PATTERN, $val)) {
-                throw new TypeError(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'Invalid MimeType'));
+                throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'Invalid MimeType'));
             }
         }
 

@@ -24,7 +24,7 @@ class SerializerTest extends FunctionalTest
             $this->fail('Exception not thrown');
         } catch (Exception $e) {
             $this->assertInstanceOf(WanderlusterException::class, $e);
-            $this->assertEquals('Error serializing - Invalid data type', $e->getMessage());
+            $this->assertEquals('Error serializing - Invalid data type.', $e->getMessage());
         }
 
         // INVALID CLASS PASSED TO SERIALIZE
@@ -33,7 +33,7 @@ class SerializerTest extends FunctionalTest
             $this->fail('Exception not thrown');
         } catch (Exception $e) {
             $this->assertInstanceOf(WanderlusterException::class, $e);
-            $this->assertEquals('Error serializing - Invalid class: stdClass', $e->getMessage());
+            $this->assertEquals('Error serializing - Invalid class: stdClass.', $e->getMessage());
         }
     }
 
@@ -45,7 +45,7 @@ class SerializerTest extends FunctionalTest
             $this->fail('Exception not thrown');
         } catch (Exception $e) {
             $this->assertInstanceOf(WanderlusterException::class, $e);
-            $this->assertEquals('Error deserializing - Invalid class: StdClass', $e->getMessage());
+            $this->assertEquals('Error deserializing - Invalid class: StdClass.', $e->getMessage());
         }
 
         // MISSING ID WHEN DESERIALIZING ENTITY
@@ -54,7 +54,7 @@ class SerializerTest extends FunctionalTest
             $this->fail('Exception not thrown');
         } catch (Exception $e) {
             $this->assertInstanceOf(WanderlusterException::class, $e);
-            $this->assertEquals('Error deserializing - Missing parameter: id', $e->getMessage());
+            $this->assertEquals('Error deserializing - Missing parameter: id.', $e->getMessage());
         }
 
         // MISSING ENTITY TYPE WHEN DESERIALIZING ENTITY
@@ -63,7 +63,7 @@ class SerializerTest extends FunctionalTest
             $this->fail('Exception not thrown');
         } catch (Exception $e) {
             $this->assertInstanceOf(WanderlusterException::class, $e);
-            $this->assertEquals('Error deserializing - Missing parameter: type', $e->getMessage());
+            $this->assertEquals('Error deserializing - Missing parameter: type.', $e->getMessage());
         }
 
         // MISSING DATA WHEN DESERIALIZING ENTITY
@@ -72,7 +72,7 @@ class SerializerTest extends FunctionalTest
             $this->fail('Exception not thrown');
         } catch (Exception $e) {
             $this->assertInstanceOf(WanderlusterException::class, $e);
-            $this->assertEquals('Error deserializing - Missing parameter: data', $e->getMessage());
+            $this->assertEquals('Error deserializing - Missing parameter: data.', $e->getMessage());
         }
     }
 

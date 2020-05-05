@@ -14,6 +14,8 @@ interface TypeTestInterface
 
     public function testTranslations(): void;
 
+    public function testTranslationsException(): void;
+
     public function testToArray(): void;
 
     public function testFromArray(): void;
@@ -25,6 +27,8 @@ interface TypeTestInterface
     public function testSetGetNull(): void;
 
     public function testInvalidSetValue(): void;
+
+    public function testInvalidConstructorValue(): void;
 
     public function testGetLanguages(): void;
 }

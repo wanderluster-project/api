@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\DataModel\Types;
 
 use App\DataModel\Types\FileSizeType;
-use App\Exception\TypeError;
 use App\Exception\WanderlusterException;
 use PHPUnit\Framework\TestCase;
 
@@ -34,6 +33,12 @@ class FileSizeTypeTest extends TestCase implements TypeTestInterface
     }
 
     public function testTranslations(): void
+    {
+        // file size doesn't support translations
+        $this->assertFalse(false);
+    }
+
+    public function testTranslationsException(): void
     {
         // file size doesn't support translations
         $this->assertFalse(false);
@@ -69,7 +74,7 @@ class FileSizeTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray([]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Error hydrating FILE_SIZE data type - Missing Field: type', $e->getMessage());
+            $this->assertEquals('Error hydrating FILE_SIZE data type - Missing Field: type.', $e->getMessage());
         }
 
         // missing value
@@ -78,7 +83,7 @@ class FileSizeTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['type' => 'FILE_SIZE']);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Error hydrating FILE_SIZE data type - Missing Field: val', $e->getMessage());
+            $this->assertEquals('Error hydrating FILE_SIZE data type - Missing Field: val.', $e->getMessage());
         }
 
         // invalid type
@@ -87,7 +92,7 @@ class FileSizeTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['type' => 'TEST', 'val' => 2000]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Error hydrating FILE_SIZE data type - Invalid Type: TEST', $e->getMessage());
+            $this->assertEquals('Error hydrating FILE_SIZE data type - Invalid Type: TEST.', $e->getMessage());
         }
 
         // invalid value
@@ -95,7 +100,7 @@ class FileSizeTypeTest extends TestCase implements TypeTestInterface
         try {
             $sut->fromArray(['type' => 'FILE_SIZE', 'val' => 'I AM INVALID']);
             $this->fail('Exception not thrown.');
-        } catch (TypeError $e) {
+        } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to FILE_SIZE data type - Invalid file size string.', $e->getMessage());
         }
 
@@ -104,7 +109,7 @@ class FileSizeTypeTest extends TestCase implements TypeTestInterface
         try {
             $sut->fromArray(['type' => 'FILE_SIZE', 'val' => false]);
             $this->fail('Exception not thrown.');
-        } catch (TypeError $e) {
+        } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to FILE_SIZE data type - Invalid file size.', $e->getMessage());
         }
     }
@@ -175,17 +180,20 @@ class FileSizeTypeTest extends TestCase implements TypeTestInterface
     public function testInvalidSetValue(): void
     {
         try {
-            $sut = new FileSizeType('I am a string');
-            $this->fail('Exception not thrown');
-        } catch (TypeError $e) {
-            $this->assertInstanceOf(TypeError::class, $e);
-        }
-
-        try {
             $sut = new FileSizeType();
             $sut->setValue('I am a string');
             $this->fail('Exception not thrown.');
-        } catch (TypeError $e) {
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Invalid value passed to FILE_SIZE data type - Invalid file size string.', $e->getMessage());
+        }
+    }
+
+    public function testInvalidConstructorValue(): void
+    {
+        try {
+            $sut = new FileSizeType('I am a string');
+            $this->fail('Exception not thrown');
+        } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to FILE_SIZE data type - Invalid file size string.', $e->getMessage());
         }
     }

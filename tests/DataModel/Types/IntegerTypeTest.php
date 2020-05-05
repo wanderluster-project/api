@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\DataModel\Types;
 
 use App\DataModel\Types\IntegerType;
-use App\Exception\TypeError;
 use App\Exception\WanderlusterException;
 use PHPUnit\Framework\TestCase;
 
@@ -37,6 +36,13 @@ class IntegerTypeTest extends TestCase implements TypeTestInterface
         // integer doesn't support translations
         $this->assertFalse(false);
     }
+
+    public function testTranslationsException(): void
+    {
+        // integer doesn't support translations
+        $this->assertFalse(false);
+    }
+
 
     public function testToArray(): void
     {
@@ -71,7 +77,7 @@ class IntegerTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['val' => 140]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Error hydrating INT data type - Missing Field: type', $e->getMessage());
+            $this->assertEquals('Error hydrating INT data type - Missing Field: type.', $e->getMessage());
         }
 
         // missing value
@@ -80,7 +86,7 @@ class IntegerTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['type' => 'INT']);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Error hydrating INT data type - Missing Field: val', $e->getMessage());
+            $this->assertEquals('Error hydrating INT data type - Missing Field: val.', $e->getMessage());
         }
 
         // invalid value
@@ -88,8 +94,17 @@ class IntegerTypeTest extends TestCase implements TypeTestInterface
         try {
             $sut->fromArray(['type' => 'INT', 'val' => 3.14]);
             $this->fail('Exception not thrown.');
-        } catch (TypeError $e) {
+        } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to INT data type - Integer required.', $e->getMessage());
+        }
+
+        // invalid TYPE
+        $sut = new IntegerType();
+        try {
+            $sut->fromArray(['type' => 'FOO', 'val' => 3]);
+            $this->fail('Exception not thrown.');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Error hydrating INT data type - Invalid Type: FOO.', $e->getMessage());
         }
     }
 
@@ -116,21 +131,25 @@ class IntegerTypeTest extends TestCase implements TypeTestInterface
     public function testInvalidSetValue(): void
     {
         try {
-            // @phpstan-ignore-next-line
-            $sut = new IntegerType('I am a string');
-            $this->fail('Exception not thrown');
-        } catch (TypeError $e) {
-            $this->assertInstanceOf(TypeError::class, $e);
-        }
-
-        try {
             $sut = new IntegerType();
             $sut->setValue('I am a string');
             $this->fail('Exception not thrown.');
-        } catch (TypeError $e) {
+        } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to INT data type - Integer required.', $e->getMessage());
         }
     }
+
+    public function testInvalidConstructorValue(): void
+    {
+        try {
+            // @phpstan-ignore-next-line
+            $sut = new IntegerType('I am a string');
+            $this->fail('Exception not thrown');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Invalid value passed to INT data type - Integer required.', $e->getMessage());
+        }
+    }
+
 
     public function testGetLanguages(): void
     {

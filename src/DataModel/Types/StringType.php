@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\DataModel\Types;
 
 use App\Exception\ErrorMessages;
-use App\Exception\TypeError;
 use App\Exception\WanderlusterException;
 
 class StringType implements DataTypeInterface
@@ -68,7 +67,7 @@ class StringType implements DataTypeInterface
         }
 
         if (!is_array($trans)) {
-            throw new TypeError(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'trans should be an array.'));
+            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'trans should be an array'));
         }
 
         foreach ($trans as $lang => $val) {
@@ -84,7 +83,7 @@ class StringType implements DataTypeInterface
     public function setValue($val, array $options = []): DataTypeInterface
     {
         if (!is_string($val) && !is_null($val)) {
-            throw new TypeError(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'String required'));
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'String required'));
         }
         $lang = isset($options['lang']) ? $options['lang'] : null;
         if (!$lang) {

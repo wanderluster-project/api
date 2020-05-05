@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\DataModel\Types;
 
 use App\DataModel\Types\DateTimeType;
-use App\Exception\TypeError;
 use App\Exception\WanderlusterException;
 use DateTime;
 use DateTimeImmutable;
@@ -51,6 +50,12 @@ class DateTimeTypeTest extends TestCase implements TypeTestInterface
         $this->assertFalse(false);
     }
 
+    public function testTranslationsException(): void
+    {
+        // datetime doesn't support translations
+        $this->assertFalse(false);
+    }
+
     public function testToArray(): void
     {
         $sut = new DateTimeType();
@@ -85,7 +90,7 @@ class DateTimeTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['val' => true]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Error hydrating DATE_TIME data type - Missing Field: type', $e->getMessage());
+            $this->assertEquals('Error hydrating DATE_TIME data type - Missing Field: type.', $e->getMessage());
         }
 
         // missing value
@@ -94,16 +99,34 @@ class DateTimeTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['type' => 'DATE_TIME']);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Error hydrating DATE_TIME data type - Missing Field: val', $e->getMessage());
+            $this->assertEquals('Error hydrating DATE_TIME data type - Missing Field: val.', $e->getMessage());
+        }
+
+        // invalid date string
+        $sut = new DateTimeType();
+        try {
+            $sut->fromArray(['type' => 'DATE_TIME', 'val' => 'I am invalid']);
+            $this->fail('Exception not thrown.');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Invalid value passed to DATE_TIME data type - Invalid date string.', $e->getMessage());
         }
 
         // invalid value
         $sut = new DateTimeType();
         try {
-            $sut->fromArray(['type' => 'DATE_TIME', 'val' => 'I am invalid']);
+            $sut->fromArray(['type' => 'DATE_TIME', 'val' => 3.14]);
             $this->fail('Exception not thrown.');
-        } catch (TypeError $e) {
-            $this->assertEquals('Invalid value passed to DATE_TIME data type - Invalid date string.', $e->getMessage());
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Invalid value passed to DATE_TIME data type - DateTime required.', $e->getMessage());
+        }
+
+        // invalid type
+        $sut = new DateTimeType();
+        try {
+            $sut->fromArray(['type' => 'FOO', 'val' => '1/1/2000']);
+            $this->fail('Exception not thrown.');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Error hydrating DATE_TIME data type - Invalid Type: FOO.', $e->getMessage());
         }
     }
 
@@ -133,20 +156,24 @@ class DateTimeTypeTest extends TestCase implements TypeTestInterface
     public function testInvalidSetValue(): void
     {
         try {
-            $sut = new DateTimeType('I am a string');
-            $this->fail('Exception not thrown');
-        } catch (TypeError $e) {
-            $this->assertInstanceOf(TypeError::class, $e);
-        }
-
-        try {
             $sut = new DateTimeType();
             $sut->setValue('I am a string');
             $this->fail('Exception not thrown.');
-        } catch (TypeError $e) {
+        } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to DATE_TIME data type - Invalid date string.', $e->getMessage());
         }
     }
+
+    public function testInvalidConstructorValue(): void
+    {
+        try {
+            $sut = new DateTimeType('I am a string');
+            $this->fail('Exception not thrown');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Invalid value passed to DATE_TIME data type - Invalid date string.', $e->getMessage());
+        }
+    }
+
 
     public function testGetLanguages(): void
     {

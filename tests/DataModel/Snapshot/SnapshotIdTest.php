@@ -28,7 +28,7 @@ class SnapshotIdTest extends TestCase
             $this->fail('Exception not thrown');
         } catch (Exception $e) {
             $this->assertInstanceOf(WanderlusterException::class, $e);
-            $this->assertEquals('Invalid SnapshotId format - INVALID-SNAPSHOT-ID', $e->getMessage());
+            $this->assertEquals('Invalid SnapshotId format - INVALID-SNAPSHOT-ID.', $e->getMessage());
         }
     }
 
