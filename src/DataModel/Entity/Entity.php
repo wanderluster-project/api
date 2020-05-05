@@ -166,10 +166,12 @@ class Entity implements SerializableInterface
             $snapshots[$key] = $value->toArray();
         }
 
+        $entityId = (string) $this->getEntityId();
+
         return [
             'type' => 'ENTITY',
-            'entity_id' => (string) $this->getEntityId(),
-            'entity_type' => (string) $this->getEntityType(),
+            'entity_id' => $entityId ? $entityId : null,
+            'entity_type' => $this->getEntityType(),
             'snapshots' => $snapshots,
         ];
     }

@@ -59,14 +59,14 @@ class Snapshot implements SerializableInterface
     /**
      * Set the value of an attribute.
      *
-     * @param string     $key
+     * @param string $key
      * @param mixed|null $value
      */
     public function set($key, $value): void
     {
-        $key = (string) $key;
+        $key = (string)$key;
         if (!is_null($value)) {
-            $value = (string) $value;
+            $value = (string)$value;
         }
 
         $this->attributes[$key] = $value;
@@ -185,9 +185,11 @@ class Snapshot implements SerializableInterface
 
     public function toArray(): array
     {
+        $snapshotId = (string)$this->snapshotId;
+
         return [
             'type' => 'SNAPSHOT',
-            'snapshot_id' => (string) $this->snapshotId,
+            'snapshot_id' => $snapshotId ? $snapshotId : null,
             'data' => $this->all(),
         ];
     }

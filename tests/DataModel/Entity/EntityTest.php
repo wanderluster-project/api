@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Tests\DataModel\Entity;
 
 use App\DataModel\Entity\Entity;
+use App\DataModel\Entity\EntityId;
 use App\DataModel\Entity\EntityTypes;
 use App\DataModel\Translation\LanguageCodes;
+use App\EntityManager\EntityUtilites;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class EntityTest extends WebTestCase
@@ -116,5 +118,47 @@ class EntityTest extends WebTestCase
         $this->assertEquals('perro', $sut->get('animal', LanguageCodes::SPANISH));
         $this->assertEquals(['animal'], $sut->keys(LanguageCodes::ENGLISH));
         $this->assertEquals(['animal'], $sut->keys(LanguageCodes::SPANISH));
+    }
+
+    public function testToArray()
+    {
+        // test empty
+        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE);
+        $this->assertEquals([
+            'type' => 'ENTITY',
+            'entity_id' => null,
+            'entity_type' => 0,
+            'snapshots' => []
+        ], $sut->toArray());
+
+        // test populated
+        $entityId = new EntityId('138a05cd-3c5d-4dab-9ad4-7d7c46a74d95');
+        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE);
+        $entityUtils = new EntityUtilites();
+        $entityUtils->setEntityId($sut, $entityId);
+        $sut->set('test.string', 'english string', 'en');
+        $sut->set('test.string', 'spanish string', 'es');
+
+        $this->assertEquals([
+            'type' => 'ENTITY',
+            'entity_id' => '138a05cd-3c5d-4dab-9ad4-7d7c46a74d95',
+            'entity_type' => 0,
+            'snapshots' => [
+                'en' => [
+                    'type' => 'SNAPSHOT',
+                    'snapshot_id' => null,
+                    'data' => [
+                        'test.string'=> 'english string'
+                    ]
+                ],
+                'es' => [
+                    'type' => 'SNAPSHOT',
+                    'snapshot_id' => null,
+                    'data' => [
+                        'test.string'=> 'spanish string'
+                    ]
+                ]
+            ]
+        ], $sut->toArray());
     }
 }
