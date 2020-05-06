@@ -117,7 +117,7 @@ class EntityTest extends WebTestCase
         $this->assertEquals(['animal'], $sut->keys());
     }
 
-    public function testToArray()
+    public function testToArray(): void
     {
         // test empty
         $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);

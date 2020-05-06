@@ -37,7 +37,7 @@ class Snapshot implements SerializableInterface
     protected $createdBy = null;
 
     /**
-     * @var TypeInterface[]
+     * @var TypeInterface[]|null[]
      */
     protected $data = [];
 
@@ -57,7 +57,7 @@ class Snapshot implements SerializableInterface
         }
 
         if (is_null($value)) {
-            $this->del($key, $value, $lang);
+            $this->del($key, $lang);
         }
 
         $key = (string) $key;
@@ -209,6 +209,8 @@ class Snapshot implements SerializableInterface
      * Return all the key=>value pairs.
      * Filters out any NULL values.
      *
+     * @param string $lang
+     *
      * @return mixed[]
      *
      * @throws WanderlusterException
@@ -286,11 +288,22 @@ class Snapshot implements SerializableInterface
 
         foreach ($data as $key => $typeData) {
             $type = $typeData['type'];
-            if ('STRING' === $type) {
-                $stringType = new StringType();
-                $stringType->fromArray($typeData);
+            $typeObj = null;
+
+            switch ($type) {
+                case 'STRING':
+                    $typeObj = new StringType();
+                    $typeObj->fromArray($typeData);
+                    break;
+                case 'INT':
+                    $typeObj = new IntegerType();
+                    $typeObj->fromArray($typeData);
+                    break;
+                default:
+                    // @todo move this logic to the serializer
+                    throw new \Exception('@todo - '.$type);
             }
-            $this->data[$key] = $stringType;
+            $this->data[$key] = $typeObj;
         }
 
         return $this;

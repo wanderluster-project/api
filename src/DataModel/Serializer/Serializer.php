@@ -43,27 +43,13 @@ class Serializer
     /**
      * Encode an object into string representation.
      *
-     * @param mixed $val
-     *
      * @throws WanderlusterException
      */
-    public function encode($val): string
+    public function encode(SerializableInterface $val): string
     {
-        if (is_object($val)) {
-            if ($val instanceof SerializableInterface) {
-                return json_encode($val->toArray());
-            } elseif ($val instanceof EntityId) {
-                return (string) $val;
-            } elseif ($val instanceof SnapshotId) {
-                return (string) $val;
-            } else {
-                throw new WanderlusterException(sprintf(ErrorMessages::SERIALIZATION_ERROR, 'Invalid data type'));
-            }
-        }
-
-        $json = json_encode($val);
+        $json = json_encode($val->toArray());
         if (json_last_error()) {
-            throw new WanderlusterException(sprintf(ErrorMessages::SERIALIZATION_ERROR, 'Invalid data type'));
+            throw new WanderlusterException(sprintf(ErrorMessages::SERIALIZATION_ERROR, 'Error encountered encoding to JSON'));
         }
 
         return $json;
@@ -73,27 +59,33 @@ class Serializer
      * Decode a string representation into an Object.
      *
      * @param string $serializedString
-     * @param string $class
      *
      * @return Entity|EntityId|SnapshotId
      *
      * @throws WanderlusterException
      */
-    public function decode($serializedString, $class)
+    public function decode($serializedString)
     {
-        switch ($class) {
-            case EntityId::class:
-                return new EntityId($serializedString);
-            case SnapshotId::class:
-                return new SnapshotId($serializedString);
-            case Entity::class:
-                $data = json_decode($serializedString, true);
-                $entity = new Entity();
-                $entity->fromArray($data);
-
-                return $entity;
-            default:
-                throw new WanderlusterException(sprintf(ErrorMessages::DESERIALIZATION_ERROR, 'Invalid class: '.$class));
+        $data = json_decode($serializedString, true);
+        if (json_last_error()) {
+            throw new WanderlusterException(sprintf(ErrorMessages::SERIALIZATION_ERROR, 'Error encountered decoding from JSON'));
         }
+
+        $type = isset($data['type']) ? $data['type'] : null;
+
+        if (!$type) {
+            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, 'UNKNOWN', 'Missing field: type'));
+        }
+
+        switch ($type) {
+            case 'ENTITY':
+                $ret = new Entity();
+                $ret->fromArray($data);
+                break;
+            default:
+                throw new WanderlusterException(sprintf(ErrorMessages::DESERIALIZATION_ERROR, 'Invalid type: '.$type));
+        }
+
+        return $ret;
     }
 }

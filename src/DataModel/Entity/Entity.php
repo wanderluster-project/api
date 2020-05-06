@@ -33,6 +33,8 @@ class Entity implements SerializableInterface
 
     /**
      * Entity constructor.
+     *
+     * @param string|null $defaultLang
      */
     public function __construct(int $defaultEntityType = null, $defaultLang = null)
     {
@@ -41,7 +43,11 @@ class Entity implements SerializableInterface
         $this->snapshot = new Snapshot();
     }
 
-    public function load($lang, $version = null)
+    /**
+     * @param string   $lang
+     * @param int|null $version
+     */
+    public function load($lang, $version = null): void
     {
         $this->lang = $lang;
 

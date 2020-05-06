@@ -17,6 +17,7 @@ class LanguageCodes
     public function getLanguageCodes(): array
     {
         return [
+            self::ANY,
             self::ENGLISH,
             self::SPANISH,
             self::FRENCH,
