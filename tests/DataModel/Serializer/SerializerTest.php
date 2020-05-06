@@ -33,7 +33,7 @@ class SerializerTest extends FunctionalTest
             $this->fail('Exception not thrown');
         } catch (Exception $e) {
             $this->assertInstanceOf(WanderlusterException::class, $e);
-            $this->assertEquals('Error serializing - Invalid class: stdClass.', $e->getMessage());
+            $this->assertEquals('Error serializing - Invalid data type.', $e->getMessage());
         }
     }
 
@@ -46,33 +46,6 @@ class SerializerTest extends FunctionalTest
         } catch (Exception $e) {
             $this->assertInstanceOf(WanderlusterException::class, $e);
             $this->assertEquals('Error deserializing - Invalid class: StdClass.', $e->getMessage());
-        }
-
-        // MISSING ID WHEN DESERIALIZING ENTITY
-        try {
-            $this->getSerializer()->decode('{}', Entity::class);
-            $this->fail('Exception not thrown');
-        } catch (Exception $e) {
-            $this->assertInstanceOf(WanderlusterException::class, $e);
-            $this->assertEquals('Error deserializing - Missing parameter: id.', $e->getMessage());
-        }
-
-        // MISSING ENTITY TYPE WHEN DESERIALIZING ENTITY
-        try {
-            $this->getSerializer()->decode('{"id":"09857e03-fca1-45a3-ab98-9cb1702fa1df"}', Entity::class);
-            $this->fail('Exception not thrown');
-        } catch (Exception $e) {
-            $this->assertInstanceOf(WanderlusterException::class, $e);
-            $this->assertEquals('Error deserializing - Missing parameter: type.', $e->getMessage());
-        }
-
-        // MISSING DATA WHEN DESERIALIZING ENTITY
-        try {
-            $this->getSerializer()->decode('{"id":"09857e03-fca1-45a3-ab98-9cb1702fa1df","type":100}', Entity::class);
-            $this->fail('Exception not thrown');
-        } catch (Exception $e) {
-            $this->assertInstanceOf(WanderlusterException::class, $e);
-            $this->assertEquals('Error deserializing - Missing parameter: data.', $e->getMessage());
         }
     }
 
@@ -91,7 +64,7 @@ class SerializerTest extends FunctionalTest
         $this->assertSame('-7.5', $this->getSerializer()->encode(-7.5));
 
         // string
-        $this->assertSame('foo', $this->getSerializer()->encode('foo'));
+        $this->assertSame('"foo"', $this->getSerializer()->encode('foo'));
     }
 
     public function testEncodingArray(): void
@@ -137,27 +110,29 @@ class SerializerTest extends FunctionalTest
     public function testEncodingEntity(): void
     {
         // test empty
-        $entity = new Entity(EntityTypes::TEST_ENTITY_TYPE);
-        $this->assertEquals('{"id":null,"type":0,"data":{}}', $this->getSerializer()->encode($entity));
+        $entity = new Entity(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
+        $this->assertEquals('{"type":"ENTITY","entity_id":null,"entity_type":0,"snapshot":{"type":"SNAPSHOT","snapshot_id":null,"data":[]}}', $this->getSerializer()->encode($entity));
 
         // test with data
-        $entity = new Entity(EntityTypes::TEST_ENTITY_TYPE);
-        $entity->set('foo1', 'bar1', LanguageCodes::ENGLISH);
-        $entity->set('foo2', 'bar2', LanguageCodes::ENGLISH);
-        $entity->del('foo2', LanguageCodes::ENGLISH);
-        $this->assertEquals('{"id":null,"type":0,"data":{"en":{"foo1":"bar1"}}}', $this->getSerializer()->encode($entity));
+        $entity = new Entity(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
+        $entity->set('foo1', 'bar1');
+        $entity->set('foo2', 'bar2');
+        $entity->del('foo2');
+        $this->assertEquals('{"type":"ENTITY","entity_id":null,"entity_type":0,"snapshot":{"type":"SNAPSHOT","snapshot_id":null,"data":{"foo1":{"type":"STRING","trans":{"en":"bar1"}}}}}', $this->getSerializer()->encode($entity));
 
         // test with multiple languages
-        $entity = new Entity(EntityTypes::TEST_ENTITY_TYPE);
-        $entity->set('foo1', 'bar1', LanguageCodes::ENGLISH);
-        $entity->set('foo2', 'bar2', LanguageCodes::SPANISH);
-        $this->assertEquals('{"id":null,"type":0,"data":{"en":{"foo1":"bar1"},"es":{"foo2":"bar2"}}}', $this->getSerializer()->encode($entity));
+        $entity = new Entity(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
+        $entity->load(LanguageCodes::ENGLISH);
+        $entity->set('foo1', 'bar1');
+        $entity->load(LanguageCodes::SPANISH);
+        $entity->set('foo1', 'bar2');
+        $this->assertEquals('{"type":"ENTITY","entity_id":null,"entity_type":0,"snapshot":{"type":"SNAPSHOT","snapshot_id":null,"data":{"foo1":{"type":"STRING","trans":{"en":"bar1","es":"bar2"}}}}}', $this->getSerializer()->encode($entity));
     }
 
     public function testDecodingEntity(): void
     {
         // test empty
-        $json = '{"id":null,"type":0,"data":[]}';
+        $json = '{"type":"ENTITY","entity_id":null,"entity_type":0,"snapshot":{"type":"SNAPSHOT","snapshot_id":null,"data":[]}}';
         $entity = $this->getSerializer()->decode($json, Entity::class);
         $this->assertInstanceOf(Entity::class, $entity);
         $this->assertEquals(null, $entity->getEntityId());
@@ -166,12 +141,13 @@ class SerializerTest extends FunctionalTest
         $this->assertEquals([], $entity->all(LanguageCodes::ENGLISH));
 
         // test fully realized
-        $json = '{"id":"c7a556c7-6f27-4049-bdbf-963379154a6f","type":0,"data":{"en":{"foo1":"bar1"},"es":{"foo2":"bar2"}}}';
+        $json = '{"type":"ENTITY","entity_id":"c7a556c7-6f27-4049-bdbf-963379154a6f","entity_type":0,"snapshot":{"type":"SNAPSHOT","snapshot_id":null,"data":{"foo1":{"type":"STRING","trans":{"en":"bar1","es":"bar2"}}}}}';
         $entity = $this->getSerializer()->decode($json, Entity::class);
+        $entity->load(LanguageCodes::ENGLISH);
         $this->assertInstanceOf(Entity::class, $entity);
         $this->assertEquals('c7a556c7-6f27-4049-bdbf-963379154a6f', (string) $entity->getEntityId());
-        $this->assertTrue($entity->has('foo1', LanguageCodes::ENGLISH));
-        $this->assertEquals('bar1', $entity->get('foo1', LanguageCodes::ENGLISH));
+        $this->assertTrue($entity->has('foo1'));
+        $this->assertEquals('bar1', $entity->get('foo1'));
         $this->assertEquals(0, $entity->getEntityType());
         $this->assertEquals([LanguageCodes::ENGLISH, LanguageCodes::SPANISH], $entity->getLanguages());
     }

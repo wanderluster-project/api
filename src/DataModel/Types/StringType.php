@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\DataModel\Types;
 
 use App\DataModel\Serializer\SerializableInterface;
+use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 
@@ -104,6 +105,9 @@ class StringType implements TypeInterface
         if (!$lang) {
             throw new WanderlusterException(sprintf(ErrorMessages::OPTION_REQUIRED, 'lang'));
         }
+        if (LanguageCodes::ANY === $lang) {
+            throw new WanderlusterException(ErrorMessages::UNABLE_TO_USE_ANY_LANGUAGE);
+        }
         $val = isset($this->trans[$lang]) ? $this->trans[$lang] : null;
 
         return $val;
@@ -114,6 +118,19 @@ class StringType implements TypeInterface
      */
     public function isNull(array $options = []): bool
     {
+        $lang = isset($options['lang']) ? $options['lang'] : null;
+        if (LanguageCodes::ANY === $lang) {
+            $languages = $this->getLanguages();
+            foreach ($languages as $lang) {
+                $options['lang'] = $lang;
+                if (is_null($this->getValue($options))) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         return is_null($this->getValue($options));
     }
 

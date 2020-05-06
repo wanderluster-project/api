@@ -6,8 +6,10 @@ namespace App\DataModel\Translation;
 
 class LanguageCodes
 {
+    const ANY = '*';
     const ENGLISH = 'en';
     const SPANISH = 'es';
+    const FRENCH = 'fr';
 
     /**
      * @return string[]
@@ -17,6 +19,7 @@ class LanguageCodes
         return [
             self::ENGLISH,
             self::SPANISH,
+            self::FRENCH,
         ];
     }
 

@@ -10,11 +10,6 @@ use App\Exception\WanderlusterException;
 interface TypeInterface extends SerializableInterface
 {
     /**
-     * Returns the identifier for this data type.
-     */
-    public function getTypeId(): string;
-
-    /**
      * Set the val for the DataType.
      *
      * @param mixed $val

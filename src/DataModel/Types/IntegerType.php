@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\DataModel\Types;
 
 use App\DataModel\Serializer\SerializableInterface;
+use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 
@@ -102,6 +103,6 @@ class IntegerType implements TypeInterface
      */
     public function getLanguages(): array
     {
-        return ['*'];
+        return [LanguageCodes::ANY];
     }
 }

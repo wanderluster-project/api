@@ -17,6 +17,7 @@ class ErrorMessages
     const INVALID_USERNAME = 'Invalid username - %s.';
     const INVALID_JSON = 'Invalid JSON passed as argument.';
     const OPTION_REQUIRED = 'Configuration option missing - %s.';
+    const UNAGLE_DETERMINE_TYPE = 'Unable to determine the type for key - %s';
 
     const INVALID_DATATYPE_VALUE = 'Invalid value passed to %s data type - %s.';
     const ERROR_HYDRATING_DATATYPE = 'Error hydrating %s data type - %s.';
@@ -31,7 +32,10 @@ class ErrorMessages
 
     const METHOD_NOT_IMPLEMENTED = 'Method not implemented yet - %s.';
     const ENTITY_LANGUAGE_NOT_SET = 'Entity language not set.';
+    const UNABLE_TO_USE_ANY_LANGUAGE = 'You must specify a language.  Wildcard (*) is not allowed).';
 
     const JWT_KEYS_MISSING = 'JWT Keys Missing.';
     const JWT_INVALID = 'Invalid JWT.';
+
+    const TOMBSTONE_EDIT = 'Unable to change tombstone type.';
 }

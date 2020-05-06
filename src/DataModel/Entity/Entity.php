@@ -22,16 +22,30 @@ class Entity implements SerializableInterface
     protected $entityType = null;
 
     /**
-     * @var Snapshot[]
+     * @var Snapshot
      */
-    protected $snapshots = [];
+    protected $snapshot = null;
+
+    /**
+     * @var string|null
+     */
+    protected $lang = null;
 
     /**
      * Entity constructor.
      */
-    public function __construct(int $entityType)
+    public function __construct(int $defaultEntityType = null, $defaultLang = null)
     {
-        $this->entityType = $entityType;
+        $this->entityType = $defaultEntityType;
+        $this->lang = $defaultLang;
+        $this->snapshot = new Snapshot();
+    }
+
+    public function load($lang, $version = null)
+    {
+        $this->lang = $lang;
+
+        // @todo actually load version
     }
 
     /**
@@ -39,7 +53,7 @@ class Entity implements SerializableInterface
      */
     public function getLanguages(): array
     {
-        return array_keys($this->snapshots);
+        return $this->snapshot->getLanguages();
     }
 
     /**
@@ -70,11 +84,10 @@ class Entity implements SerializableInterface
      * Get the value associated with a key.
      *
      * @param string $key
-     * @param string $lang
      */
-    public function get($key, $lang): ?string
+    public function get($key): ?string
     {
-        return $this->getSnapshot($lang)->get($key);
+        return $this->snapshot->get($key, $this->lang);
     }
 
     /**
@@ -82,11 +95,14 @@ class Entity implements SerializableInterface
      *
      * @param string $key
      * @param mixed  $value
-     * @param string $lang
      */
-    public function set($key, $value, $lang): Entity
+    public function set($key, $value): Entity
     {
-        $this->getSnapshot($lang)->set($key, $value);
+        if (is_null($value)) {
+            $this->del($key);
+        } else {
+            $this->snapshot->set($key, $value, $this->lang);
+        }
 
         return $this;
     }
@@ -96,109 +112,86 @@ class Entity implements SerializableInterface
      * If entity was deleted then will return FALSE.
      *
      * @param string $key
-     * @param string $lang
      */
-    public function has($key, $lang): bool
+    public function has($key): bool
     {
-        if ($this->getSnapshot($lang)->wasDeleted($key)) {
-            return false;
-        }
-
-        return $this->getSnapshot($lang)->has($key);
+        return $this->snapshot->has($key, $this->lang);
     }
 
     /**
      * Delete a key from an Entity.
      *
      * @param string $key
-     * @param string $lang
      */
-    public function del($key, $lang): void
+    public function del($key): void
     {
-        $this->getSnapshot($lang)->del($key);
+        $this->snapshot->del($key, $this->lang);
     }
 
     /**
      * Return all the data associated with this Entity.
-     *
-     * @param string $lang
      */
-    public function all($lang): array
+    public function all(): array
     {
-        return $this->getSnapshot($lang)->all();
+        return $this->snapshot->all($this->lang);
     }
 
     /**
      * Return the keys associated with this Entity.
-     *
-     * @param string $lang
      */
-    public function keys($lang): array
+    public function keys(): array
     {
-        return $this->getSnapshot($lang)->keys();
+        return $this->snapshot->keys($this->lang);
     }
 
     /**
-     * Returns TRUE if key was deleted from Entity, FALSE otherwise.
-     *
-     * @param string      $key
-     * @param string|null $lang
+     * {@inheritdoc}
      */
-    public function wasDeleted($key, $lang): bool
-    {
-        return $this->getSnapshot($lang)->wasDeleted($key);
-    }
-
-    /**
-     * Returns array of keys deleted from this entity.
-     *
-     * @param string $lang
-     */
-    public function getDeletedKeys($lang): array
-    {
-        return $this->getSnapshot($lang)->getDeletedKeys();
-    }
-
     public function toArray(): array
     {
-        $snapshots = [];
-        foreach ($this->snapshots as $key => $value) {
-            $snapshots[$key] = $value->toArray();
-        }
-
         $entityId = (string) $this->getEntityId();
 
         return [
-            'type' => 'ENTITY',
+            'type' => $this->getTypeId(),
             'entity_id' => $entityId ? $entityId : null,
             'entity_type' => $this->getEntityType(),
-            'snapshots' => $snapshots,
+            'snapshot' => $this->snapshot->toArray(),
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function fromArray(array $data): SerializableInterface
     {
-        // TODO: Implement fromArray() method.
+        $fields = ['type', 'entity_id', 'entity_type', 'snapshot'];
+        foreach ($fields as $field) {
+            if (!array_key_exists($field, $data)) {
+                throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Missing Field: '.$field));
+            }
+        }
+
+        $type = $data['type'];
+        $entityId = $data['entity_id'];
+        $entityType = $data['entity_type'];
+        $snapshot = $data['snapshot'];
+
+        if ($type !== $this->getTypeId()) {
+            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Invalid Type: '.$type));
+        }
+
+        if ($entityId) {
+            $this->entityId = new EntityId($entityId);
+        }
+
+        $this->entityType = $entityType;
+        $this->snapshot->fromArray($snapshot);
+
         return $this;
     }
 
-    /**
-     * Get the snapshot associated with a language.
-     *
-     * @param string $lang
-     *
-     * @throws WanderlusterException
-     */
-    protected function getSnapshot($lang): Snapshot
+    public function getTypeId(): string
     {
-        if (!$lang) {
-            throw new WanderlusterException(ErrorMessages::ENTITY_LANGUAGE_NOT_SET);
-        }
-
-        if (!isset($this->snapshots[$lang])) {
-            $this->snapshots[$lang] = new Snapshot($lang);
-        }
-
-        return $this->snapshots[$lang];
+        return 'ENTITY';
     }
 }
