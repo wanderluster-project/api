@@ -8,8 +8,4 @@ parameters:
     autoload_files:
         - vendor/autoload.php
         - bin/.phpunit/phpunit-7.5-0/vendor/autoload.php
-    symfony:
-        container_xml_path: '%rootDir%/../../../var/cache/dev/App_KernelDevDebugContainer.xml'
     checkMissingIterableValueType: false
-    ignoreErrors:
-        - '/Service "test.(.*)" is not registered in the container./'

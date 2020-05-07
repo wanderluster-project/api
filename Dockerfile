@@ -1,5 +1,5 @@
 # Pull base image.
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 # Dependencies
 RUN export DEBIAN_FRONTEND=noninteractive && \
@@ -13,13 +13,13 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     ln -sfn /var/www/wanderluster/public /var/www/html && \
     apt-get install -y libsodium-dev php-pear php-dev && \
     pecl install libsodium && \
-    echo 'extension=sodium.so' >>  /etc/php/7.2/apache2/php.ini
+    echo 'extension=sodium.so' >>  /etc/php/7.4/apache2/php.ini
 
 # Copy data into container
 COPY . /var/www/wanderluster
 
 # Dev Dependencies
-RUN apt-get install -y php7.2-phpdbg vim && \
+RUN apt-get install -y php7.4-phpdbg vim && \
     wget https://get.symfony.com/cli/installer -O - | bash && \
     mv /root/.symfony/bin/symfony /usr/local/bin/symfony && \
     git config --global user.email "simpkevin@gmail.com" && \
