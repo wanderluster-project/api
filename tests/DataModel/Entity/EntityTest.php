@@ -18,7 +18,7 @@ class EntityTest extends WebTestCase
         $this->assertEquals([], $sut->getLanguages());
         $this->assertEquals(EntityTypes::TEST_ENTITY_TYPE, $sut->getEntityType());
         $this->assertEmpty($sut->all());
-        $this->assertEquals('', (string)$sut->getEntityId());
+        $this->assertEquals('', (string) $sut->getEntityId());
         $this->assertNull($sut->get('foo'));
         $this->assertFalse($sut->has('foo'));
     }
@@ -150,8 +150,8 @@ class EntityTest extends WebTestCase
             'entity_type' => 100,
             'snapshot' => null,
         ]);
-        $this->assertEquals('', (string)$sut->getEntityId());
-        $this->assertEquals(100, (string)$sut->getEntityType());
+        $this->assertEquals('', (string) $sut->getEntityId());
+        $this->assertEquals(100, (string) $sut->getEntityType());
 
         // with some data
         $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
@@ -173,12 +173,12 @@ class EntityTest extends WebTestCase
                 ],
             ],
         ]);
-        $this->assertEquals('31159eca-522c-4d09-8a5d-ee3438e6bb6f', (string)$sut->getEntityId());
+        $this->assertEquals('31159eca-522c-4d09-8a5d-ee3438e6bb6f', (string) $sut->getEntityId());
         $this->assertEquals(10, $sut->getEntityType());
         $this->assertEquals(100, $sut->getVersion());
     }
 
-    public function testFromArrayExceptions()
+    public function testFromArrayExceptions(): void
     {
         // Missing Type
         $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
@@ -192,7 +192,7 @@ class EntityTest extends WebTestCase
         // Missing EntityId
         try {
             $sut->fromArray([
-                'type' => 'ENTITY'
+                'type' => 'ENTITY',
             ]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
@@ -203,7 +203,7 @@ class EntityTest extends WebTestCase
         try {
             $sut->fromArray([
                 'type' => 'ENTITY',
-                'entity_id' => null
+                'entity_id' => null,
             ]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {

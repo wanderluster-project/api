@@ -61,7 +61,7 @@ class EntityId
      */
     public function asString(): string
     {
-        return (string)$this->getUuid();
+        return (string) $this->getUuid();
     }
 
     /**

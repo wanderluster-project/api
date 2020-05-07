@@ -8,6 +8,7 @@ use App\Controller\StorageController;
 use App\DataModel\Entity\EntityTypes;
 use App\DataModel\Translation\LanguageCodes;
 use App\EntityManager\EntityManager;
+use App\FileStorage\FileAdapters\ChainFileAdapter;
 use App\Tests\FunctionalTest;
 use Exception;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -55,26 +56,28 @@ class StorageControllerTest extends FunctionalTest
         }
     }
 
-//    public function testDeleteExceptions(): void
-//    {
-//        // 404 error should be thrown if issuing DEL to endpoint without entity id
-//        $client = self::getClient('simpkevin@gmail.com');
-//        $client->request('DELETE', '/api/v1/storage/');
-//        $this->assertEquals(404, $client->getResponse()->getStatusCode());
-//
-//        // 400 error if issuing DEL with invalid entity id
-//        $client->request('DELETE', '/api/v1/storage/I-AM-INVALID');
-//        $this->assertEquals(400, $client->getResponse()->getStatusCode());
-//
+    public function testDeleteExceptions(): void
+    {
+        // 404 error should be thrown if issuing DEL to endpoint without entity id
+        $client = self::getClient('simpkevin@gmail.com');
+        $client->request('DELETE', '/api/v1/storage/');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+
+        // 400 error if issuing DEL with invalid entity id
+        $client->request('DELETE', '/api/v1/storage/I-AM-INVALID');
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+
+        // @todo Implement
 //        // 404 error should be thrown if issuing DEL to non-existent entity id
-//        $client->request('DELETE', '/api/v1/storage/1-1000-0000000000000000');
+//        $client->request('DELETE', '/api/v1/storage/0877bb25-8bf7-4b0b-926a-8c416f3a2624');
 //        $this->assertEquals(404, $client->getResponse()->getStatusCode());
-//    }
-//
+    }
+
 //    public function testDeleteServerError(): void
 //    {
+    // @todo Implement
 //        // mock error encountered deleting file
-//        $entityId = '1-1000-0000000000000000';
+//        $entityId = '0877bb25-8bf7-4b0b-926a-8c416f3a2624';
 //        $sut = new StorageController();
 //        $mockFileAdapter = \Mockery::mock(ChainFileAdapter::class);
 //        $mockFileAdapter->shouldReceive('deleteRemoteFile')->andThrow(new Exception());
