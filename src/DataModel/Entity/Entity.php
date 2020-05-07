@@ -189,7 +189,7 @@ class Entity implements SerializableInterface
         }
 
         if (!is_int($entityType)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Invalid EntityType: '.$entityType));
+            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'EntityType should be an integer'));
         }
 
         if ($entityType) {
@@ -197,7 +197,7 @@ class Entity implements SerializableInterface
         }
 
         if (!is_array($snapshot) && !is_null($snapshot)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Invalid Snapshot: '.$entityType));
+            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Invalid Snapshot'));
         }
 
         if ($snapshot) {

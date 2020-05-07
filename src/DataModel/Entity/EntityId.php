@@ -43,7 +43,7 @@ class EntityId
     /**
      * Returns TRUE if non-empty and FALSE otherwise.
      */
-    public function isEmpty(): bool
+    public function isNull(): bool
     {
         return is_null($this->uuid) || '' === $this->uuid;
     }
@@ -51,9 +51,9 @@ class EntityId
     /**
      * Returns the string representation of the entity id.
      */
-    public function getUuid(): string
+    public function getUuid(): ?string
     {
-        return (string) $this->uuid;
+        return $this->uuid;
     }
 
     /**
@@ -61,7 +61,7 @@ class EntityId
      */
     public function asString(): string
     {
-        return $this->getUuid();
+        return (string)$this->getUuid();
     }
 
     /**
@@ -69,6 +69,6 @@ class EntityId
      */
     public function __toString(): string
     {
-        return $this->getUuid();
+        return $this->asString();
     }
 }

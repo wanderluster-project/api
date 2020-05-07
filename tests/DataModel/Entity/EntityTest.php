@@ -7,6 +7,7 @@ namespace App\Tests\DataModel\Entity;
 use App\DataModel\Entity\Entity;
 use App\DataModel\Entity\EntityTypes;
 use App\DataModel\Translation\LanguageCodes;
+use App\Exception\WanderlusterException;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class EntityTest extends WebTestCase
@@ -17,7 +18,7 @@ class EntityTest extends WebTestCase
         $this->assertEquals([], $sut->getLanguages());
         $this->assertEquals(EntityTypes::TEST_ENTITY_TYPE, $sut->getEntityType());
         $this->assertEmpty($sut->all());
-        $this->assertEquals('', (string) $sut->getEntityId());
+        $this->assertEquals('', (string)$sut->getEntityId());
         $this->assertNull($sut->get('foo'));
         $this->assertFalse($sut->has('foo'));
     }
@@ -149,8 +150,8 @@ class EntityTest extends WebTestCase
             'entity_type' => 100,
             'snapshot' => null,
         ]);
-        $this->assertEquals('', (string) $sut->getEntityId());
-        $this->assertEquals(100, (string) $sut->getEntityType());
+        $this->assertEquals('', (string)$sut->getEntityId());
+        $this->assertEquals(100, (string)$sut->getEntityType());
 
         // with some data
         $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
@@ -172,9 +173,93 @@ class EntityTest extends WebTestCase
                 ],
             ],
         ]);
-        $this->assertEquals('31159eca-522c-4d09-8a5d-ee3438e6bb6f', (string) $sut->getEntityId());
+        $this->assertEquals('31159eca-522c-4d09-8a5d-ee3438e6bb6f', (string)$sut->getEntityId());
         $this->assertEquals(10, $sut->getEntityType());
         $this->assertEquals(100, $sut->getVersion());
+    }
+
+    public function testFromArrayExceptions()
+    {
+        // Missing Type
+        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
+        try {
+            $sut->fromArray([]);
+            $this->fail('Exception not thrown.');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Error hydrating ENTITY data type - Missing Field: type.', $e->getMessage());
+        }
+
+        // Missing EntityId
+        try {
+            $sut->fromArray([
+                'type' => 'ENTITY'
+            ]);
+            $this->fail('Exception not thrown.');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Error hydrating ENTITY data type - Missing Field: entity_id.', $e->getMessage());
+        }
+
+        // Missing EntityType
+        try {
+            $sut->fromArray([
+                'type' => 'ENTITY',
+                'entity_id' => null
+            ]);
+            $this->fail('Exception not thrown.');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Error hydrating ENTITY data type - Missing Field: entity_type.', $e->getMessage());
+        }
+
+        // Missing Snapshot
+        try {
+            $sut->fromArray([
+                'type' => 'ENTITY',
+                'entity_id' => null,
+                'entity_type' => 100,
+            ]);
+            $this->fail('Exception not thrown.');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Error hydrating ENTITY data type - Missing Field: snapshot.', $e->getMessage());
+        }
+
+        // Invalid EntityType
+        try {
+            $sut->fromArray([
+                'type' => 'ENTITY',
+                'entity_id' => null,
+                'entity_type' => 'INVALID',
+                'snapshot' => null,
+            ]);
+            $this->fail('Exception not thrown.');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Error hydrating ENTITY data type - EntityType should be an integer.', $e->getMessage());
+        }
+
+        // Invalid Snapshot
+        try {
+            $sut->fromArray([
+                'type' => 'ENTITY',
+                'entity_id' => null,
+                'entity_type' => 100,
+                'snapshot' => 'INVALID',
+            ]);
+            $this->fail('Exception not thrown.');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Error hydrating ENTITY data type - Invalid Snapshot.', $e->getMessage());
+        }
+
+        // Invalid Type
+        try {
+            $sut->fromArray([
+                'type' => 'FOO',
+                'entity_id' => null,
+                'entity_type' => 100,
+                'snapshot' => null,
+            ]);
+            $this->fail('Exception not thrown.');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Error hydrating ENTITY data type - Invalid Type: FOO.', $e->getMessage());
+        }
     }
 
     public function testToArray(): void

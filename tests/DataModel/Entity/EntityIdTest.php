@@ -33,8 +33,17 @@ class EntityIdTest extends TestCase
         $uuid = 'dd25eacd-0ca9-4b26-87f8-7cceca184b03';
         $sut = new EntityId($uuid);
 
-        $this->assertEquals($uuid, (string) $sut);
+        $this->assertEquals($uuid, (string)$sut);
         $this->assertEquals($uuid, $sut->asString());
+    }
+
+    public function testIsNull()
+    {
+        $sut = new EntityId();
+        $this->assertTrue($sut->isNull());
+
+        $sut = new EntityId('2fa637ef-09ba-48a7-8647-ac056d5aab90');
+        $this->assertFalse($sut->isNull());
     }
 
     public function testInvalidEntityIdFormat(): void
