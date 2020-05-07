@@ -17,6 +17,11 @@ class NumericType implements TypeInterface
     protected $val;
 
     /**
+     * @var int
+     */
+    protected $ver = 0;
+
+    /**
      * Numeric constructor.
      *
      * @param float|int|null $val
@@ -26,6 +31,9 @@ class NumericType implements TypeInterface
     public function __construct($val = null, array $options = [])
     {
         $this->setValue($val, $options);
+
+        $ver = isset($options['ver']) ? (int) $options['ver'] : 0;
+        $this->setVersion($ver);
     }
 
     /**
@@ -90,6 +98,27 @@ class NumericType implements TypeInterface
     public function getValue(array $options = [])
     {
         return $this->val;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setVersion(int $version): TypeInterface
+    {
+        if ($version < 0) {
+            throw new WanderlusterException(sprintf(ErrorMessages::VERSION_INVALID, $version));
+        }
+        $this->ver = $version;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getVersion(): int
+    {
+        return $this->ver;
     }
 
     /**

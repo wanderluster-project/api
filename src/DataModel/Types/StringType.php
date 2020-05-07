@@ -19,15 +19,24 @@ class StringType implements TypeInterface
     protected $trans;
 
     /**
+     * @var int
+     */
+    protected $ver = 0;
+
+    /**
      * Boolean constructor.
      *
      * @param string[] $trans
+     *
+     * @throws WanderlusterException
      */
-    public function __construct(array $trans = [])
+    public function __construct(array $trans = [], array $options = [])
     {
         foreach ($trans as $lang => $val) {
             $this->setValue($val, ['lang' => $lang]);
         }
+        $ver = isset($options['ver']) ? (int) $options['ver'] : 0;
+        $this->setVersion($ver);
     }
 
     /**
@@ -114,6 +123,27 @@ class StringType implements TypeInterface
         $val = isset($this->trans[$lang]) ? $this->trans[$lang] : null;
 
         return $val;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setVersion(int $version): TypeInterface
+    {
+        if ($version < 0) {
+            throw new WanderlusterException(sprintf(ErrorMessages::VERSION_INVALID, $version));
+        }
+        $this->ver = $version;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getVersion(): int
+    {
+        return $this->ver;
     }
 
     /**

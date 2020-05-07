@@ -22,13 +22,23 @@ class FileSizeType implements TypeInterface
     protected $val;
 
     /**
+     * @var int
+     */
+    protected $ver = 0;
+
+    /**
      * FileSizeType constructor.
      *
      * @param int|string|null $val
+     *
+     * @throws WanderlusterException
      */
-    public function __construct($val = null)
+    public function __construct($val = null, array $options = [])
     {
         $this->setValue($val);
+
+        $ver = isset($options['ver']) ? (int) $options['ver'] : 0;
+        $this->setVersion($ver);
     }
 
     /**
@@ -106,6 +116,27 @@ class FileSizeType implements TypeInterface
         }
 
         return $this->val;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setVersion(int $version): TypeInterface
+    {
+        if ($version < 0) {
+            throw new WanderlusterException(sprintf(ErrorMessages::VERSION_INVALID, $version));
+        }
+        $this->ver = $version;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getVersion(): int
+    {
+        return $this->ver;
     }
 
     /**

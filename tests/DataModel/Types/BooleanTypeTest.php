@@ -50,26 +50,29 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
     public function testToArray(): void
     {
         $sut = new BooleanType();
-        $this->assertEquals(['val' => null, 'type' => 'BOOL'], $sut->toArray());
+        $this->assertEquals(['val' => null, 'type' => 'BOOL', 'ver' => 0], $sut->toArray());
 
-        $sut = new BooleanType(true);
-        $this->assertEquals(['val' => true, 'type' => 'BOOL'], $sut->toArray());
+        $sut = new BooleanType(true, ['ver' => 10]);
+        $this->assertEquals(['val' => true, 'type' => 'BOOL', 'ver' => 10], $sut->toArray());
 
-        $sut = new BooleanType(false);
-        $this->assertEquals(['val' => false,  'type' => 'BOOL'], $sut->toArray());
+        $sut = new BooleanType(false, ['ver' => 50]);
+        $this->assertEquals(['val' => false, 'type' => 'BOOL', 'ver' => 50], $sut->toArray());
     }
 
     public function testFromArray(): void
     {
         $sut = new BooleanType();
-        $sut->fromArray(['val' => null, 'type' => 'BOOL']);
+        $sut->fromArray(['val' => null, 'type' => 'BOOL', 'ver' => 0]);
         $this->assertNull($sut->getValue());
+        $this->assertEquals(0, $sut->getVersion());
 
-        $sut->fromArray(['type' => 'BOOL', 'val' => true]);
+        $sut->fromArray(['type' => 'BOOL', 'val' => true, 'ver' => 10]);
         $this->assertTrue($sut->getValue());
+        $this->assertEquals(10, $sut->getVersion());
 
-        $sut->fromArray(['type' => 'BOOL', 'val' => false]);
+        $sut->fromArray(['type' => 'BOOL', 'val' => false, 'ver' => 100]);
         $this->assertFalse($sut->getValue());
+        $this->assertEquals(100, $sut->getVersion());
     }
 
     public function testFromArrayException(): void
@@ -95,7 +98,7 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
         // invalid value
         $sut = new BooleanType();
         try {
-            $sut->fromArray(['type' => 'BOOL', 'val' => 'I am invalid']);
+            $sut->fromArray(['type' => 'BOOL', 'val' => 'I am invalid', 'ver' => 0]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to BOOL data type - Boolean required.', $e->getMessage());
@@ -104,7 +107,7 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
         // invalid type
         $sut = new BooleanType();
         try {
-            $sut->fromArray(['type' => 'FOO', 'val' => true]);
+            $sut->fromArray(['type' => 'FOO', 'val' => true, 'ver' => 0]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Error hydrating BOOL data type - Invalid Type: FOO.', $e->getMessage());
@@ -132,6 +135,14 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
         $this->assertNull($sut->getValue());
         $sut->setValue(null);
         $this->assertNull($sut->getValue());
+    }
+
+    public function testSetGetVersion(): void
+    {
+        $sut = new BooleanType();
+        $this->assertEquals(0, $sut->getVersion());
+        $sut->setVersion(10);
+        $this->assertEquals(10, $sut->getVersion());
     }
 
     public function testInvalidSetValue(): void

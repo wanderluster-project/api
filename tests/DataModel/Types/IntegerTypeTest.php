@@ -127,6 +127,14 @@ class IntegerTypeTest extends TestCase implements TypeTestInterface
         $this->assertNull($sut->getValue());
     }
 
+    public function testSetGetVersion(): void
+    {
+        $sut = new IntegerType();
+        $this->assertEquals(0, $sut->getVersion());
+        $sut->setVersion(10);
+        $this->assertEquals(10, $sut->getVersion());
+    }
+
     public function testInvalidSetValue(): void
     {
         try {

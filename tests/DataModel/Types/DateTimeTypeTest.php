@@ -59,27 +59,29 @@ class DateTimeTypeTest extends TestCase implements TypeTestInterface
     public function testToArray(): void
     {
         $sut = new DateTimeType();
-        $this->assertEquals(['val' => null, 'type' => 'DATE_TIME'], $sut->toArray());
+        $this->assertEquals(['val' => null, 'type' => 'DATE_TIME', 'ver' => 0], $sut->toArray());
 
-        $sut = new DateTimeType('1/1/2000');
-        $this->assertEquals(['val' => '2000-01-01T00:00:00+00:00', 'type' => 'DATE_TIME'], $sut->toArray());
+        $sut = new DateTimeType('1/1/2000', ['ver' => 10]);
+        $this->assertEquals(['val' => '2000-01-01T00:00:00+00:00', 'type' => 'DATE_TIME', 'ver' => 10], $sut->toArray());
 
-        $sut = new DateTimeType(new DateTime('1/1/2000'));
-        $this->assertEquals(['val' => '2000-01-01T00:00:00+00:00',  'type' => 'DATE_TIME'], $sut->toArray());
+        $sut = new DateTimeType(new DateTime('1/1/2000'), ['ver' => 50]);
+        $this->assertEquals(['val' => '2000-01-01T00:00:00+00:00', 'type' => 'DATE_TIME', 'ver' => 50], $sut->toArray());
 
-        $sut = new DateTimeType(new DateTimeImmutable('1/1/2000'));
-        $this->assertEquals(['val' => '2000-01-01T00:00:00+00:00',  'type' => 'DATE_TIME'], $sut->toArray());
+        $sut = new DateTimeType(new DateTimeImmutable('1/1/2000'), ['ver' => 100]);
+        $this->assertEquals(['val' => '2000-01-01T00:00:00+00:00', 'type' => 'DATE_TIME', 'ver' => 100], $sut->toArray());
     }
 
     public function testFromArray(): void
     {
         $sut = new DateTimeType();
-        $sut->fromArray(['val' => null, 'type' => 'DATE_TIME']);
+        $sut->fromArray(['val' => null, 'type' => 'DATE_TIME', 'ver' => 0]);
         $this->assertNull($sut->getValue());
+        $this->assertEquals(0, $sut->getVersion());
 
-        $sut->fromArray(['val' => '2000-01-01T00:00:00+00:00', 'type' => 'DATE_TIME']);
+        $sut->fromArray(['val' => '2000-01-01T00:00:00+00:00', 'type' => 'DATE_TIME', 'ver' => 10]);
         $this->assertInstanceOf(DateTimeImmutable::class, $sut->getValue());
         $this->assertEquals(946684800, $sut->getValue()->getTimestamp());
+        $this->assertEquals(10, $sut->getVersion());
     }
 
     public function testFromArrayException(): void
@@ -105,7 +107,7 @@ class DateTimeTypeTest extends TestCase implements TypeTestInterface
         // invalid date string
         $sut = new DateTimeType();
         try {
-            $sut->fromArray(['type' => 'DATE_TIME', 'val' => 'I am invalid']);
+            $sut->fromArray(['type' => 'DATE_TIME', 'val' => 'I am invalid', 'ver' => 0]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to DATE_TIME data type - Invalid date string.', $e->getMessage());
@@ -114,7 +116,7 @@ class DateTimeTypeTest extends TestCase implements TypeTestInterface
         // invalid value
         $sut = new DateTimeType();
         try {
-            $sut->fromArray(['type' => 'DATE_TIME', 'val' => 3.14]);
+            $sut->fromArray(['type' => 'DATE_TIME', 'val' => 3.14, 'ver' => 0]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to DATE_TIME data type - DateTime required.', $e->getMessage());
@@ -123,7 +125,7 @@ class DateTimeTypeTest extends TestCase implements TypeTestInterface
         // invalid type
         $sut = new DateTimeType();
         try {
-            $sut->fromArray(['type' => 'FOO', 'val' => '1/1/2000']);
+            $sut->fromArray(['type' => 'FOO', 'val' => '1/1/2000', 'ver' => 0]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Error hydrating DATE_TIME data type - Invalid Type: FOO.', $e->getMessage());
@@ -143,6 +145,14 @@ class DateTimeTypeTest extends TestCase implements TypeTestInterface
 
         $sut->setValue(new DateTimeImmutable('1/1/2000'));
         $this->assertInstanceOf(DateTimeImmutable::class, $sut->getValue());
+    }
+
+    public function testSetGetVersion(): void
+    {
+        $sut = new DateTimeType();
+        $this->assertEquals(0, $sut->getVersion());
+        $sut->setVersion(10);
+        $this->assertEquals(10, $sut->getVersion());
     }
 
     public function testSetGetNull(): void

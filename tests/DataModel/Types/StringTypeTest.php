@@ -181,6 +181,14 @@ class StringTypeTest extends TestCase implements TypeTestInterface
         $this->assertNull($sut->getValue(['lang' => 'es']));
     }
 
+    public function testSetGetVersion(): void
+    {
+        $sut = new StringType();
+        $this->assertEquals(0, $sut->getVersion());
+        $sut->setVersion(10);
+        $this->assertEquals(10, $sut->getVersion());
+    }
+
     public function testInvalidSetValue(): void
     {
         try {

@@ -17,13 +17,23 @@ class BooleanType implements TypeInterface
     protected $val;
 
     /**
+     * @var int
+     */
+    protected $ver = 0;
+
+    /**
      * Boolean constructor.
      *
      * @param bool|null $val
+     *
+     * @throws WanderlusterException
      */
-    public function __construct($val = null)
+    public function __construct($val = null, array $options = [])
     {
-        $this->setValue($val);
+        $this->setValue($val, $options);
+
+        $ver = isset($options['ver']) ? (int) $options['ver'] : 0;
+        $this->setVersion($ver);
     }
 
     /**
@@ -42,6 +52,7 @@ class BooleanType implements TypeInterface
         return [
             'type' => $this->getTypeId(),
             'val' => $this->val,
+            'ver' => $this->getVersion(),
         ];
     }
 
@@ -50,7 +61,7 @@ class BooleanType implements TypeInterface
      */
     public function fromArray(array $data): SerializableInterface
     {
-        $fields = ['type', 'val'];
+        $fields = ['type', 'val', 'ver'];
         foreach ($fields as $field) {
             if (!array_key_exists($field, $data)) {
                 throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Missing Field: '.$field));
@@ -59,11 +70,13 @@ class BooleanType implements TypeInterface
 
         $type = $data['type'];
         $val = $data['val'];
+        $ver = (int) $data['ver'];
 
         if ($type !== $this->getTypeId()) {
             throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Invalid Type: '.$type));
         }
         $this->setValue($val);
+        $this->setVersion($ver);
 
         return $this;
     }
@@ -88,6 +101,27 @@ class BooleanType implements TypeInterface
     public function getValue(array $options = [])
     {
         return $this->val;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setVersion(int $version): TypeInterface
+    {
+        if ($version < 0) {
+            throw new WanderlusterException(sprintf(ErrorMessages::VERSION_INVALID, $version));
+        }
+        $this->ver = $version;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getVersion(): int
+    {
+        return $this->ver;
     }
 
     /**

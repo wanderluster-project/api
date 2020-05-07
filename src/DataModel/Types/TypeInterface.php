@@ -19,13 +19,27 @@ interface TypeInterface extends SerializableInterface
     public function setValue($val, array $options = []): self;
 
     /**
-     * Set the val for the DataType.
+     * Set the val for the data type.
      *
      * @throws WanderlusterException
      *
      * @return mixed
      */
     public function getValue(array $options = []);
+
+    /**
+     * Set the version for the data type.
+     *
+     * @throws WanderlusterException
+     */
+    public function setVersion(int $version): TypeInterface;
+
+    /**
+     * Get the version for the data type.
+     *
+     * @throws WanderlusterException
+     */
+    public function getVersion(): int;
 
     /**
      * Returns TRUE if value is null, FALSE otherwise.

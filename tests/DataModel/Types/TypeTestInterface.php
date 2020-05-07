@@ -26,6 +26,8 @@ interface TypeTestInterface
 
     public function testSetGetNull(): void;
 
+    public function testSetGetVersion(): void;
+
     public function testInvalidSetValue(): void;
 
     public function testInvalidConstructorValue(): void;
