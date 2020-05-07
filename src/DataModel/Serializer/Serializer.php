@@ -6,7 +6,6 @@ namespace App\DataModel\Serializer;
 
 use App\DataModel\Entity\Entity;
 use App\DataModel\Entity\EntityId;
-use App\DataModel\Snapshot\SnapshotId;
 use App\DataModel\Translation\LanguageCodes;
 use App\EntityManager\EntityTypeManager;
 use App\EntityManager\EntityUtilites;
@@ -60,7 +59,7 @@ class Serializer
      *
      * @param string $serializedString
      *
-     * @return Entity|EntityId|SnapshotId
+     * @return Entity|EntityId
      *
      * @throws WanderlusterException
      */
@@ -77,13 +76,11 @@ class Serializer
             throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, 'UNKNOWN', 'Missing field: type'));
         }
 
-        switch ($type) {
-            case 'ENTITY':
-                $ret = new Entity();
-                $ret->fromArray($data);
-                break;
-            default:
-                throw new WanderlusterException(sprintf(ErrorMessages::DESERIALIZATION_ERROR, 'Invalid type: '.$type));
+        if ('ENTITY' === $type) {
+            $ret = new Entity();
+            $ret->fromArray($data);
+        } else {
+            throw new WanderlusterException(sprintf(ErrorMessages::DESERIALIZATION_ERROR, 'Invalid type: '.$type));
         }
 
         return $ret;

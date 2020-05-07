@@ -91,6 +91,9 @@ class StringType implements TypeInterface
         if (!$lang) {
             throw new WanderlusterException(sprintf(ErrorMessages::OPTION_REQUIRED, 'lang'));
         }
+        if (LanguageCodes::ANY === $lang) {
+            throw new WanderlusterException(ErrorMessages::UNABLE_TO_USE_ANY_LANGUAGE);
+        }
         $this->trans[$lang] = $val;
 
         return $this;
@@ -120,15 +123,7 @@ class StringType implements TypeInterface
     {
         $lang = isset($options['lang']) ? $options['lang'] : null;
         if (LanguageCodes::ANY === $lang) {
-            $languages = $this->getLanguages();
-            foreach ($languages as $lang) {
-                $options['lang'] = $lang;
-                if (is_null($this->getValue($options))) {
-                    return true;
-                }
-            }
-
-            return false;
+            throw new WanderlusterException(ErrorMessages::UNABLE_TO_USE_ANY_LANGUAGE);
         }
 
         return is_null($this->getValue($options));

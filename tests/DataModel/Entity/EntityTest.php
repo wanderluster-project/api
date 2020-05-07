@@ -15,9 +15,9 @@ class EntityTest extends WebTestCase
     {
         $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE);
         $this->assertEquals([], $sut->getLanguages());
-        $this->assertEquals(EntityTypes::TEST_ENTITY_TYPE, $sut->getEntityId());
+        $this->assertEquals(EntityTypes::TEST_ENTITY_TYPE, $sut->getEntityType());
         $this->assertEmpty($sut->all());
-        $this->assertNull($sut->getEntityId());
+        $this->assertEquals('', (string) $sut->getEntityId());
         $this->assertNull($sut->get('foo'));
         $this->assertFalse($sut->has('foo'));
     }
@@ -97,6 +97,28 @@ class EntityTest extends WebTestCase
         $this->assertEquals(['foo2'], $sut->keys());
     }
 
+    public function testGetLanguages(): void
+    {
+        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE);
+
+        $sut->load(LanguageCodes::ENGLISH);
+        $sut->set('animal', 'dog');
+        $sut->load(LanguageCodes::SPANISH);
+        $sut->set('animal', 'perro');
+
+        $this->assertEquals([LanguageCodes::ENGLISH, LanguageCodes::SPANISH], $sut->getLanguages());
+    }
+
+    public function testGetVersion(): void
+    {
+        // no version set
+        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE);
+        $this->assertEquals(0, $sut->getVersion());
+
+        // version set
+        // @todo handle versioning
+    }
+
     public function testMultilanguage(): void
     {
         $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE);
@@ -117,6 +139,44 @@ class EntityTest extends WebTestCase
         $this->assertEquals(['animal'], $sut->keys());
     }
 
+    public function testFromArray(): void
+    {
+        // empty data
+        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
+        $sut->fromArray([
+            'type' => 'ENTITY',
+            'entity_id' => null,
+            'entity_type' => 100,
+            'snapshot' => null,
+        ]);
+        $this->assertEquals('', (string) $sut->getEntityId());
+        $this->assertEquals(100, (string) $sut->getEntityType());
+
+        // with some data
+        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
+        $sut->fromArray([
+            'type' => 'ENTITY',
+            'entity_id' => '31159eca-522c-4d09-8a5d-ee3438e6bb6f',
+            'entity_type' => 10,
+            'snapshot' => [
+                'type' => 'SNAPSHOT',
+                'version' => 100,
+                'data' => [
+                    'test.string' => [
+                        'type' => 'STRING',
+                        'trans' => [
+                            'en' => 'english string',
+                            'es' => 'spanish string',
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+        $this->assertEquals('31159eca-522c-4d09-8a5d-ee3438e6bb6f', (string) $sut->getEntityId());
+        $this->assertEquals(10, $sut->getEntityType());
+        $this->assertEquals(100, $sut->getVersion());
+    }
+
     public function testToArray(): void
     {
         // test empty
@@ -124,10 +184,10 @@ class EntityTest extends WebTestCase
         $this->assertEquals([
             'type' => 'ENTITY',
             'entity_id' => null,
-            'entity_type' => 0,
+            'entity_type' => 10,
             'snapshot' => [
                 'type' => 'SNAPSHOT',
-                'snapshot_id' => null,
+                'version' => null,
                 'data' => [],
             ],
         ], $sut->toArray());
@@ -141,10 +201,10 @@ class EntityTest extends WebTestCase
         $this->assertEquals([
             'type' => 'ENTITY',
             'entity_id' => null,
-            'entity_type' => 0,
+            'entity_type' => 10,
             'snapshot' => [
                 'type' => 'SNAPSHOT',
-                'snapshot_id' => null,
+                'version' => null,
                 'data' => [
                     'test.string' => [
                         'type' => 'STRING',

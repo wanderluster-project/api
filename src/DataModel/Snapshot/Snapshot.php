@@ -22,9 +22,9 @@ use DateTimeInterface;
 class Snapshot implements SerializableInterface
 {
     /**
-     * @var SnapshotId|null
+     * @var int|null
      */
-    protected $snapshotId = null;
+    protected $version = null;
 
     /**
      * @var DateTimeImmutable
@@ -248,9 +248,13 @@ class Snapshot implements SerializableInterface
         return $ret;
     }
 
+    public function getVersion(): ?int
+    {
+        return $this->version;
+    }
+
     public function toArray(): array
     {
-        $snapshotId = (string) $this->snapshotId;
         $data = [];
         foreach ($this->data as $key => $value) {
             if (!is_null($value)) {
@@ -260,14 +264,14 @@ class Snapshot implements SerializableInterface
 
         return [
             'type' => $this->getTypeId(),
-            'snapshot_id' => $snapshotId ? $snapshotId : null,
+            'version' => $this->version,
             'data' => $data,
         ];
     }
 
     public function fromArray(array $data): SerializableInterface
     {
-        $fields = ['type', 'snapshot_id', 'data'];
+        $fields = ['type', 'version', 'data'];
         foreach ($fields as $field) {
             if (!array_key_exists($field, $data)) {
                 throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Missing Field: '.$field));
@@ -275,15 +279,15 @@ class Snapshot implements SerializableInterface
         }
 
         $type = $data['type'];
-        $snapshotId = $data['snapshot_id'];
+        $version = (int) $data['version'];
         $data = $data['data'];
 
         if ($type !== $this->getTypeId()) {
             throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Invalid Type: '.$type));
         }
 
-        if ($snapshotId) {
-            $this->snapshotId = new SnapshotId($snapshotId);
+        if ($version) {
+            $this->version = $version;
         }
 
         foreach ($data as $key => $typeData) {

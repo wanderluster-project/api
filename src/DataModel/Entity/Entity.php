@@ -40,6 +40,7 @@ class Entity implements SerializableInterface
     {
         $this->entityType = $defaultEntityType;
         $this->lang = $defaultLang;
+        $this->entityId = new EntityId();
         $this->snapshot = new Snapshot();
     }
 
@@ -62,20 +63,17 @@ class Entity implements SerializableInterface
         return $this->snapshot->getLanguages();
     }
 
+    public function getVersion(): ?int
+    {
+        return $this->snapshot->getVersion();
+    }
+
     /**
      * Get the EntityType for this Entity.
      */
     public function getEntityType(): ?int
     {
         return $this->entityType;
-    }
-
-    /**
-     * Set the EntityType for this Entity.
-     */
-    public function setEntityType(int $entityType): void
-    {
-        $this->entityType = $entityType;
     }
 
     /**
@@ -190,8 +188,21 @@ class Entity implements SerializableInterface
             $this->entityId = new EntityId($entityId);
         }
 
-        $this->entityType = $entityType;
-        $this->snapshot->fromArray($snapshot);
+        if (!is_int($entityType)) {
+            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Invalid EntityType: '.$entityType));
+        }
+
+        if ($entityType) {
+            $this->entityType = $entityType;
+        }
+
+        if (!is_array($snapshot) && !is_null($snapshot)) {
+            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Invalid Snapshot: '.$entityType));
+        }
+
+        if ($snapshot) {
+            $this->snapshot->fromArray($snapshot);
+        }
 
         return $this;
     }

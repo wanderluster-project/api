@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\DataModel\Types;
 
+use App\DataModel\Translation\LanguageCodes;
 use App\DataModel\Types\StringType;
 use App\Exception\WanderlusterException;
 use PHPUnit\Framework\TestCase;
@@ -23,6 +24,15 @@ class StringTypeTest extends TestCase implements TypeTestInterface
 
         $sut = new StringType(['en' => 'The quick brown fox jumps over the lazy dog']);
         $this->assertFalse($sut->isNull(['lang' => 'en']));
+
+        // exceptions
+        try {
+            $sut = new StringType(['en' => 'The quick brown fox jumps over the lazy dog']);
+            $sut->isNull(['lang' => LanguageCodes::ANY]);
+            $this->fail('Exception not thrown.');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('You must specify a language.  Wildcard (*) is not allowed).', $e->getMessage());
+        }
     }
 
     public function testConstructorWithValue(): void
@@ -146,6 +156,21 @@ class StringTypeTest extends TestCase implements TypeTestInterface
 
         $sut->setValue('bar', ['lang' => 'es']);
         $this->assertEquals('bar', $sut->getValue(['lang' => 'es']));
+
+        // Exceptions
+        try {
+            $sut->setValue('bar', ['lang' => LanguageCodes::ANY]);
+            $this->fail('Exception not thrown');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('You must specify a language.  Wildcard (*) is not allowed).', $e->getMessage());
+        }
+
+        try {
+            $sut->getValue(['lang' => LanguageCodes::ANY]);
+            $this->fail('Exception not thrown');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('You must specify a language.  Wildcard (*) is not allowed).', $e->getMessage());
+        }
     }
 
     public function testSetGetNull(): void
