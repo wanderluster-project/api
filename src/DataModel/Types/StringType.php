@@ -54,7 +54,8 @@ class StringType implements TypeInterface
     {
         return [
             'type' => $this->getTypeId(),
-            'trans' => $this->trans,
+            'val' => $this->trans,
+            'ver' => $this->getVersion(),
         ];
     }
 
@@ -63,7 +64,7 @@ class StringType implements TypeInterface
      */
     public function fromArray(array $data): SerializableInterface
     {
-        $fields = ['type', 'trans'];
+        $fields = ['type', 'val', 'ver'];
         foreach ($fields as $field) {
             if (!array_key_exists($field, $data)) {
                 throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Missing Field: '.$field));
@@ -71,19 +72,21 @@ class StringType implements TypeInterface
         }
 
         $type = $data['type'];
-        $trans = $data['trans'];
+        $val = $data['val'];
+        $ver = (int) $data['ver'];
 
         if ($type !== $this->getTypeId()) {
             throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Invalid Type: '.$type));
         }
 
-        if (!is_array($trans)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'trans should be an array'));
+        if (!is_array($val)) {
+            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'val should be an array'));
         }
 
-        foreach ($trans as $lang => $val) {
-            $this->setValue($val, ['lang' => $lang]);
+        foreach ($val as $lang => $item) {
+            $this->setValue($item, ['lang' => $lang]);
         }
+        $this->setVersion($ver);
 
         return $this;
     }

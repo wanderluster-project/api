@@ -47,20 +47,22 @@ class UrlTypeTest extends TestCase implements TypeTestInterface
     public function testToArray(): void
     {
         $sut = new UrlType();
-        $this->assertEquals(['val' => null, 'type' => 'URL'], $sut->toArray());
+        $this->assertEquals(['val' => null, 'type' => 'URL', 'ver' => 0], $sut->toArray());
 
         $sut = new UrlType('https://www.google.com');
-        $this->assertEquals(['val' => 'https://www.google.com', 'type' => 'URL'], $sut->toArray());
+        $this->assertEquals(['val' => 'https://www.google.com', 'type' => 'URL', 'ver' => 0], $sut->toArray());
     }
 
     public function testFromArray(): void
     {
         $sut = new UrlType();
-        $sut->fromArray(['val' => null, 'type' => 'URL']);
+        $sut->fromArray(['val' => null, 'type' => 'URL', 'ver' => 0]);
         $this->assertNull($sut->getValue());
+        $this->assertEquals(0, $sut->getVersion());
 
-        $sut->fromArray(['type' => 'URL', 'val' => 'https://www.google.com']);
+        $sut->fromArray(['type' => 'URL', 'val' => 'https://www.google.com', 'ver' => 10]);
         $this->assertEquals('https://www.google.com', $sut->getValue());
+        $this->assertEquals(10, $sut->getVersion());
     }
 
     public function testFromArrayException(): void
@@ -83,10 +85,19 @@ class UrlTypeTest extends TestCase implements TypeTestInterface
             $this->assertEquals('Error hydrating URL data type - Missing Field: val.', $e->getMessage());
         }
 
+        // missing ver
+        $sut = new UrlType();
+        try {
+            $sut->fromArray(['type' => 'URL', 'val' => 'https://www.google.com']);
+            $this->fail('Exception not thrown.');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Error hydrating URL data type - Missing Field: ver.', $e->getMessage());
+        }
+
         // invalid value
         $sut = new UrlType();
         try {
-            $sut->fromArray(['type' => 'URL', 'val' => 3.14]);
+            $sut->fromArray(['type' => 'URL', 'ver' => 10, 'val' => 3.14]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to URL data type - String required.', $e->getMessage());
@@ -95,7 +106,7 @@ class UrlTypeTest extends TestCase implements TypeTestInterface
         // invalid value
         $sut = new UrlType();
         try {
-            $sut->fromArray(['type' => 'URL', 'val' => 'simpkevin']);
+            $sut->fromArray(['type' => 'URL', 'ver' => 10, 'val' => 'simpkevin']);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to URL data type - Invalid URL.', $e->getMessage());
@@ -104,7 +115,7 @@ class UrlTypeTest extends TestCase implements TypeTestInterface
         // invalid TYPE
         $sut = new UrlType();
         try {
-            $sut->fromArray(['type' => 'foo', 'val' => 'https://www.google.com']);
+            $sut->fromArray(['type' => 'foo', 'ver' => 10, 'val' => 'https://www.google.com']);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Error hydrating URL data type - Invalid Type: foo.', $e->getMessage());

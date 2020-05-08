@@ -48,21 +48,22 @@ class MimeTypeTest extends TestCase implements TypeTestInterface
     {
         // null
         $sut = new MimeType();
-        $this->assertEquals(['val' => null, 'type' => 'MIME_TYPE'], $sut->toArray());
+        $this->assertEquals(['val' => null, 'type' => 'MIME_TYPE', 'ver' => 0], $sut->toArray());
 
         // negative value
-        $sut = new MimeType('image/png');
-        $this->assertEquals(['val' => 'image/png', 'type' => 'MIME_TYPE'], $sut->toArray());
+        $sut = new MimeType('image/png', ['ver' => 10]);
+        $this->assertEquals(['val' => 'image/png', 'type' => 'MIME_TYPE', 'ver' => 10], $sut->toArray());
     }
 
     public function testFromArray(): void
     {
         $sut = new MimeType();
-        $sut->fromArray(['val' => null, 'type' => 'MIME_TYPE']);
+        $sut->fromArray(['val' => null, 'type' => 'MIME_TYPE', 'ver' => 0]);
         $this->assertNull($sut->getValue());
 
-        $sut->fromArray(['type' => 'MIME_TYPE', 'val' => 'image/png']);
+        $sut->fromArray(['type' => 'MIME_TYPE', 'val' => 'image/png', 'ver' => 10]);
         $this->assertEquals('image/png', $sut->getValue());
+        $this->assertEquals(10, $sut->getVersion());
     }
 
     public function testFromArrayException(): void
@@ -85,10 +86,19 @@ class MimeTypeTest extends TestCase implements TypeTestInterface
             $this->assertEquals('Error hydrating MIME_TYPE data type - Missing Field: val.', $e->getMessage());
         }
 
+        // missing ver
+        $sut = new MimeType();
+        try {
+            $sut->fromArray(['type' => 'MIME_TYPE', 'val' => 'image/png']);
+            $this->fail('Exception not thrown.');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Error hydrating MIME_TYPE data type - Missing Field: ver.', $e->getMessage());
+        }
+
         // invalid value
         $sut = new MimeType();
         try {
-            $sut->fromArray(['type' => 'MIME_TYPE', 'val' => 'test invalid']);
+            $sut->fromArray(['type' => 'MIME_TYPE', 'val' => 'test invalid', 'ver' => 10]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to MIME_TYPE data type - Invalid MimeType.', $e->getMessage());
@@ -97,7 +107,7 @@ class MimeTypeTest extends TestCase implements TypeTestInterface
         // invalid value
         $sut = new MimeType();
         try {
-            $sut->fromArray(['type' => 'MIME_TYPE', 'val' => 3.14]);
+            $sut->fromArray(['type' => 'MIME_TYPE', 'val' => 3.14, 'ver' => 10]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to MIME_TYPE data type - String required.', $e->getMessage());
@@ -106,7 +116,7 @@ class MimeTypeTest extends TestCase implements TypeTestInterface
         // invalid value
         $sut = new MimeType();
         try {
-            $sut->fromArray(['type' => 'FOO', 'val' => 'image/png']);
+            $sut->fromArray(['type' => 'FOO', 'val' => 'image/png', 'ver' => 10]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Error hydrating MIME_TYPE data type - Invalid Type: FOO.', $e->getMessage());

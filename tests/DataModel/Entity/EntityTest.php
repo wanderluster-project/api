@@ -165,7 +165,8 @@ class EntityTest extends WebTestCase
                 'data' => [
                     'test.string' => [
                         'type' => 'STRING',
-                        'trans' => [
+                        'ver' => 0,
+                        'val' => [
                             'en' => 'english string',
                             'es' => 'spanish string',
                         ],
@@ -293,7 +294,8 @@ class EntityTest extends WebTestCase
                 'data' => [
                     'test.string' => [
                         'type' => 'STRING',
-                        'trans' => [
+                        'ver' => 0,
+                        'val' => [
                             'en' => 'english string',
                             'es' => 'spanish string',
                         ],

@@ -47,23 +47,25 @@ class FileSizeTypeTest extends TestCase implements TypeTestInterface
     public function testToArray(): void
     {
         $sut = new FileSizeType();
-        $this->assertEquals(['val' => null, 'type' => 'FILE_SIZE'], $sut->toArray());
+        $this->assertEquals(['val' => null, 'type' => 'FILE_SIZE', 'ver' => 0], $sut->toArray());
 
-        $sut = new FileSizeType('1.1GB');
-        $this->assertEquals(['val' => floor(1.1 * FileSizeType::GB_BYTES), 'type' => 'FILE_SIZE'], $sut->toArray());
+        $sut = new FileSizeType('1.1GB', ['ver' => 10]);
+        $this->assertEquals(['val' => floor(1.1 * FileSizeType::GB_BYTES), 'type' => 'FILE_SIZE', 'ver' => 10], $sut->toArray());
 
-        $sut = new FileSizeType(2000);
-        $this->assertEquals(['val' => 2000, 'type' => 'FILE_SIZE'], $sut->toArray());
+        $sut = new FileSizeType(2000, ['ver' => 10]);
+        $this->assertEquals(['val' => 2000, 'type' => 'FILE_SIZE', 'ver' => 10], $sut->toArray());
     }
 
     public function testFromArray(): void
     {
         $sut = new FileSizeType();
-        $sut->fromArray(['val' => null, 'type' => 'FILE_SIZE']);
+        $sut->fromArray(['val' => null, 'type' => 'FILE_SIZE', 'ver' => 10]);
         $this->assertNull($sut->getValue());
+        $this->assertEquals(10, $sut->getVersion());
 
-        $sut->fromArray(['type' => 'FILE_SIZE', 'val' => 2000]);
+        $sut->fromArray(['type' => 'FILE_SIZE', 'val' => 2000, 'ver' => 10]);
         $this->assertEquals(2000, $sut->getValue());
+        $this->assertEquals(10, $sut->getVersion());
     }
 
     public function testFromArrayException(): void
@@ -86,10 +88,19 @@ class FileSizeTypeTest extends TestCase implements TypeTestInterface
             $this->assertEquals('Error hydrating FILE_SIZE data type - Missing Field: val.', $e->getMessage());
         }
 
+        // missing ver
+        $sut = new FileSizeType();
+        try {
+            $sut->fromArray(['type' => 'FILE_SIZE', 'val' => 2000]);
+            $this->fail('Exception not thrown.');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Error hydrating FILE_SIZE data type - Missing Field: ver.', $e->getMessage());
+        }
+
         // invalid type
         $sut = new FileSizeType();
         try {
-            $sut->fromArray(['type' => 'TEST', 'val' => 2000]);
+            $sut->fromArray(['type' => 'TEST', 'val' => 2000, 'ver' => 150]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Error hydrating FILE_SIZE data type - Invalid Type: TEST.', $e->getMessage());
@@ -98,7 +109,7 @@ class FileSizeTypeTest extends TestCase implements TypeTestInterface
         // invalid value
         $sut = new FileSizeType();
         try {
-            $sut->fromArray(['type' => 'FILE_SIZE', 'val' => 'I AM INVALID']);
+            $sut->fromArray(['type' => 'FILE_SIZE', 'val' => 'I AM INVALID', 'ver' => 150]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to FILE_SIZE data type - Invalid file size string.', $e->getMessage());
@@ -107,7 +118,7 @@ class FileSizeTypeTest extends TestCase implements TypeTestInterface
         // invalid value
         $sut = new FileSizeType();
         try {
-            $sut->fromArray(['type' => 'FILE_SIZE', 'val' => false]);
+            $sut->fromArray(['type' => 'FILE_SIZE', 'val' => false, 'ver' => 150]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to FILE_SIZE data type - Invalid file size.', $e->getMessage());

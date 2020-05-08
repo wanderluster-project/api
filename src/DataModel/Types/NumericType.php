@@ -52,6 +52,7 @@ class NumericType implements TypeInterface
         return [
             'type' => $this->getTypeId(),
             'val' => $this->val,
+            'ver' => $this->getVersion(),
         ];
     }
 
@@ -60,7 +61,7 @@ class NumericType implements TypeInterface
      */
     public function fromArray(array $data): SerializableInterface
     {
-        $fields = ['type', 'val'];
+        $fields = ['type', 'val', 'ver'];
         foreach ($fields as $field) {
             if (!array_key_exists($field, $data)) {
                 throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Missing Field: '.$field));
@@ -69,11 +70,13 @@ class NumericType implements TypeInterface
 
         $type = $data['type'];
         $val = $data['val'];
+        $ver = (int) $data['ver'];
 
         if ($type !== $this->getTypeId()) {
             throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Invalid Type: '.$type));
         }
         $this->setValue($val);
+        $this->setVersion($ver);
 
         return $this;
     }

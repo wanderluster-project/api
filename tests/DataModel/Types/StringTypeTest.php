@@ -80,14 +80,15 @@ class StringTypeTest extends TestCase implements TypeTestInterface
 
     public function testToArray(): void
     {
-        $sut = new StringType(['en' => 'The quick brown fox jumps over the lazy dog', 'es' => 'El rápido zorro marrón salta sobre el perro perezoso']);
+        $sut = new StringType(['en' => 'The quick brown fox jumps over the lazy dog', 'es' => 'El rápido zorro marrón salta sobre el perro perezoso'], ['ver' => 10]);
         $this->assertEquals(
             [
                 'type' => 'STRING',
-                'trans' => [
+                'val' => [
                     'en' => 'The quick brown fox jumps over the lazy dog',
                     'es' => 'El rápido zorro marrón salta sobre el perro perezoso',
                 ],
+                'ver' => 10,
             ],
             $sut->toArray());
     }
@@ -98,13 +99,15 @@ class StringTypeTest extends TestCase implements TypeTestInterface
         $this->assertTrue($sut->isNull(['lang' => 'en']));
         $sut->fromArray([
             'type' => 'STRING',
-            'trans' => [
+            'val' => [
                 'en' => 'The quick brown fox jumps over the lazy dog',
                 'es' => 'El rápido zorro marrón salta sobre el perro perezoso',
             ],
+            'ver' => 10,
         ]);
         $this->assertEquals('The quick brown fox jumps over the lazy dog', $sut->getValue(['lang' => 'en']));
         $this->assertEquals('El rápido zorro marrón salta sobre el perro perezoso', $sut->getValue(['lang' => 'es']));
+        $this->assertEquals(10, $sut->getVersion());
     }
 
     public function testFromArrayException(): void
@@ -124,22 +127,31 @@ class StringTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['type' => 'STRING']);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Error hydrating STRING data type - Missing Field: trans.', $e->getMessage());
+            $this->assertEquals('Error hydrating STRING data type - Missing Field: val.', $e->getMessage());
         }
 
-        // invalid value
+        // missing ver
         $sut = new StringType();
         try {
-            $sut->fromArray(['type' => 'STRING', 'trans' => 'I AM INVALID']);
+            $sut->fromArray(['type' => 'STRING', 'val' => []]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Error hydrating STRING data type - trans should be an array.', $e->getMessage());
+            $this->assertEquals('Error hydrating STRING data type - Missing Field: ver.', $e->getMessage());
         }
 
         // invalid value
         $sut = new StringType();
         try {
-            $sut->fromArray(['type' => 'FOO', 'trans' => ['en' => 'The quick brown fox jumps over the lazy dog']]);
+            $sut->fromArray(['type' => 'STRING', 'val' => 'I AM INVALID', 'ver' => 10]);
+            $this->fail('Exception not thrown.');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Error hydrating STRING data type - val should be an array.', $e->getMessage());
+        }
+
+        // invalid value
+        $sut = new StringType();
+        try {
+            $sut->fromArray(['type' => 'FOO', 'val' => ['en' => 'The quick brown fox jumps over the lazy dog'], 'ver' => 10]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Error hydrating STRING data type - Invalid Type: FOO.', $e->getMessage());

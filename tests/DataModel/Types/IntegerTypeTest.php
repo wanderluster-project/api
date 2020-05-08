@@ -47,25 +47,26 @@ class IntegerTypeTest extends TestCase implements TypeTestInterface
     {
         // null
         $sut = new IntegerType();
-        $this->assertEquals(['val' => null, 'type' => 'INT'], $sut->toArray());
+        $this->assertEquals(['val' => null, 'type' => 'INT', 'ver' => 0], $sut->toArray());
 
         // negative value
-        $sut = new IntegerType(-1);
-        $this->assertEquals(['val' => -1, 'type' => 'INT'], $sut->toArray());
+        $sut = new IntegerType(-1, ['ver' => 150]);
+        $this->assertEquals(['val' => -1, 'type' => 'INT', 'ver' => 150], $sut->toArray());
 
         // positive value
-        $sut = new IntegerType(150);
-        $this->assertEquals(['val' => 150, 'type' => 'INT'], $sut->toArray());
+        $sut = new IntegerType(150, ['ver' => 150]);
+        $this->assertEquals(['val' => 150, 'type' => 'INT', 'ver' => 150], $sut->toArray());
     }
 
     public function testFromArray(): void
     {
         $sut = new IntegerType();
-        $sut->fromArray(['val' => null, 'type' => 'INT']);
+        $sut->fromArray(['val' => null, 'type' => 'INT', 'ver' => 0]);
         $this->assertNull($sut->getValue());
 
-        $sut->fromArray(['type' => 'INT', 'val' => 150]);
+        $sut->fromArray(['type' => 'INT', 'val' => 150, 'ver' => 10]);
         $this->assertEquals(150, $sut->getValue());
+        $this->assertEquals(10, $sut->getVersion());
     }
 
     public function testFromArrayException(): void
@@ -88,10 +89,19 @@ class IntegerTypeTest extends TestCase implements TypeTestInterface
             $this->assertEquals('Error hydrating INT data type - Missing Field: val.', $e->getMessage());
         }
 
+        // missing ver
+        $sut = new IntegerType();
+        try {
+            $sut->fromArray(['type' => 'INT', 'val' => 150]);
+            $this->fail('Exception not thrown.');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Error hydrating INT data type - Missing Field: ver.', $e->getMessage());
+        }
+
         // invalid value
         $sut = new IntegerType();
         try {
-            $sut->fromArray(['type' => 'INT', 'val' => 3.14]);
+            $sut->fromArray(['type' => 'INT', 'val' => 3.14, 'ver' => 10]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to INT data type - Integer required.', $e->getMessage());
@@ -100,7 +110,7 @@ class IntegerTypeTest extends TestCase implements TypeTestInterface
         // invalid TYPE
         $sut = new IntegerType();
         try {
-            $sut->fromArray(['type' => 'FOO', 'val' => 3]);
+            $sut->fromArray(['type' => 'FOO', 'val' => 3, 'ver' => 10]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Error hydrating INT data type - Invalid Type: FOO.', $e->getMessage());

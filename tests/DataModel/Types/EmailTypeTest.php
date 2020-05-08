@@ -56,10 +56,10 @@ class EmailTypeTest extends TestCase implements TypeTestInterface
     public function testFromArray(): void
     {
         $sut = new EmailType();
-        $sut->fromArray(['val' => null, 'type' => 'EMAIL', 'ver'=>0]);
+        $sut->fromArray(['val' => null, 'type' => 'EMAIL', 'ver' => 0]);
         $this->assertNull($sut->getValue());
 
-        $sut->fromArray(['type' => 'EMAIL', 'val' => 'simpkevin@gmail.com','ver'=>10]);
+        $sut->fromArray(['type' => 'EMAIL', 'val' => 'simpkevin@gmail.com', 'ver' => 10]);
         $this->assertEquals('simpkevin@gmail.com', $sut->getValue());
         $this->assertEquals(10, $sut->getVersion());
     }
@@ -87,7 +87,7 @@ class EmailTypeTest extends TestCase implements TypeTestInterface
         // invalid value
         $sut = new EmailType();
         try {
-            $sut->fromArray(['type' => 'EMAIL','val' => 3.14, 'ver'=> 0]);
+            $sut->fromArray(['type' => 'EMAIL', 'val' => 3.14, 'ver' => 0]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to EMAIL data type - String required.', $e->getMessage());
@@ -96,7 +96,7 @@ class EmailTypeTest extends TestCase implements TypeTestInterface
         // invalid value
         $sut = new EmailType();
         try {
-            $sut->fromArray(['type' => 'EMAIL', 'val' => 'simpkevin', 'ver'=> 0]);
+            $sut->fromArray(['type' => 'EMAIL', 'val' => 'simpkevin', 'ver' => 0]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to EMAIL data type - Invalid Email.', $e->getMessage());
@@ -105,7 +105,7 @@ class EmailTypeTest extends TestCase implements TypeTestInterface
         // invalid type
         $sut = new EmailType();
         try {
-            $sut->fromArray(['type' => 'FOO', 'val' => 'simpkevin@gmail.com', 'ver'=> 0]);
+            $sut->fromArray(['type' => 'FOO', 'val' => 'simpkevin@gmail.com', 'ver' => 0]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Error hydrating EMAIL data type - Invalid Type: FOO.', $e->getMessage());

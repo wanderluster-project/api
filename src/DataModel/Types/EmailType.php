@@ -52,7 +52,7 @@ class EmailType implements TypeInterface
         return [
             'type' => $this->getTypeId(),
             'val' => $this->val,
-            'ver'=> $this->getVersion()
+            'ver' => $this->getVersion(),
         ];
     }
 
