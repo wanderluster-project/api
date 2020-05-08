@@ -38,5 +38,5 @@ class ErrorMessages
     const JWT_INVALID = 'Invalid JWT.';
 
     const TOMBSTONE_EDIT = 'Unable to change tombstone type.';
-    const VERSION_INVALID = 'Invalid version -  %s';
+    const VERSION_INVALID = 'Invalid version: %s';
 }

@@ -135,6 +135,13 @@ class EmailTypeTest extends TestCase implements TypeTestInterface
         $this->assertEquals(0, $sut->getVersion());
         $sut->setVersion(10);
         $this->assertEquals(10, $sut->getVersion());
+
+        try {
+            $sut->setVersion(-1);
+            $this->fail('Exception not thrown.');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Invalid version: -1', $e->getMessage());
+        }
     }
 
     public function testInvalidSetValue(): void
