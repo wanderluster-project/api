@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\DataModel\Serializer;
 
+use App\DataModel\Contracts\SerializableInterface;
 use App\DataModel\Entity\Entity;
 use App\DataModel\Entity\EntityId;
 use App\DataModel\Translation\LanguageCodes;
@@ -14,20 +15,9 @@ use App\Exception\WanderlusterException;
 
 class Serializer
 {
-    /**
-     * @var EntityUtilites
-     */
-    protected $entityUtilites;
-
-    /**
-     * @var LanguageCodes
-     */
-    protected $languageCodes;
-
-    /**
-     * @var EntityTypeManager
-     */
-    protected $entityTypeManager;
+    protected EntityUtilites $entityUtilites;
+    protected LanguageCodes $languageCodes;
+    protected EntityTypeManager $entityTypeManager;
 
     /**
      * Serializer constructor.
@@ -57,13 +47,11 @@ class Serializer
     /**
      * Decode a string representation into an Object.
      *
-     * @param string $serializedString
-     *
      * @return Entity|EntityId
      *
      * @throws WanderlusterException
      */
-    public function decode($serializedString)
+    public function decode(string $serializedString)
     {
         $data = json_decode($serializedString, true);
         if (json_last_error()) {

@@ -14,7 +14,7 @@ class FileSizeTypeTest extends TestCase implements TypeTestInterface
     public function testNullConstructor(): void
     {
         $sut = new FileSizeType();
-        $this->assertEquals('FILE_SIZE', $sut->getTypeId());
+        $this->assertEquals('FILE_SIZE', $sut->getSerializationId());
         $this->assertTrue($sut->isNull());
     }
 

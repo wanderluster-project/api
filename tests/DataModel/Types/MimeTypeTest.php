@@ -14,7 +14,7 @@ class MimeTypeTest extends TestCase implements TypeTestInterface
     public function testNullConstructor(): void
     {
         $sut = new MimeType();
-        $this->assertEquals('MIME_TYPE', $sut->getTypeId());
+        $this->assertEquals('MIME_TYPE', $sut->getSerializationId());
         $this->assertTrue($sut->isNull());
     }
 

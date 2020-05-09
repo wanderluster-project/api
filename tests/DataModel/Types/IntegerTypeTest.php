@@ -170,8 +170,8 @@ class IntegerTypeTest extends TestCase implements TypeTestInterface
             // @phpstan-ignore-next-line
             $sut = new IntegerType('I am a string');
             $this->fail('Exception not thrown');
-        } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to INT data type - Integer required.', $e->getMessage());
+        } catch (\TypeError $e) {
+            $this->assertStringStartsWith('Argument 1 passed to App\DataModel\Types\IntegerType::__construct() must be of the type int or null, string given', $e->getMessage());
         }
     }
 

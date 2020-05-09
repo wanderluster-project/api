@@ -14,7 +14,7 @@ class EntityTest extends WebTestCase
 {
     public function testConstuctor(): void
     {
-        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE);
+        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
         $this->assertEquals([], $sut->getLanguages());
         $this->assertEquals(EntityTypes::TEST_ENTITY_TYPE, $sut->getEntityType());
         $this->assertEmpty($sut->all());
@@ -122,7 +122,7 @@ class EntityTest extends WebTestCase
 
     public function testMultilanguage(): void
     {
-        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE);
+        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
         $this->assertEquals([], $sut->all());
 
         $sut->load(LanguageCodes::ENGLISH);

@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\DataModel\Serializer;
+namespace App\DataModel\Contracts;
 
 use App\Exception\WanderlusterException;
 
 interface SerializableInterface
 {
     /**
-     * Returns the identifier for this data type.
+     * Returns the unique identifier used for serialization.
      */
-    public function getTypeId(): string;
+    public function getSerializationId(): string;
 
     /**
      * Converts data type to array to be serialized.

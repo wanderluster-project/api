@@ -4,22 +4,17 @@ declare(strict_types=1);
 
 namespace App\DataModel\Types;
 
-use App\DataModel\Serializer\SerializableInterface;
+use App\DataModel\Contracts\SerializableInterface;
+use App\DataModel\Contracts\TypeInterface;
+use App\DataModel\Contracts\VersionableTrait;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 
 class NumericType implements TypeInterface
 {
-    /**
-     * @var int|float|null
-     */
-    protected $val;
-
-    /**
-     * @var int
-     */
-    protected $ver = 0;
+    use VersionableTrait;
+    protected ?float $val = null;
 
     /**
      * Numeric constructor.
@@ -39,7 +34,7 @@ class NumericType implements TypeInterface
     /**
      * {@inheritdoc}
      */
-    public function getTypeId(): string
+    public function getSerializationId(): string
     {
         return 'NUM';
     }
@@ -50,7 +45,7 @@ class NumericType implements TypeInterface
     public function toArray(): array
     {
         return [
-            'type' => $this->getTypeId(),
+            'type' => $this->getSerializationId(),
             'val' => $this->val,
             'ver' => $this->getVersion(),
         ];
@@ -64,7 +59,7 @@ class NumericType implements TypeInterface
         $fields = ['type', 'val', 'ver'];
         foreach ($fields as $field) {
             if (!array_key_exists($field, $data)) {
-                throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Missing Field: '.$field));
+                throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Missing Field: '.$field));
             }
         }
 
@@ -72,8 +67,8 @@ class NumericType implements TypeInterface
         $val = $data['val'];
         $ver = (int) $data['ver'];
 
-        if ($type !== $this->getTypeId()) {
-            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Invalid Type: '.$type));
+        if ($type !== $this->getSerializationId()) {
+            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Invalid Type: '.$type));
         }
         $this->setValue($val);
         $this->setVersion($ver);
@@ -87,7 +82,7 @@ class NumericType implements TypeInterface
     public function setValue($val, array $options = []): TypeInterface
     {
         if (!is_int($val) && !is_float($val) && !is_null($val)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'Numeric required'));
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId(), 'Numeric required'));
         }
 
         $this->val = $val;
@@ -101,27 +96,6 @@ class NumericType implements TypeInterface
     public function getValue(array $options = [])
     {
         return $this->val;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setVersion(int $version): TypeInterface
-    {
-        if ($version < 0) {
-            throw new WanderlusterException(sprintf(ErrorMessages::VERSION_INVALID, $version));
-        }
-        $this->ver = $version;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getVersion(): int
-    {
-        return $this->ver;
     }
 
     /**
@@ -143,7 +117,7 @@ class NumericType implements TypeInterface
     public function merge(TypeInterface $type): void
     {
         if (!$type instanceof NumericType) {
-            throw new WanderlusterException(sprintf(ErrorMessages::MERGE_UNSUCCESSFUL, $type->getTypeId(), $this->getTypeId()));
+            throw new WanderlusterException(sprintf(ErrorMessages::MERGE_UNSUCCESSFUL, $type->getSerializationId(), $this->getSerializationId()));
         }
 
         $thisVal = $this->getValue();

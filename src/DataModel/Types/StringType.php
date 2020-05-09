@@ -4,24 +4,23 @@ declare(strict_types=1);
 
 namespace App\DataModel\Types;
 
-use App\DataModel\Serializer\SerializableInterface;
+use App\DataModel\Contracts\SerializableInterface;
+use App\DataModel\Contracts\TypeInterface;
+use App\DataModel\Contracts\VersionableTrait;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 
 class StringType implements TypeInterface
 {
+    use VersionableTrait;
+
     /**
      * Associative array identifying languageCode => translation.
      *
      * @var string[]|null
      */
     protected $trans;
-
-    /**
-     * @var int
-     */
-    protected $ver = 0;
 
     /**
      * Boolean constructor.
@@ -42,7 +41,7 @@ class StringType implements TypeInterface
     /**
      * {@inheritdoc}
      */
-    public function getTypeId(): string
+    public function getSerializationId(): string
     {
         return 'STRING';
     }
@@ -53,7 +52,7 @@ class StringType implements TypeInterface
     public function toArray(): array
     {
         return [
-            'type' => $this->getTypeId(),
+            'type' => $this->getSerializationId(),
             'val' => $this->trans,
             'ver' => $this->getVersion(),
         ];
@@ -67,7 +66,7 @@ class StringType implements TypeInterface
         $fields = ['type', 'val', 'ver'];
         foreach ($fields as $field) {
             if (!array_key_exists($field, $data)) {
-                throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Missing Field: '.$field));
+                throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Missing Field: '.$field));
             }
         }
 
@@ -75,12 +74,12 @@ class StringType implements TypeInterface
         $val = $data['val'];
         $ver = (int) $data['ver'];
 
-        if ($type !== $this->getTypeId()) {
-            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Invalid Type: '.$type));
+        if ($type !== $this->getSerializationId()) {
+            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Invalid Type: '.$type));
         }
 
         if (!is_array($val)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'val should be an array'));
+            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'val should be an array'));
         }
 
         foreach ($val as $lang => $item) {
@@ -97,7 +96,7 @@ class StringType implements TypeInterface
     public function setValue($val, array $options = []): TypeInterface
     {
         if (!is_string($val) && !is_null($val)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'String required'));
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId(), 'String required'));
         }
         $lang = isset($options['lang']) ? $options['lang'] : null;
         if (!$lang) {
@@ -131,27 +130,6 @@ class StringType implements TypeInterface
     /**
      * {@inheritdoc}
      */
-    public function setVersion(int $version): TypeInterface
-    {
-        if ($version < 0) {
-            throw new WanderlusterException(sprintf(ErrorMessages::VERSION_INVALID, $version));
-        }
-        $this->ver = $version;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getVersion(): int
-    {
-        return $this->ver;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function isNull(array $options = []): bool
     {
         $lang = isset($options['lang']) ? $options['lang'] : null;
@@ -176,7 +154,7 @@ class StringType implements TypeInterface
     public function merge(TypeInterface $type): void
     {
         if (!$type instanceof StringType) {
-            throw new WanderlusterException(sprintf(ErrorMessages::MERGE_UNSUCCESSFUL, $type->getTypeId(), $this->getTypeId()));
+            throw new WanderlusterException(sprintf(ErrorMessages::MERGE_UNSUCCESSFUL, $type->getSerializationId(), $this->getSerializationId()));
         }
 
         $languages = array_unique(array_merge($this->getLanguages(), $type->getLanguages()));

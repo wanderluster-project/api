@@ -15,13 +15,7 @@ class EntityId
      * ex: c0db5fe7-24be-4e77-ad4c-ce1aaa5c7682.
      */
     const PATTERN = '/^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$/';
-
-    /**
-     * @SerializedName("customer_name")
-     *
-     * @var string|null
-     */
-    protected $uuid = null;
+    protected ?string $uuid = null;
 
     /**
      * EntityId constructor.

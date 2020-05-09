@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\DataModel\Snapshot;
 
-use App\DataModel\Serializer\SerializableInterface;
+use App\DataModel\Contracts\SerializableInterface;
+use App\DataModel\Contracts\TypeInterface;
 use App\DataModel\Translation\LanguageCodes;
 use App\DataModel\Types\BooleanType;
 use App\DataModel\Types\DateTimeType;
 use App\DataModel\Types\IntegerType;
 use App\DataModel\Types\NumericType;
 use App\DataModel\Types\StringType;
-use App\DataModel\Types\TypeInterface;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 use App\Security\User;
@@ -21,36 +21,23 @@ use DateTimeInterface;
 
 class Snapshot implements SerializableInterface
 {
-    /**
-     * @var int|null
-     */
-    protected $version = null;
-
-    /**
-     * @var DateTimeImmutable
-     */
-    protected $createdAt = null;
-
-    /**
-     * @var User
-     */
-    protected $createdBy = null;
+    protected ?int $version = null;
+    protected ?DateTimeImmutable $createdAt = null;
+    protected ?User $createdBy = null;
 
     /**
      * @var TypeInterface[]|null[]
      */
-    protected $data = [];
+    protected array $data = [];
 
     /**
      * Set the value of an attribute.
      *
-     * @param string                                                              $key
      * @param bool|int|float|string|DateTime|DateTimeImmutable|TypeInterface|null $value
-     * @param string                                                              $lang
      *
      * @throws WanderlusterException
      */
-    public function set($key, $value, $lang): void
+    public function set(string $key, $value, string $lang): void
     {
         if (LanguageCodes::ANY === $lang) {
             throw new WanderlusterException(ErrorMessages::UNABLE_TO_USE_ANY_LANGUAGE);
@@ -91,14 +78,11 @@ class Snapshot implements SerializableInterface
     /**
      * Get the value of an attribute.
      *
-     * @param string $key
-     * @param string $lang
-     *
      * @return string|null
      *
      * @throws WanderlusterException
      */
-    public function get($key, $lang)
+    public function get(string $key, string $lang)
     {
         if (LanguageCodes::ANY === $lang) {
             throw new WanderlusterException(ErrorMessages::UNABLE_TO_USE_ANY_LANGUAGE);
@@ -111,11 +95,7 @@ class Snapshot implements SerializableInterface
         return $this->data[$key]->getValue(['lang' => $lang]);
     }
 
-    /**
-     * @param string $key
-     * @param string $lang
-     */
-    public function del($key, $lang): void
+    public function del(string $key, string $lang): void
     {
         if (LanguageCodes::ANY === $lang) {
             $this->data[$key] = null;
@@ -141,11 +121,8 @@ class Snapshot implements SerializableInterface
 
     /**
      * Check if attribute exists.  Return true if exists, false otherwise.
-     *
-     * @param string $key
-     * @param string $lang
      */
-    public function has($key, $lang): bool
+    public function has(string $key, string $lang): bool
     {
         if (!array_key_exists($key, $this->data)) {
             return false;
@@ -172,13 +149,11 @@ class Snapshot implements SerializableInterface
      * Return the keys as an array.
      * Filters out any NULL values.
      *
-     * @param string $lang
-     *
      * @return string[]
      *
      * @throws WanderlusterException
      */
-    public function keys($lang): array
+    public function keys(string $lang): array
     {
         $return = [];
 
@@ -209,13 +184,11 @@ class Snapshot implements SerializableInterface
      * Return all the key=>value pairs.
      * Filters out any NULL values.
      *
-     * @param string $lang
-     *
      * @return mixed[]
      *
      * @throws WanderlusterException
      */
-    public function all($lang): array
+    public function all(string $lang): array
     {
         if (LanguageCodes::ANY === $lang) {
             throw new WanderlusterException(ErrorMessages::UNABLE_TO_USE_ANY_LANGUAGE);
@@ -263,7 +236,7 @@ class Snapshot implements SerializableInterface
         }
 
         return [
-            'type' => $this->getTypeId(),
+            'type' => $this->getSerializationId(),
             'version' => $this->version,
             'data' => $data,
         ];
@@ -274,7 +247,7 @@ class Snapshot implements SerializableInterface
         $fields = ['type', 'version', 'data'];
         foreach ($fields as $field) {
             if (!array_key_exists($field, $data)) {
-                throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Missing Field: '.$field));
+                throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Missing Field: '.$field));
             }
         }
 
@@ -282,8 +255,8 @@ class Snapshot implements SerializableInterface
         $version = (int) $data['version'];
         $data = $data['data'];
 
-        if ($type !== $this->getTypeId()) {
-            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Invalid Type: '.$type));
+        if ($type !== $this->getSerializationId()) {
+            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Invalid Type: '.$type));
         }
 
         if ($version) {
@@ -313,7 +286,7 @@ class Snapshot implements SerializableInterface
         return $this;
     }
 
-    public function getTypeId(): string
+    public function getSerializationId(): string
     {
         return 'SNAPSHOT';
     }

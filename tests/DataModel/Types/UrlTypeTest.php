@@ -14,7 +14,7 @@ class UrlTypeTest extends TestCase implements TypeTestInterface
     public function testNullConstructor(): void
     {
         $sut = new UrlType();
-        $this->assertEquals('URL', $sut->getTypeId());
+        $this->assertEquals('URL', $sut->getSerializationId());
         $this->assertTrue($sut->isNull());
     }
 

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\DataModel\Serializer;
 
+use App\DataModel\Contracts\SerializableInterface;
 use App\DataModel\Entity\Entity;
 use App\DataModel\Entity\EntityTypes;
-use App\DataModel\Serializer\SerializableInterface;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\WanderlusterException;
 use App\Tests\FunctionalTest;
@@ -17,7 +17,7 @@ class SerializerTest extends FunctionalTest
     public function testEncodingException(): void
     {
         $invalidObj = new class() implements SerializableInterface {
-            public function getTypeId(): string
+            public function getSerializationId(): string
             {
                 return 'INVALID';
             }
@@ -101,6 +101,7 @@ class SerializerTest extends FunctionalTest
         // test empty
         $json = '{"type":"ENTITY","entity_id":"","entity_type":10,"snapshot":{"type":"SNAPSHOT","version":null,"data":[]}}';
         $entity = $this->getSerializer()->decode($json);
+        $entity->load(LanguageCodes::ENGLISH);
         $this->assertInstanceOf(Entity::class, $entity);
         $this->assertEquals('', $entity->getEntityId());
         $this->assertEquals([], $entity->getLanguages());

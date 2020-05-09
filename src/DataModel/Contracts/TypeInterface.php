@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\DataModel\Types;
+namespace App\DataModel\Contracts;
 
-use App\DataModel\Serializer\SerializableInterface;
 use App\Exception\WanderlusterException;
 
-interface TypeInterface extends SerializableInterface
+interface TypeInterface extends SerializableInterface, VersionableInterface
 {
     /**
      * Set the val for the DataType.
@@ -26,20 +25,6 @@ interface TypeInterface extends SerializableInterface
      * @return mixed
      */
     public function getValue(array $options = []);
-
-    /**
-     * Set the version for the data type.
-     *
-     * @throws WanderlusterException
-     */
-    public function setVersion(int $version): TypeInterface;
-
-    /**
-     * Get the version for the data type.
-     *
-     * @throws WanderlusterException
-     */
-    public function getVersion(): int;
 
     /**
      * Returns TRUE if value is null, FALSE otherwise.

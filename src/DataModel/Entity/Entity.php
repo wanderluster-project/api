@@ -4,39 +4,23 @@ declare(strict_types=1);
 
 namespace App\DataModel\Entity;
 
-use App\DataModel\Serializer\SerializableInterface;
+use App\DataModel\Contracts\SerializableInterface;
 use App\DataModel\Snapshot\Snapshot;
+use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 
 class Entity implements SerializableInterface
 {
-    /**
-     * @var EntityId|null
-     */
-    protected $entityId = null;
-
-    /**
-     * @var int
-     */
-    protected $entityType = null;
-
-    /**
-     * @var Snapshot
-     */
-    protected $snapshot = null;
-
-    /**
-     * @var string|null
-     */
-    protected $lang = null;
+    protected int $entityType;
+    protected string $lang;
+    protected EntityId $entityId;
+    protected Snapshot $snapshot;
 
     /**
      * Entity constructor.
-     *
-     * @param string|null $defaultLang
      */
-    public function __construct(int $defaultEntityType = null, $defaultLang = null)
+    public function __construct(int $defaultEntityType = 0, string $defaultLang = LanguageCodes::ANY)
     {
         $this->entityType = $defaultEntityType;
         $this->lang = $defaultLang;
@@ -45,10 +29,9 @@ class Entity implements SerializableInterface
     }
 
     /**
-     * @param string   $lang
-     * @param int|null $version
+     * Load a language,version combination of this Entity.
      */
-    public function load($lang, $version = null): void
+    public function load(string $lang, int $version = null): void
     {
         $this->lang = $lang;
 
@@ -97,10 +80,9 @@ class Entity implements SerializableInterface
     /**
      * Set the value associated with a key.
      *
-     * @param string $key
-     * @param mixed  $value
+     * @param mixed $value
      */
-    public function set($key, $value): Entity
+    public function set(string $key, $value): Entity
     {
         if (is_null($value)) {
             $this->del($key);
@@ -114,20 +96,16 @@ class Entity implements SerializableInterface
     /**
      * Returns TRUE if entity has key, FALSE otherwise.
      * If entity was deleted then will return FALSE.
-     *
-     * @param string $key
      */
-    public function has($key): bool
+    public function has(string $key): bool
     {
         return $this->snapshot->has($key, $this->lang);
     }
 
     /**
      * Delete a key from an Entity.
-     *
-     * @param string $key
      */
-    public function del($key): void
+    public function del(string $key): void
     {
         $this->snapshot->del($key, $this->lang);
     }
@@ -156,7 +134,7 @@ class Entity implements SerializableInterface
         $entityId = (string) $this->getEntityId();
 
         return [
-            'type' => $this->getTypeId(),
+            'type' => $this->getSerializationId(),
             'entity_id' => $entityId ? $entityId : null,
             'entity_type' => $this->getEntityType(),
             'snapshot' => $this->snapshot->toArray(),
@@ -171,7 +149,7 @@ class Entity implements SerializableInterface
         $fields = ['type', 'entity_id', 'entity_type', 'snapshot'];
         foreach ($fields as $field) {
             if (!array_key_exists($field, $data)) {
-                throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Missing Field: '.$field));
+                throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Missing Field: '.$field));
             }
         }
 
@@ -180,8 +158,8 @@ class Entity implements SerializableInterface
         $entityType = $data['entity_type'];
         $snapshot = $data['snapshot'];
 
-        if ($type !== $this->getTypeId()) {
-            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Invalid Type: '.$type));
+        if ($type !== $this->getSerializationId()) {
+            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Invalid Type: '.$type));
         }
 
         if ($entityId) {
@@ -189,7 +167,7 @@ class Entity implements SerializableInterface
         }
 
         if (!is_int($entityType)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'EntityType should be an integer'));
+            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'EntityType should be an integer'));
         }
 
         if ($entityType) {
@@ -197,7 +175,7 @@ class Entity implements SerializableInterface
         }
 
         if (!is_array($snapshot) && !is_null($snapshot)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Invalid Snapshot'));
+            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Invalid Snapshot'));
         }
 
         if ($snapshot) {
@@ -207,7 +185,10 @@ class Entity implements SerializableInterface
         return $this;
     }
 
-    public function getTypeId(): string
+    /**
+     * {@inheritdoc}
+     */
+    public function getSerializationId(): string
     {
         return 'ENTITY';
     }

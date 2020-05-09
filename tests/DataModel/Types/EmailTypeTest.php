@@ -14,7 +14,7 @@ class EmailTypeTest extends TestCase implements TypeTestInterface
     public function testNullConstructor(): void
     {
         $sut = new EmailType();
-        $this->assertEquals('EMAIL', $sut->getTypeId());
+        $this->assertEquals('EMAIL', $sut->getSerializationId());
         $this->assertTrue($sut->isNull());
     }
 

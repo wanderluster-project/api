@@ -14,7 +14,7 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
     public function testNullConstructor(): void
     {
         $sut = new BooleanType();
-        $this->assertEquals('BOOL', $sut->getTypeId());
+        $this->assertEquals('BOOL', $sut->getSerializationId());
         $this->assertTrue($sut->isNull());
     }
 
@@ -170,8 +170,8 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
             // @phpstan-ignore-next-line
             $sut = new BooleanType('I am a string');
             $this->fail('Exception not thrown');
-        } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to BOOL data type - Boolean required.', $e->getMessage());
+        } catch (\TypeError $e) {
+            $this->assertStringStartsWith('Argument 1 passed to App\DataModel\Types\BooleanType::__construct() must be of the type bool or null, string given', $e->getMessage());
         }
     }
 

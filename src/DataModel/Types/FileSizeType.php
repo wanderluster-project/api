@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\DataModel\Types;
 
-use App\DataModel\Serializer\SerializableInterface;
+use App\DataModel\Contracts\SerializableInterface;
+use App\DataModel\Contracts\TypeInterface;
+use App\DataModel\Contracts\VersionableTrait;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
@@ -12,19 +14,13 @@ use Exception;
 
 class FileSizeType implements TypeInterface
 {
+    use VersionableTrait;
+
     const GB_BYTES = 1073741824;
     const MB_BYTES = 1048576;
     const KB_BYTES = 1024;
 
-    /**
-     * @var int|null
-     */
-    protected $val;
-
-    /**
-     * @var int
-     */
-    protected $ver = 0;
+    protected ?int $val;
 
     /**
      * FileSizeType constructor.
@@ -44,7 +40,7 @@ class FileSizeType implements TypeInterface
     /**
      * {@inheritdoc}
      */
-    public function getTypeId(): string
+    public function getSerializationId(): string
     {
         return 'FILE_SIZE';
     }
@@ -55,7 +51,7 @@ class FileSizeType implements TypeInterface
     public function toArray(): array
     {
         return [
-            'type' => $this->getTypeId(),
+            'type' => $this->getSerializationId(),
             'val' => $this->getValue(),
             'ver' => $this->getVersion(),
         ];
@@ -69,7 +65,7 @@ class FileSizeType implements TypeInterface
         $fields = ['type', 'val', 'ver'];
         foreach ($fields as $field) {
             if (!array_key_exists($field, $data)) {
-                throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Missing Field: '.$field));
+                throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Missing Field: '.$field));
             }
         }
 
@@ -77,8 +73,8 @@ class FileSizeType implements TypeInterface
         $val = $data['val'];
         $ver = (int) $data['ver'];
 
-        if ($type !== $this->getTypeId()) {
-            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getTypeId(), 'Invalid Type: '.$type));
+        if ($type !== $this->getSerializationId()) {
+            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Invalid Type: '.$type));
         }
         $this->setValue($val);
         $this->setVersion($ver);
@@ -95,12 +91,12 @@ class FileSizeType implements TypeInterface
             try {
                 $val = $this->parseFileSizeString($val);
             } catch (Exception $e) {
-                throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'Invalid file size string'));
+                throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId(), 'Invalid file size string'));
             }
         }
 
         if (!is_int($val) && !is_null($val)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getTypeId(), 'Invalid file size'));
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId(), 'Invalid file size'));
         }
 
         $this->val = $val;
@@ -119,27 +115,6 @@ class FileSizeType implements TypeInterface
         }
 
         return $this->val;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setVersion(int $version): TypeInterface
-    {
-        if ($version < 0) {
-            throw new WanderlusterException(sprintf(ErrorMessages::VERSION_INVALID, $version));
-        }
-        $this->ver = $version;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getVersion(): int
-    {
-        return $this->ver;
     }
 
     /**
@@ -223,7 +198,7 @@ class FileSizeType implements TypeInterface
     public function merge(TypeInterface $type): void
     {
         if (!$type instanceof FileSizeType) {
-            throw new WanderlusterException(sprintf(ErrorMessages::MERGE_UNSUCCESSFUL, $type->getTypeId(), $this->getTypeId()));
+            throw new WanderlusterException(sprintf(ErrorMessages::MERGE_UNSUCCESSFUL, $type->getSerializationId(), $this->getSerializationId()));
         }
 
         $thisVal = $this->getValue();
