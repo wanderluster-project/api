@@ -10,6 +10,8 @@ class LanguageCodes
     const ENGLISH = 'en';
     const SPANISH = 'es';
     const FRENCH = 'fr';
+    const CHINESE = 'zh';
+    const JAPANES = 'ja';
 
     /**
      * @return string[]
@@ -21,6 +23,8 @@ class LanguageCodes
             self::ENGLISH,
             self::SPANISH,
             self::FRENCH,
+            self::CHINESE,
+            self::JAPANES,
         ];
     }
 

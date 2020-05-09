@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\DataModel\Types;
 
+use App\DataModel\Types\BooleanType;
 use App\DataModel\Types\EmailType;
 use App\Exception\WanderlusterException;
 use PHPUnit\Framework\TestCase;
@@ -169,5 +170,41 @@ class EmailTypeTest extends TestCase implements TypeTestInterface
     {
         $sut = new EmailType();
         $this->assertEquals(['*'], $sut->getLanguages());
+    }
+
+    public function testMerge(): void
+    {
+        // Merging previous version
+        $sut = new EmailType('simpkevin+10@gmail.com', ['ver' => 10]);
+        $sut->merge(new EmailType('simpkevin+9@gmail.com', ['ver' => 9]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame('simpkevin+10@gmail.com', $sut->getValue());
+
+        // Merging same version
+        $sut = new EmailType('abc0@gmail.com', ['ver' => 10]);
+        $sut->merge(new EmailType('xyz@gmail.com', ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame('xyz@gmail.com', $sut->getValue());
+
+        $sut = new EmailType('xyz@gmail.com', ['ver' => 10]);
+        $sut->merge(new EmailType('abc0@gmail.com', ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame('xyz@gmail.com', $sut->getValue());
+
+        // Merging greater value
+        $sut = new EmailType('xyz@gmail.com', ['ver' => 10]);
+        $sut->merge(new EmailType('abc@gmail.com', ['ver' => 11]));
+        $this->assertSame(11, $sut->getVersion());
+        $this->assertSame('abc@gmail.com', $sut->getValue());
+    }
+
+    public function testMergeException(): void
+    {
+        try {
+            $sut = new EmailType('simpkevin+10@gmail.com', ['ver' => 10]);
+            $sut->merge(new BooleanType(true, ['ver' => 9]));
+        } catch (WanderlusterException $e) {
+            $this->assertSame('Unable to merge BOOL with EMAIL.', $e->getMessage());
+        }
     }
 }

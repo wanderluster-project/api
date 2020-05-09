@@ -33,4 +33,8 @@ interface TypeTestInterface
     public function testInvalidConstructorValue(): void;
 
     public function testGetLanguages(): void;
+
+    public function testMerge(): void;
+
+    public function testMergeException(): void;
 }

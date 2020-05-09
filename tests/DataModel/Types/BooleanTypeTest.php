@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\DataModel\Types;
 
 use App\DataModel\Types\BooleanType;
+use App\DataModel\Types\DateTimeType;
 use App\Exception\WanderlusterException;
 use PHPUnit\Framework\TestCase;
 
@@ -178,5 +179,42 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
     {
         $sut = new BooleanType();
         $this->assertEquals(['*'], $sut->getLanguages());
+    }
+
+    public function testMerge(): void
+    {
+        // Merging previous version
+        $sut = new BooleanType(true, ['ver' => 10]);
+        $sut->merge(new BooleanType(false, ['ver' => 9]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertTrue($sut->getValue());
+
+        // Merging same version
+        $sut = new BooleanType(true, ['ver' => 10]);
+        $sut->merge(new BooleanType(false, ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertTrue($sut->getValue());
+
+        $sut = new BooleanType(false, ['ver' => 10]);
+        $sut->merge(new BooleanType(true, ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertTrue($sut->getValue());
+
+        // Merging greater value
+        $sut = new BooleanType(false, ['ver' => 10]);
+        $sut->merge(new BooleanType(true, ['ver' => 11]));
+        $this->assertSame(11, $sut->getVersion());
+        $this->assertTrue($sut->getValue());
+    }
+
+    public function testMergeException(): void
+    {
+        $sut = new BooleanType(true, ['ver' => 10]);
+        try {
+            $sut->merge(new DateTimeType('1/1/20', ['ver' => 9]));
+            $this->fail('Exception not thrown.');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Unable to merge DATE_TIME with BOOL.', $e->getMessage());
+        }
     }
 }

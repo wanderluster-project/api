@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\DataModel\Types;
 
+use App\DataModel\Types\BooleanType;
 use App\DataModel\Types\DateTimeType;
 use App\Exception\WanderlusterException;
 use DateTime;
@@ -195,5 +196,41 @@ class DateTimeTypeTest extends TestCase implements TypeTestInterface
     {
         $sut = new DateTimeType();
         $this->assertEquals(['*'], $sut->getLanguages());
+    }
+
+    public function testMerge(): void
+    {
+        // Merging previous version
+        $sut = new DateTimeType('1/1/2020', ['ver' => 10]);
+        $sut->merge(new DateTimeType('1/2/2020', ['ver' => 9]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame('01/01/2020', $sut->getValue()->format('m/d/Y'));
+
+        // Merging same version
+        $sut = new DateTimeType('1/1/2020', ['ver' => 10]);
+        $sut->merge(new DateTimeType('1/2/2020', ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame('01/02/2020', $sut->getValue()->format('m/d/Y'));
+
+        $sut = new DateTimeType('1/2/2020', ['ver' => 10]);
+        $sut->merge(new DateTimeType('1/1/2020', ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame('01/02/2020', $sut->getValue()->format('m/d/Y'));
+
+        // Merging greater value
+        $sut = new DateTimeType('1/2/2020', ['ver' => 10]);
+        $sut->merge(new DateTimeType('1/1/2020', ['ver' => 11]));
+        $this->assertSame(11, $sut->getVersion());
+        $this->assertSame('01/01/2020', $sut->getValue()->format('m/d/Y'));
+    }
+
+    public function testMergeException(): void
+    {
+        try {
+            $sut = new DateTimeType('1/1/2020', ['ver' => 10]);
+            $sut->merge(new BooleanType(true, ['ver' => 9]));
+        } catch (WanderlusterException $e) {
+            $this->assertSame('Unable to merge BOOL with DATE_TIME.', $e->getMessage());
+        }
     }
 }

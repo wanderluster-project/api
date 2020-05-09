@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\DataModel\Types;
 
+use App\DataModel\Types\BooleanType;
 use App\DataModel\Types\MimeType;
 use App\Exception\WanderlusterException;
 use PHPUnit\Framework\TestCase;
@@ -192,5 +193,41 @@ class MimeTypeTest extends TestCase implements TypeTestInterface
             ++$lineCount;
         }
         $this->assertGreaterThan(0, $lineCount);
+    }
+
+    public function testMerge(): void
+    {
+        // Merging previous version
+        $sut = new MimeType('image/jpeg', ['ver' => 10]);
+        $sut->merge(new MimeType('image/png', ['ver' => 9]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame('image/jpeg', $sut->getValue());
+
+        // Merging same version
+        $sut = new MimeType('image/jpeg', ['ver' => 10]);
+        $sut->merge(new MimeType('image/png', ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame('image/png', $sut->getValue());
+
+        $sut = new MimeType('image/png', ['ver' => 10]);
+        $sut->merge(new MimeType('image/jpg', ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame('image/png', $sut->getValue());
+
+        // Merging greater value
+        $sut = new MimeType('image/png', ['ver' => 10]);
+        $sut->merge(new MimeType('image/jpeg', ['ver' => 11]));
+        $this->assertSame(11, $sut->getVersion());
+        $this->assertSame('image/jpeg', $sut->getValue());
+    }
+
+    public function testMergeException(): void
+    {
+        try {
+            $sut = new MimeType('image/png', ['ver' => 10]);
+            $sut->merge(new BooleanType(true, ['ver' => 9]));
+        } catch (WanderlusterException $e) {
+            $this->assertSame('Unable to merge BOOL with MIME_TYPE.', $e->getMessage());
+        }
     }
 }

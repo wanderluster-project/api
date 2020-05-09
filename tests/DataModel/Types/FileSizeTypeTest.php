@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\DataModel\Types;
 
+use App\DataModel\Types\BooleanType;
 use App\DataModel\Types\FileSizeType;
 use App\Exception\WanderlusterException;
 use PHPUnit\Framework\TestCase;
@@ -228,5 +229,41 @@ class FileSizeTypeTest extends TestCase implements TypeTestInterface
     {
         $sut = new FileSizeType();
         $this->assertEquals(['*'], $sut->getLanguages());
+    }
+
+    public function testMerge(): void
+    {
+        // Merging previous version
+        $sut = new FileSizeType(2000, ['ver' => 10]);
+        $sut->merge(new FileSizeType(1000, ['ver' => 9]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame(2000, $sut->getValue());
+
+        // Merging same version
+        $sut = new FileSizeType(2000, ['ver' => 10]);
+        $sut->merge(new FileSizeType(1000, ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame(2000, $sut->getValue());
+
+        $sut = new FileSizeType(1000, ['ver' => 10]);
+        $sut->merge(new FileSizeType(2000, ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame(2000, $sut->getValue());
+
+        // Merging greater value
+        $sut = new FileSizeType(3000, ['ver' => 10]);
+        $sut->merge(new FileSizeType(2000, ['ver' => 11]));
+        $this->assertSame(11, $sut->getVersion());
+        $this->assertSame(2000, $sut->getValue());
+    }
+
+    public function testMergeException(): void
+    {
+        try {
+            $sut = new FileSizeType(2000, ['ver' => 10]);
+            $sut->merge(new BooleanType(true, ['ver' => 9]));
+        } catch (WanderlusterException $e) {
+            $this->assertSame('Unable to merge BOOL with FILE_SIZE.', $e->getMessage());
+        }
     }
 }

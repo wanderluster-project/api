@@ -172,4 +172,50 @@ class StringType implements TypeInterface
 
         return $langauges;
     }
+
+    public function merge(TypeInterface $type): void
+    {
+        if (!$type instanceof StringType) {
+            throw new WanderlusterException(sprintf(ErrorMessages::MERGE_UNSUCCESSFUL, $type->getTypeId(), $this->getTypeId()));
+        }
+
+        $languages = array_unique(array_merge($this->getLanguages(), $type->getLanguages()));
+        sort($languages);
+
+        $thisVal = [];
+        foreach ($languages as $lang) {
+            $thisVal[$lang] = $this->getValue(['lang' => $lang]);
+        }
+        $thatVal = [];
+        foreach ($languages as $lang) {
+            $thatVal[$lang] = $type->getValue(['lang' => $lang]);
+        }
+
+        $thisVer = $this->getVersion();
+        $thatVer = $type->getVersion();
+
+        // previous version... do nothing
+        if ($thatVer < $thatVer) {
+            return;
+        }
+
+        // greater version, use its value
+        if ($thatVer > $thisVer) {
+            foreach ($thatVal as $lang => $translation) {
+                $this->setValue($translation, ['lang' => $lang]);
+            }
+            $this->setVersion($thatVer);
+
+            return;
+        }
+
+        // handle merge conflict
+        if ($thatVer === $thisVer) {
+            foreach ($languages as $lang) {
+                if ($thatVal[$lang] > $thisVal[$lang]) {
+                    $this->setValue($thatVal[$lang], ['lang' => $lang]);
+                }
+            }
+        }
+    }
 }

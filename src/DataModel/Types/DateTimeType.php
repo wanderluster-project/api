@@ -156,4 +156,39 @@ class DateTimeType implements TypeInterface
     {
         return [LanguageCodes::ANY];
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function merge(TypeInterface $type): void
+    {
+        if (!$type instanceof DateTimeType) {
+            throw new WanderlusterException(sprintf(ErrorMessages::MERGE_UNSUCCESSFUL, $type->getTypeId(), $this->getTypeId()));
+        }
+
+        $thisVal = $this->getValue();
+        $thatVal = $type->getValue();
+        $thisVer = $this->getVersion();
+        $thatVer = $type->getVersion();
+
+        // previous version... do nothing
+        if ($thatVer < $thatVer) {
+            return;
+        }
+
+        // greater version, use its value
+        if ($thatVer > $thisVer) {
+            $this->setVersion($thatVer);
+            $this->setValue($thatVal);
+
+            return;
+        }
+
+        // handle merge conflict
+        if ($thatVer === $thisVer && $thisVal !== $thatVal) {
+            if ($thatVal > $thisVal) {
+                $this->setValue($thatVal);
+            }
+        }
+    }
 }

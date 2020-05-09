@@ -52,4 +52,9 @@ interface TypeInterface extends SerializableInterface
      * Returns array of language codes represented by the value of this data type.
      */
     public function getLanguages(): array;
+
+    /**
+     * Merge data from an existing type.
+     */
+    public function merge(TypeInterface $type): void;
 }

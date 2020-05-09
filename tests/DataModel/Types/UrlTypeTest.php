@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\DataModel\Types;
 
+use App\DataModel\Types\BooleanType;
 use App\DataModel\Types\UrlType;
 use App\Exception\WanderlusterException;
 use PHPUnit\Framework\TestCase;
@@ -179,5 +180,41 @@ class UrlTypeTest extends TestCase implements TypeTestInterface
     {
         $sut = new UrlType();
         $this->assertEquals(['*'], $sut->getLanguages());
+    }
+
+    public function testMerge(): void
+    {
+        // Merging previous version
+        $sut = new UrlType('https://www.google.com', ['ver' => 10]);
+        $sut->merge(new UrlType('https://www.yahoo.com', ['ver' => 9]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame('https://www.google.com', $sut->getValue());
+
+        // Merging same version
+        $sut = new UrlType('https://www.google.com', ['ver' => 10]);
+        $sut->merge(new UrlType('https://www.yahoo.com', ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame('https://www.yahoo.com', $sut->getValue());
+
+        $sut = new UrlType('https://www.yahoo.com', ['ver' => 10]);
+        $sut->merge(new UrlType('https://www.google.com', ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame('https://www.yahoo.com', $sut->getValue());
+
+        // Merging greater value
+        $sut = new UrlType('https://www.yahoo.com', ['ver' => 10]);
+        $sut->merge(new UrlType('https://www.google.com', ['ver' => 11]));
+        $this->assertSame(11, $sut->getVersion());
+        $this->assertSame('https://www.google.com', $sut->getValue());
+    }
+
+    public function testMergeException(): void
+    {
+        try {
+            $sut = new UrlType('https://www.yahoo.com', ['ver' => 10]);
+            $sut->merge(new BooleanType(true, ['ver' => 9]));
+        } catch (WanderlusterException $e) {
+            $this->assertSame('Unable to merge BOOL with URL.', $e->getMessage());
+        }
     }
 }

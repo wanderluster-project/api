@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\DataModel\Types;
 
+use App\DataModel\Types\BooleanType;
 use App\DataModel\Types\NumericType;
 use App\Exception\WanderlusterException;
 use PHPUnit\Framework\TestCase;
@@ -187,5 +188,41 @@ class NumericTypeTest extends TestCase implements TypeTestInterface
     {
         $sut = new NumericType();
         $this->assertEquals(['*'], $sut->getLanguages());
+    }
+
+    public function testMerge(): void
+    {
+        // Merging previous version
+        $sut = new NumericType(25.0, ['ver' => 10]);
+        $sut->merge(new NumericType(15.0, ['ver' => 9]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame(25.0, $sut->getValue());
+
+        // Merging same version
+        $sut = new NumericType(25.0, ['ver' => 10]);
+        $sut->merge(new NumericType(15.0, ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame(25.0, $sut->getValue());
+
+        $sut = new NumericType(15.0, ['ver' => 10]);
+        $sut->merge(new NumericType(25.0, ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame(25.0, $sut->getValue());
+
+        // Merging greater value
+        $sut = new NumericType(35.0, ['ver' => 10]);
+        $sut->merge(new NumericType(25.0, ['ver' => 11]));
+        $this->assertSame(11, $sut->getVersion());
+        $this->assertSame(25.0, $sut->getValue());
+    }
+
+    public function testMergeException(): void
+    {
+        try {
+            $sut = new NumericType(3.14, ['ver' => 10]);
+            $sut->merge(new BooleanType(true, ['ver' => 9]));
+        } catch (WanderlusterException $e) {
+            $this->assertSame('Unable to merge BOOL with NUM.', $e->getMessage());
+        }
     }
 }

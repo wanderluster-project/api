@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\DataModel\Types;
 
 use App\DataModel\Translation\LanguageCodes;
+use App\DataModel\Types\BooleanType;
 use App\DataModel\Types\StringType;
 use App\Exception\WanderlusterException;
 use PHPUnit\Framework\TestCase;
@@ -234,5 +235,57 @@ class StringTypeTest extends TestCase implements TypeTestInterface
     {
         $sut = new StringType(['en' => 'The quick brown fox jumps over the lazy dog', 'es' => 'El rápido zorro marrón salta sobre el perro perezoso']);
         $this->assertEquals(['en', 'es'], $sut->getLanguages());
+    }
+
+    public function testMerge(): void
+    {
+        // Merging previous version
+        $string1 = new StringType(['en' => 'ABC', 'es' => 'DEF', 'ja' => 'GHI'], ['ver' => 10]);
+        $string2 = new StringType(['en' => 'JKL', 'es' => 'MNO', 'fr' => 'PQR'], ['ver' => 9]);
+        $string1->merge($string2);
+        $this->assertSame(10, $string1->getVersion());
+        $this->assertSame('ABC', $string1->getValue(['lang' => 'en']));
+        $this->assertSame('DEF', $string1->getValue(['lang' => 'es']));
+        $this->assertSame('GHI', $string1->getValue(['lang' => 'ja']));
+        $this->assertNull($string1->getValue(['lang' => 'fr']));
+
+        // Merging same version
+        $string1 = new StringType(['en' => 'ABC', 'es' => 'MNO', 'ja' => 'GHI'], ['ver' => 10]);
+        $string2 = new StringType(['en' => 'JKL', 'es' => 'DEF', 'fr' => 'PQR'], ['ver' => 10]);
+        $string1->merge($string2);
+        $this->assertSame(10, $string1->getVersion());
+        $this->assertSame('JKL', $string1->getValue(['lang' => 'en']));
+        $this->assertSame('MNO', $string1->getValue(['lang' => 'es']));
+        $this->assertSame('GHI', $string1->getValue(['lang' => 'ja']));
+        $this->assertSame('PQR', $string1->getValue(['lang' => 'fr']));
+
+        $string1 = new StringType(['en' => 'JKL', 'es' => 'DEF', 'fr' => 'PQR'], ['ver' => 10]);
+        $string2 = new StringType(['en' => 'ABC', 'es' => 'MNO', 'ja' => 'GHI'], ['ver' => 10]);
+        $string1->merge($string2);
+        $this->assertSame(10, $string1->getVersion());
+        $this->assertSame('JKL', $string1->getValue(['lang' => 'en']));
+        $this->assertSame('MNO', $string1->getValue(['lang' => 'es']));
+        $this->assertSame('GHI', $string1->getValue(['lang' => 'ja']));
+        $this->assertSame('PQR', $string1->getValue(['lang' => 'fr']));
+
+        // merging newer version
+        $string1 = new StringType(['en' => 'ABC', 'es' => 'DEF', 'ja' => 'GHI'], ['ver' => 9]);
+        $string2 = new StringType(['en' => 'JKL', 'es' => 'MNO', 'fr' => 'PQR'], ['ver' => 10]);
+        $string1->merge($string2);
+        $this->assertSame(10, $string1->getVersion());
+        $this->assertSame('JKL', $string1->getValue(['lang' => 'en']));
+        $this->assertSame('MNO', $string1->getValue(['lang' => 'es']));
+        $this->assertNull($string1->getValue(['lang' => 'ja']));
+        $this->assertSame('PQR', $string1->getValue(['lang' => 'fr']));
+    }
+
+    public function testMergeException(): void
+    {
+        try {
+            $sut = new StringType(['en' => 'ABC', 'es' => 'DEF', 'ja' => 'GHI'], ['ver' => 9]);
+            $sut->merge(new BooleanType(true, ['ver' => 9]));
+        } catch (WanderlusterException $e) {
+            $this->assertSame('Unable to merge BOOL with STRING.', $e->getMessage());
+        }
     }
 }
