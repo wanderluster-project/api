@@ -2,29 +2,29 @@
 
 declare(strict_types=1);
 
-namespace App\DataModel\Types;
+namespace App\DataModel\DataType;
 
+use App\DataModel\Contracts\AbstractDataType;
+use App\DataModel\Contracts\DataTypeInterface;
 use App\DataModel\Contracts\SerializableInterface;
-use App\DataModel\Contracts\TypeInterface;
-use App\DataModel\Contracts\VersionableTrait;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 
-class EmailType implements TypeInterface
+class UrlType extends AbstractDataType
 {
-    use VersionableTrait;
-    protected ?string $val;
+    protected ?string $val = null;
 
     /**
-     * EmailType constructor.
+     * UrlType constructor.
+     *
+     * @param string|null $val
      *
      * @throws WanderlusterException
      */
-    public function __construct(string $val = null, array $options = [])
+    public function __construct($val = null, array $options = [])
     {
         $this->setValue($val);
-
         $ver = isset($options['ver']) ? (int) $options['ver'] : 0;
         $this->setVersion($ver);
     }
@@ -34,7 +34,7 @@ class EmailType implements TypeInterface
      */
     public function getSerializationId(): string
     {
-        return 'EMAIL';
+        return 'URL';
     }
 
     /**
@@ -77,15 +77,15 @@ class EmailType implements TypeInterface
     /**
      * {@inheritdoc}
      */
-    public function setValue($val, array $options = []): TypeInterface
+    public function setValue($val, array $options = []): DataTypeInterface
     {
         if (!is_string($val) && !is_null($val)) {
             throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId(), 'String required'));
         }
 
         if (is_string($val)) {
-            if (!filter_var($val, FILTER_VALIDATE_EMAIL)) {
-                throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId(), 'Invalid Email'));
+            if (!filter_var($val, FILTER_VALIDATE_URL)) {
+                throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId(), 'Invalid URL'));
             }
         }
 
@@ -121,35 +121,8 @@ class EmailType implements TypeInterface
     /**
      * {@inheritdoc}
      */
-    public function merge(TypeInterface $type): void
+    public function canMergeWith(DataTypeInterface $type): bool
     {
-        if (!$type instanceof EmailType) {
-            throw new WanderlusterException(sprintf(ErrorMessages::MERGE_UNSUCCESSFUL, $type->getSerializationId(), $this->getSerializationId()));
-        }
-
-        $thisVal = $this->getValue();
-        $thatVal = $type->getValue();
-        $thisVer = $this->getVersion();
-        $thatVer = $type->getVersion();
-
-        // previous version... do nothing
-        if ($thatVer < $thatVer) {
-            return;
-        }
-
-        // greater version, use its value
-        if ($thatVer > $thisVer) {
-            $this->setVersion($thatVer);
-            $this->setValue($thatVal);
-
-            return;
-        }
-
-        // handle merge conflict
-        if ($thatVer === $thisVer && $thisVal !== $thatVal) {
-            if ($thatVal > $thisVal) {
-                $this->setValue($thatVal);
-            }
-        }
+        return $type instanceof UrlType;
     }
 }

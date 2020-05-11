@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\DataModel\Types;
+namespace App\Tests\DataModel\DataType;
 
-use App\DataModel\Types\BooleanType;
-use App\DataModel\Types\IntegerType;
+use App\DataModel\DataType\BooleanType;
+use App\DataModel\DataType\IntegerType;
 use App\Exception\WanderlusterException;
 use PHPUnit\Framework\TestCase;
 
@@ -171,7 +171,7 @@ class IntegerTypeTest extends TestCase implements TypeTestInterface
             $sut = new IntegerType('I am a string');
             $this->fail('Exception not thrown');
         } catch (\TypeError $e) {
-            $this->assertStringStartsWith('Argument 1 passed to App\DataModel\Types\IntegerType::__construct() must be of the type int or null, string given', $e->getMessage());
+            $this->assertStringStartsWith('Argument 1 passed to App\DataModel\DataType\IntegerType::__construct() must be of the type int or null, string given', $e->getMessage());
         }
     }
 

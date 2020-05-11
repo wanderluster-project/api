@@ -2,28 +2,28 @@
 
 declare(strict_types=1);
 
-namespace App\DataModel\Types;
+namespace App\DataModel\DataType;
 
+use App\DataModel\Contracts\AbstractDataType;
+use App\DataModel\Contracts\DataTypeInterface;
 use App\DataModel\Contracts\SerializableInterface;
-use App\DataModel\Contracts\TypeInterface;
-use App\DataModel\Contracts\VersionableTrait;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 
-class NumericType implements TypeInterface
+class IntegerType extends AbstractDataType
 {
-    use VersionableTrait;
-    protected ?float $val = null;
+    /**
+     * @var int|null
+     */
+    protected $val;
 
     /**
-     * Numeric constructor.
-     *
-     * @param float|int|null $val
+     * Integer constructor.
      *
      * @throws WanderlusterException
      */
-    public function __construct($val = null, array $options = [])
+    public function __construct(int $val = null, array $options = [])
     {
         $this->setValue($val, $options);
 
@@ -36,7 +36,7 @@ class NumericType implements TypeInterface
      */
     public function getSerializationId(): string
     {
-        return 'NUM';
+        return 'INT';
     }
 
     /**
@@ -79,10 +79,10 @@ class NumericType implements TypeInterface
     /**
      * {@inheritdoc}
      */
-    public function setValue($val, array $options = []): TypeInterface
+    public function setValue($val, array $options = []): DataTypeInterface
     {
-        if (!is_int($val) && !is_float($val) && !is_null($val)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId(), 'Numeric required'));
+        if (!is_int($val) && !is_null($val)) {
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId(), 'Integer required'));
         }
 
         $this->val = $val;
@@ -114,35 +114,11 @@ class NumericType implements TypeInterface
         return [LanguageCodes::ANY];
     }
 
-    public function merge(TypeInterface $type): void
+    /**
+     * {@inheritdoc}
+     */
+    public function canMergeWith(DataTypeInterface $type): bool
     {
-        if (!$type instanceof NumericType) {
-            throw new WanderlusterException(sprintf(ErrorMessages::MERGE_UNSUCCESSFUL, $type->getSerializationId(), $this->getSerializationId()));
-        }
-
-        $thisVal = $this->getValue();
-        $thatVal = $type->getValue();
-        $thisVer = $this->getVersion();
-        $thatVer = $type->getVersion();
-
-        // previous version... do nothing
-        if ($thatVer < $thatVer) {
-            return;
-        }
-
-        // greater version, use its value
-        if ($thatVer > $thisVer) {
-            $this->setVersion($thatVer);
-            $this->setValue($thatVal);
-
-            return;
-        }
-
-        // handle merge conflict
-        if ($thatVer === $thisVer && $thisVal !== $thatVal) {
-            if ($thatVal > $thisVal) {
-                $this->setValue($thatVal);
-            }
-        }
+        return $type instanceof IntegerType;
     }
 }

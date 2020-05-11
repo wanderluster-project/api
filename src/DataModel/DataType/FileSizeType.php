@@ -2,20 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\DataModel\Types;
+namespace App\DataModel\DataType;
 
+use App\DataModel\Contracts\AbstractDataType;
+use App\DataModel\Contracts\DataTypeInterface;
 use App\DataModel\Contracts\SerializableInterface;
-use App\DataModel\Contracts\TypeInterface;
-use App\DataModel\Contracts\VersionableTrait;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 use Exception;
 
-class FileSizeType implements TypeInterface
+class FileSizeType extends AbstractDataType
 {
-    use VersionableTrait;
-
     const GB_BYTES = 1073741824;
     const MB_BYTES = 1048576;
     const KB_BYTES = 1024;
@@ -85,7 +83,7 @@ class FileSizeType implements TypeInterface
     /**
      * {@inheritdoc}
      */
-    public function setValue($val, array $options = []): TypeInterface
+    public function setValue($val, array $options = []): DataTypeInterface
     {
         if (is_string($val)) {
             try {
@@ -195,35 +193,8 @@ class FileSizeType implements TypeInterface
     /**
      * {@inheritdoc}
      */
-    public function merge(TypeInterface $type): void
+    public function canMergeWith(DataTypeInterface $type): bool
     {
-        if (!$type instanceof FileSizeType) {
-            throw new WanderlusterException(sprintf(ErrorMessages::MERGE_UNSUCCESSFUL, $type->getSerializationId(), $this->getSerializationId()));
-        }
-
-        $thisVal = $this->getValue();
-        $thatVal = $type->getValue();
-        $thisVer = $this->getVersion();
-        $thatVer = $type->getVersion();
-
-        // previous version... do nothing
-        if ($thatVer < $thatVer) {
-            return;
-        }
-
-        // greater version, use its value
-        if ($thatVer > $thisVer) {
-            $this->setVersion($thatVer);
-            $this->setValue($thatVal);
-
-            return;
-        }
-
-        // handle merge conflict
-        if ($thatVer === $thisVer && $thisVal !== $thatVal) {
-            if ($thatVal > $thisVal) {
-                $this->setValue($thatVal);
-            }
-        }
+        return $type instanceof FileSizeType;
     }
 }

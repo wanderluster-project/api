@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\DataModel\Types;
+namespace App\Tests\DataModel\DataType;
 
-use App\DataModel\Types\BooleanType;
-use App\DataModel\Types\DateTimeType;
+use App\DataModel\DataType\BooleanType;
+use App\DataModel\DataType\DateTimeType;
 use App\Exception\WanderlusterException;
 use PHPUnit\Framework\TestCase;
 
@@ -171,7 +171,7 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
             $sut = new BooleanType('I am a string');
             $this->fail('Exception not thrown');
         } catch (\TypeError $e) {
-            $this->assertStringStartsWith('Argument 1 passed to App\DataModel\Types\BooleanType::__construct() must be of the type bool or null, string given', $e->getMessage());
+            $this->assertStringStartsWith('Argument 1 passed to App\DataModel\DataType\BooleanType::__construct() must be of the type bool or null, string given', $e->getMessage());
         }
     }
 

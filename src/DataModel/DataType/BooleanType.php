@@ -2,18 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\DataModel\Types;
+namespace App\DataModel\DataType;
 
+use App\DataModel\Contracts\AbstractDataType;
+use App\DataModel\Contracts\DataTypeInterface;
 use App\DataModel\Contracts\SerializableInterface;
-use App\DataModel\Contracts\TypeInterface;
-use App\DataModel\Contracts\VersionableTrait;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 
-class BooleanType implements TypeInterface
+class BooleanType extends AbstractDataType
 {
-    use VersionableTrait;
     protected ?bool $val;
 
     /**
@@ -77,7 +76,7 @@ class BooleanType implements TypeInterface
     /**
      * {@inheritdoc}
      */
-    public function setValue($val, array $options = []): TypeInterface
+    public function setValue($val, array $options = []): DataTypeInterface
     {
         if (!is_bool($val) && !is_null($val)) {
             throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId(), 'Boolean required'));
@@ -115,35 +114,8 @@ class BooleanType implements TypeInterface
     /**
      * {@inheritdoc}
      */
-    public function merge(TypeInterface $type): void
+    public function canMergeWith(DataTypeInterface $type): bool
     {
-        if (!$type instanceof BooleanType) {
-            throw new WanderlusterException(sprintf(ErrorMessages::MERGE_UNSUCCESSFUL, $type->getSerializationId(), $this->getSerializationId()));
-        }
-
-        $thisVal = $this->getValue();
-        $thatVal = $type->getValue();
-        $thisVer = $this->getVersion();
-        $thatVer = $type->getVersion();
-
-        // previous version... do nothing
-        if ($thatVer < $thatVer) {
-            return;
-        }
-
-        // greater version, use its value
-        if ($thatVer > $thisVer) {
-            $this->setVersion($thatVer);
-            $this->setValue($thatVal);
-
-            return;
-        }
-
-        // handle merge conflict
-        if ($thatVer === $thisVer && $thisVal !== $thatVal) {
-            if ($thatVal > $thisVal) {
-                $this->setValue($thatVal);
-            }
-        }
+        return $type instanceof BooleanType;
     }
 }

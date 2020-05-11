@@ -40,4 +40,5 @@ class ErrorMessages
     const TOMBSTONE_EDIT = 'Unable to change tombstone type.';
     const VERSION_INVALID = 'Invalid version: %s';
     const MERGE_UNSUCCESSFUL = 'Unable to merge %s with %s.';
+    const DATA_TYPE_COMPARISON_UNSUCCESSFUL = 'Unable to compare %s with %s.';
 }

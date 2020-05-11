@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\DataModel\Types;
+namespace App\Tests\DataModel\DataType;
 
 interface TypeTestInterface
 {

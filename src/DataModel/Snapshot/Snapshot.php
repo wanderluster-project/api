@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\DataModel\Snapshot;
 
+use App\DataModel\Contracts\DataTypeInterface;
 use App\DataModel\Contracts\SerializableInterface;
-use App\DataModel\Contracts\TypeInterface;
+use App\DataModel\DataType\BooleanType;
+use App\DataModel\DataType\DateTimeType;
+use App\DataModel\DataType\IntegerType;
+use App\DataModel\DataType\NumericType;
+use App\DataModel\DataType\StringType;
 use App\DataModel\Translation\LanguageCodes;
-use App\DataModel\Types\BooleanType;
-use App\DataModel\Types\DateTimeType;
-use App\DataModel\Types\IntegerType;
-use App\DataModel\Types\NumericType;
-use App\DataModel\Types\StringType;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 use App\Security\User;
@@ -26,14 +26,14 @@ class Snapshot implements SerializableInterface
     protected ?User $createdBy = null;
 
     /**
-     * @var TypeInterface[]|null[]
+     * @var DataTypeInterface[]|null[]
      */
     protected array $data = [];
 
     /**
      * Set the value of an attribute.
      *
-     * @param bool|int|float|string|DateTime|DateTimeImmutable|TypeInterface|null $value
+     * @param bool|int|float|string|DateTime|DateTimeImmutable|DataTypeInterface|null $value
      *
      * @throws WanderlusterException
      */

@@ -2,30 +2,30 @@
 
 declare(strict_types=1);
 
-namespace App\DataModel\Types;
+namespace App\DataModel\DataType;
 
+use App\DataModel\Contracts\AbstractDataType;
+use App\DataModel\Contracts\DataTypeInterface;
 use App\DataModel\Contracts\SerializableInterface;
-use App\DataModel\Contracts\TypeInterface;
-use App\DataModel\Contracts\VersionableTrait;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
+use DateTime;
+use DateTimeImmutable;
+use Exception;
 
-class IntegerType implements TypeInterface
+class DateTimeType extends AbstractDataType
 {
-    use VersionableTrait;
+    protected ?DateTimeImmutable $val;
 
     /**
-     * @var int|null
-     */
-    protected $val;
-
-    /**
-     * Integer constructor.
+     * DateTimeType constructor.
+     *
+     * @param string|DateTime|DateTimeImmutable|null $val
      *
      * @throws WanderlusterException
      */
-    public function __construct(int $val = null, array $options = [])
+    public function __construct($val = null, array $options = [])
     {
         $this->setValue($val, $options);
 
@@ -33,12 +33,9 @@ class IntegerType implements TypeInterface
         $this->setVersion($ver);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getSerializationId(): string
     {
-        return 'INT';
+        return 'DATE_TIME';
     }
 
     /**
@@ -46,9 +43,14 @@ class IntegerType implements TypeInterface
      */
     public function toArray(): array
     {
+        $formattedVal = null;
+        if ($this->val instanceof DateTimeImmutable) {
+            $formattedVal = $this->val->format('c');
+        }
+
         return [
             'type' => $this->getSerializationId(),
-            'val' => $this->val,
+            'val' => $formattedVal,
             'ver' => $this->getVersion(),
         ];
     }
@@ -81,10 +83,22 @@ class IntegerType implements TypeInterface
     /**
      * {@inheritdoc}
      */
-    public function setValue($val, array $options = []): TypeInterface
+    public function setValue($val, array $options = []): DataTypeInterface
     {
-        if (!is_int($val) && !is_null($val)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId(), 'Integer required'));
+        if (is_string($val)) {
+            try {
+                $val = new DateTimeImmutable($val);
+            } catch (Exception $e) {
+                throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId(), 'Invalid date string'));
+            }
+        }
+
+        if ($val instanceof DateTime) {
+            $val = DateTimeImmutable::createFromMutable($val);
+        }
+
+        if (!($val instanceof DateTimeImmutable) && !is_null($val)) {
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId(), 'DateTime required'));
         }
 
         $this->val = $val;
@@ -119,35 +133,8 @@ class IntegerType implements TypeInterface
     /**
      * {@inheritdoc}
      */
-    public function merge(TypeInterface $type): void
+    public function canMergeWith(DataTypeInterface $type): bool
     {
-        if (!$type instanceof IntegerType) {
-            throw new WanderlusterException(sprintf(ErrorMessages::MERGE_UNSUCCESSFUL, $type->getSerializationId(), $this->getSerializationId()));
-        }
-
-        $thisVal = $this->getValue();
-        $thatVal = $type->getValue();
-        $thisVer = $this->getVersion();
-        $thatVer = $type->getVersion();
-
-        // previous version... do nothing
-        if ($thatVer < $thatVer) {
-            return;
-        }
-
-        // greater version, use its value
-        if ($thatVer > $thisVer) {
-            $this->setVersion($thatVer);
-            $this->setValue($thatVal);
-
-            return;
-        }
-
-        // handle merge conflict
-        if ($thatVer === $thisVer && $thisVal !== $thatVal) {
-            if ($thatVal > $thisVal) {
-                $this->setValue($thatVal);
-            }
-        }
+        return $type instanceof DateTimeType;
     }
 }

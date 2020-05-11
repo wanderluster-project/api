@@ -2,22 +2,26 @@
 
 declare(strict_types=1);
 
-namespace App\DataModel\Types;
+namespace App\DataModel\DataType;
 
+use App\DataModel\Contracts\AbstractDataType;
+use App\DataModel\Contracts\DataTypeInterface;
 use App\DataModel\Contracts\SerializableInterface;
-use App\DataModel\Contracts\TypeInterface;
-use App\DataModel\Contracts\VersionableTrait;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 
-class UrlType implements TypeInterface
+class MimeType extends AbstractDataType
 {
-    use VersionableTrait;
-    protected ?string $val = null;
+    const PATTERN = '/^[-\w]+\/[-\w\.\+]+$/';
 
     /**
-     * UrlType constructor.
+     * @var string|null
+     */
+    protected $val;
+
+    /**
+     * MimeType constructor.
      *
      * @param string|null $val
      *
@@ -25,7 +29,8 @@ class UrlType implements TypeInterface
      */
     public function __construct($val = null, array $options = [])
     {
-        $this->setValue($val);
+        $this->setValue($val, $options);
+
         $ver = isset($options['ver']) ? (int) $options['ver'] : 0;
         $this->setVersion($ver);
     }
@@ -35,7 +40,7 @@ class UrlType implements TypeInterface
      */
     public function getSerializationId(): string
     {
-        return 'URL';
+        return 'MIME_TYPE';
     }
 
     /**
@@ -78,15 +83,15 @@ class UrlType implements TypeInterface
     /**
      * {@inheritdoc}
      */
-    public function setValue($val, array $options = []): TypeInterface
+    public function setValue($val, array $options = []): DataTypeInterface
     {
         if (!is_string($val) && !is_null($val)) {
             throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId(), 'String required'));
         }
 
         if (is_string($val)) {
-            if (!filter_var($val, FILTER_VALIDATE_URL)) {
-                throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId(), 'Invalid URL'));
+            if (!preg_match(self::PATTERN, $val)) {
+                throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId(), 'Invalid MimeType'));
             }
         }
 
@@ -119,35 +124,11 @@ class UrlType implements TypeInterface
         return [LanguageCodes::ANY];
     }
 
-    public function merge(TypeInterface $type): void
+    /**
+     * {@inheritdoc}
+     */
+    public function canMergeWith(DataTypeInterface $type): bool
     {
-        if (!$type instanceof UrlType) {
-            throw new WanderlusterException(sprintf(ErrorMessages::MERGE_UNSUCCESSFUL, $type->getSerializationId(), $this->getSerializationId()));
-        }
-
-        $thisVal = $this->getValue();
-        $thatVal = $type->getValue();
-        $thisVer = $this->getVersion();
-        $thatVer = $type->getVersion();
-
-        // previous version... do nothing
-        if ($thatVer < $thatVer) {
-            return;
-        }
-
-        // greater version, use its value
-        if ($thatVer > $thisVer) {
-            $this->setVersion($thatVer);
-            $this->setValue($thatVal);
-
-            return;
-        }
-
-        // handle merge conflict
-        if ($thatVer === $thisVer && $thisVal !== $thatVal) {
-            if ($thatVal > $thisVal) {
-                $this->setValue($thatVal);
-            }
-        }
+        return $type instanceof MimeType;
     }
 }

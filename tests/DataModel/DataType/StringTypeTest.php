@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\DataModel\Types;
+namespace App\Tests\DataModel\DataType;
 
+use App\DataModel\DataType\BooleanType;
+use App\DataModel\DataType\StringType;
 use App\DataModel\Translation\LanguageCodes;
-use App\DataModel\Types\BooleanType;
-use App\DataModel\Types\StringType;
 use App\Exception\WanderlusterException;
 use PHPUnit\Framework\TestCase;
 

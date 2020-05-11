@@ -2,19 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\DataModel\Types;
+namespace App\DataModel\DataType;
 
+use App\DataModel\Contracts\AbstractDataType;
+use App\DataModel\Contracts\DataTypeInterface;
 use App\DataModel\Contracts\SerializableInterface;
-use App\DataModel\Contracts\TypeInterface;
-use App\DataModel\Contracts\VersionableTrait;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 
-class StringType implements TypeInterface
+class StringType extends AbstractDataType
 {
-    use VersionableTrait;
-
     /**
      * Associative array identifying languageCode => translation.
      *
@@ -93,7 +91,7 @@ class StringType implements TypeInterface
     /**
      * {@inheritdoc}
      */
-    public function setValue($val, array $options = []): TypeInterface
+    public function setValue($val, array $options = []): DataTypeInterface
     {
         if (!is_string($val) && !is_null($val)) {
             throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId(), 'String required'));
@@ -151,7 +149,7 @@ class StringType implements TypeInterface
         return $langauges;
     }
 
-    public function merge(TypeInterface $type): void
+    public function merge(DataTypeInterface $type): self
     {
         if (!$type instanceof StringType) {
             throw new WanderlusterException(sprintf(ErrorMessages::MERGE_UNSUCCESSFUL, $type->getSerializationId(), $this->getSerializationId()));
@@ -174,7 +172,7 @@ class StringType implements TypeInterface
 
         // previous version... do nothing
         if ($thatVer < $thatVer) {
-            return;
+            return $this;
         }
 
         // greater version, use its value
@@ -184,7 +182,7 @@ class StringType implements TypeInterface
             }
             $this->setVersion($thatVer);
 
-            return;
+            return $this;
         }
 
         // handle merge conflict
@@ -195,5 +193,12 @@ class StringType implements TypeInterface
                 }
             }
         }
+
+        return $this;
+    }
+
+    public function canMergeWith(DataTypeInterface $type): bool
+    {
+        return $type instanceof StringType;
     }
 }

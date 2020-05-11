@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\DataModel\Types;
+namespace App\Tests\DataModel\DataType;
 
-use App\DataModel\Types\BooleanType;
-use App\DataModel\Types\UrlType;
+use App\DataModel\DataType\BooleanType;
+use App\DataModel\DataType\UrlType;
 use App\Exception\WanderlusterException;
 use PHPUnit\Framework\TestCase;
 

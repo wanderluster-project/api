@@ -2,25 +2,29 @@
 
 declare(strict_types=1);
 
-namespace App\DataModel\Translation;
+namespace App\DataModel\DataType;
 
+use App\DataModel\Contracts\AbstractDataType;
+use App\DataModel\Contracts\DataTypeInterface;
 use App\DataModel\Contracts\SerializableInterface;
-use App\DataModel\Contracts\TranslatableInterface;
-use App\DataModel\Contracts\VersionableTrait;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 
-class Translation implements TranslatableInterface
+class TranslationType extends AbstractDataType
 {
-    use VersionableTrait;
-
     protected ?string $lang = null;
     protected ?string $val = null;
+
+    public function __construct(?string $lang, ?string $val)
+    {
+        $this->lang = $lang;
+        $this->val = $val;
+    }
 
     /**
      * {@inheritdoc}
      */
-    public function setLanguage(string $lang): TranslatableInterface
+    public function setLanguage(string $lang): self
     {
         $this->lang = $lang;
 
@@ -38,7 +42,7 @@ class Translation implements TranslatableInterface
     /**
      * {@inheritdoc}
      */
-    public function setValue(string $val): TranslatableInterface
+    public function setValue($val, array $options = []): DataTypeInterface
     {
         $this->val = $val;
 
@@ -48,21 +52,30 @@ class Translation implements TranslatableInterface
     /**
      * {@inheritdoc}
      */
-    public function getValue(): string
+    public function getValue(array $options = [])
     {
         return $this->val;
     }
 
-    public function merge(Translation $type): void
+    /**
+     * {@inheritdoc}
+     */
+    public function merge(DataTypeInterface $type): self
     {
-        // TODO: Implement merge() method.
+        return $this;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getSerializationId(): string
     {
         return 'TRANS';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function toArray(): array
     {
         return [
@@ -72,6 +85,9 @@ class Translation implements TranslatableInterface
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function fromArray(array $data): SerializableInterface
     {
         $fields = ['type', 'val', 'ver'];
@@ -92,5 +108,29 @@ class Translation implements TranslatableInterface
         $this->setVersion($ver);
 
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isNull(array $options = []): bool
+    {
+        return is_null($this->val);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLanguages(): array
+    {
+        return [$this->lang];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function canMergeWith(DataTypeInterface $type): bool
+    {
+        return $type instanceof TranslationType;
     }
 }
