@@ -27,6 +27,15 @@ interface DataTypeInterface extends SerializableInterface
     public function getValue(array $options = []);
 
     /**
+     * Serialize a value to a string.
+     *
+     * @return mixed $val
+     *
+     * @throws WanderlusterException
+     */
+    public function getSerializedValue();
+
+    /**
      * Returns TRUE if value is null, FALSE otherwise.
      *
      * @throws WanderlusterException

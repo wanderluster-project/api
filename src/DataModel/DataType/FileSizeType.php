@@ -38,6 +38,54 @@ class FileSizeType extends AbstractDataType
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function canMergeWith(DataTypeInterface $type): bool
+    {
+        return $type instanceof FileSizeType;
+    }
+
+    /**
+     * Only valid file size strings or integer representing number of bytes.
+     * {@inheritdoc}
+     */
+    public function isValidValue($val): bool
+    {
+        if (is_null($val)) {
+            return true;
+        }
+
+        if (is_int($val)) {
+            return true;
+        }
+
+        if (is_string($val)) {
+            try {
+                $this->parseFileSizeString($val);
+
+                return true;
+            } catch (Exception $e) {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    public function coerce($val)
+    {
+        if (!$this->isValidValue($val)) {
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId()));
+        }
+        if (is_string($val)) {
+            return $this->parseFileSizeString($val);
+        }
+
+        return $val;
+    }
+
+
+    /**
      * @param int|float $bytes
      *
      * @return string
@@ -94,52 +142,5 @@ class FileSizeType extends AbstractDataType
         }
 
         return (int) floor($bytes);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function canMergeWith(DataTypeInterface $type): bool
-    {
-        return $type instanceof FileSizeType;
-    }
-
-    /**
-     * Only valid file size strings or integer representing number of bytes.
-     * {@inheritdoc}
-     */
-    public function isValidValue($val): bool
-    {
-        if (is_null($val)) {
-            return true;
-        }
-
-        if (is_int($val)) {
-            return true;
-        }
-
-        if (is_string($val)) {
-            try {
-                $this->parseFileSizeString($val);
-
-                return true;
-            } catch (Exception $e) {
-                return false;
-            }
-        }
-
-        return false;
-    }
-
-    public function coerce($val)
-    {
-        if (!$this->isValidValue($val)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::DATA_TYPE_COERSION_UNSUCCESSFUL, $val, $this->getSerializationId()));
-        }
-        if (is_string($val)) {
-            return $this->parseFileSizeString($val);
-        }
-
-        return $val;
     }
 }

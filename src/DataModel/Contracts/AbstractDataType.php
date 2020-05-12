@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\DataModel\Contracts;
 
+use App\DataModel\DataType\BooleanType;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
@@ -27,7 +28,7 @@ abstract class AbstractDataType implements DataTypeInterface
     public function __construct($val = null, array $options = [])
     {
         $this->setValue($val, $options);
-        $ver = isset($options['ver']) ? (int) $options['ver'] : 0;
+        $ver = isset($options['ver']) ? (int)$options['ver'] : 0;
         $this->setVersion($ver);
     }
 
@@ -81,7 +82,7 @@ abstract class AbstractDataType implements DataTypeInterface
     {
         return [
             'type' => $this->getSerializationId(),
-            'val' => $this->getValue(),
+            'val' => $this->getSerializedValue(),
             'ver' => $this->getVersion(),
         ];
     }
@@ -94,23 +95,18 @@ abstract class AbstractDataType implements DataTypeInterface
         $fields = ['type', 'val', 'ver'];
         foreach ($fields as $field) {
             if (!array_key_exists($field, $data)) {
-                throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Missing Field: '.$field));
+                throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Missing Field: ' . $field));
             }
         }
 
         $type = $data['type'];
-        $val = $data['val'];
-        $ver = (int) $data['ver'];
+        $val = $this->coerce($data['val']);
+        $ver = (int)$data['ver'];
 
         if ($type !== $this->getSerializationId()) {
-            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Invalid Type: '.$type));
+            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Invalid Type: ' . $type));
         }
 
-        // coerce to correct type
-        if (!$this->isValidValue($val)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId()));
-        }
-        $val = $this->coerce($val);
         $this->setValue($val);
         $this->setVersion($ver);
 
@@ -200,9 +196,17 @@ abstract class AbstractDataType implements DataTypeInterface
     public function coerce($val)
     {
         if (!$this->isValidValue($val)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::DATA_TYPE_COERSION_UNSUCCESSFUL, $val, $this->getSerializationId()));
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId()));
         }
 
         return $val;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSerializedValue()
+    {
+        return $this->val;
     }
 }

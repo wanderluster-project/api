@@ -11,6 +11,7 @@ use App\Exception\WanderlusterException;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
+use DateTimeZone;
 use Exception;
 
 class DateTimeType extends AbstractDataType
@@ -18,23 +19,6 @@ class DateTimeType extends AbstractDataType
     public function getSerializationId(): string
     {
         return 'DATE_TIME';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function toArray(): array
-    {
-        $formattedVal = null;
-        if ($this->val instanceof DateTimeImmutable) {
-            $formattedVal = $this->val->format('c');
-        }
-
-        return [
-            'type' => $this->getSerializationId(),
-            'val' => $formattedVal,
-            'ver' => $this->getVersion(),
-        ];
     }
 
     /**
@@ -80,17 +64,31 @@ class DateTimeType extends AbstractDataType
     public function coerce($val)
     {
         if (!$this->isValidValue($val)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::DATA_TYPE_COERSION_UNSUCCESSFUL, $val, $this->getSerializationId()));
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId()));
         }
         if (is_string($val)) {
-            return new DateTimeImmutable($val);
+            return new DateTimeImmutable($val, new DateTimeZone('UTC'));
         }
 
-        if($val instanceof DateTime){
+        if ($val instanceof DateTime) {
+            $val->setTimezone(new DateTimeZone('UTC'));
+
             return DateTimeImmutable::createFromMutable($val);
         }
 
         return $val;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSerializedValue()
+    {
+        if ($this->val instanceof DateTimeImmutable) {
+            return $this->val->format('c');
+        }
+
+        return null;
     }
 
     /**

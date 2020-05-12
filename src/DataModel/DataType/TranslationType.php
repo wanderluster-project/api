@@ -32,35 +32,9 @@ class TranslationType extends AbstractDataType
     /**
      * {@inheritdoc}
      */
-    public function setValue($val, array $options = []): DataTypeInterface
-    {
-        $this->val = $val;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function merge(DataTypeInterface $type): self
-    {
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getSerializationId(): string
     {
         return 'TRANS';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isNull(array $options = []): bool
-    {
-        return is_null($this->val);
     }
 
     /**

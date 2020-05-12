@@ -41,5 +41,4 @@ class ErrorMessages
     const VERSION_INVALID = 'Invalid version: %s';
     const MERGE_UNSUCCESSFUL = 'Unable to merge %s with %s.';
     const DATA_TYPE_COMPARISON_UNSUCCESSFUL = 'Unable to compare %s with %s.';
-    const DATA_TYPE_COERSION_UNSUCCESSFUL = 'Unable to coerce %s to data type %s.';
 }
