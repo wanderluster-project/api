@@ -111,7 +111,7 @@ class DateTimeTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['type' => 'DATE_TIME', 'val' => 'I am invalid', 'ver' => 0]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to DATE_TIME data type - Invalid date string.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to DATE_TIME data type.', $e->getMessage());
         }
 
         // invalid value
@@ -120,7 +120,7 @@ class DateTimeTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['type' => 'DATE_TIME', 'val' => 3.14, 'ver' => 0]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to DATE_TIME data type - DateTime required.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to DATE_TIME data type.', $e->getMessage());
         }
 
         // invalid type
@@ -178,7 +178,7 @@ class DateTimeTypeTest extends TestCase implements TypeTestInterface
             $sut->setValue('I am a string');
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to DATE_TIME data type - Invalid date string.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to DATE_TIME data type.', $e->getMessage());
         }
     }
 
@@ -188,7 +188,7 @@ class DateTimeTypeTest extends TestCase implements TypeTestInterface
             $sut = new DateTimeType('I am a string');
             $this->fail('Exception not thrown');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to DATE_TIME data type - Invalid date string.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to DATE_TIME data type.', $e->getMessage());
         }
     }
 

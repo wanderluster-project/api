@@ -113,7 +113,7 @@ class FileSizeTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['type' => 'FILE_SIZE', 'val' => 'I AM INVALID', 'ver' => 150]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to FILE_SIZE data type - Invalid file size string.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to FILE_SIZE data type.', $e->getMessage());
         }
 
         // invalid value
@@ -122,7 +122,7 @@ class FileSizeTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['type' => 'FILE_SIZE', 'val' => false, 'ver' => 150]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to FILE_SIZE data type - Invalid file size.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to FILE_SIZE data type.', $e->getMessage());
         }
     }
 
@@ -211,7 +211,7 @@ class FileSizeTypeTest extends TestCase implements TypeTestInterface
             $sut->setValue('I am a string');
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to FILE_SIZE data type - Invalid file size string.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to FILE_SIZE data type.', $e->getMessage());
         }
     }
 
@@ -221,7 +221,7 @@ class FileSizeTypeTest extends TestCase implements TypeTestInterface
             $sut = new FileSizeType('I am a string');
             $this->fail('Exception not thrown');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to FILE_SIZE data type - Invalid file size string.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to FILE_SIZE data type.', $e->getMessage());
         }
     }
 

@@ -111,7 +111,7 @@ class NumericTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['type' => 'NUM', 'val' => 'I AM INVALID', 'ver' => 10]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to NUM data type - Numeric required.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to NUM data type.', $e->getMessage());
         }
 
         // invalid TYPE
@@ -169,18 +169,17 @@ class NumericTypeTest extends TestCase implements TypeTestInterface
             $sut->setValue('I am a string');
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to NUM data type - Numeric required.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to NUM data type.', $e->getMessage());
         }
     }
 
     public function testInvalidConstructorValue(): void
     {
         try {
-            // @phpstan-ignore-next-line
             $sut = new NumericType('I am a string');
             $this->fail('Exception not thrown');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to NUM data type - Numeric required.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to NUM data type.', $e->getMessage());
         }
     }
 

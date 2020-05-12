@@ -91,7 +91,7 @@ class EmailTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['type' => 'EMAIL', 'val' => 3.14, 'ver' => 0]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to EMAIL data type - String required.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to EMAIL data type.', $e->getMessage());
         }
 
         // invalid value
@@ -100,7 +100,7 @@ class EmailTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['type' => 'EMAIL', 'val' => 'simpkevin', 'ver' => 0]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to EMAIL data type - Invalid Email.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to EMAIL data type.', $e->getMessage());
         }
 
         // invalid type
@@ -152,7 +152,7 @@ class EmailTypeTest extends TestCase implements TypeTestInterface
             $sut->setValue('I am a string');
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to EMAIL data type - Invalid Email.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to EMAIL data type.', $e->getMessage());
         }
     }
 
@@ -162,7 +162,7 @@ class EmailTypeTest extends TestCase implements TypeTestInterface
             $sut = new EmailType('I am a string');
             $this->fail('Exception not thrown');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to EMAIL data type - Invalid Email.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to EMAIL data type.', $e->getMessage());
         }
     }
 

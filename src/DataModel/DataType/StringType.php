@@ -18,7 +18,7 @@ class StringType extends AbstractDataType
      *
      * @var string[]|null
      */
-    protected $trans;
+    protected $val;
 
     /**
      * Boolean constructor.
@@ -51,7 +51,7 @@ class StringType extends AbstractDataType
     {
         return [
             'type' => $this->getSerializationId(),
-            'val' => $this->trans,
+            'val' => $this->val,
             'ver' => $this->getVersion(),
         ];
     }
@@ -94,7 +94,7 @@ class StringType extends AbstractDataType
     public function setValue($val, array $options = []): DataTypeInterface
     {
         if (!is_string($val) && !is_null($val)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId(), 'String required'));
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId()));
         }
         $lang = isset($options['lang']) ? $options['lang'] : null;
         if (!$lang) {
@@ -103,7 +103,7 @@ class StringType extends AbstractDataType
         if (LanguageCodes::ANY === $lang) {
             throw new WanderlusterException(ErrorMessages::UNABLE_TO_USE_ANY_LANGUAGE);
         }
-        $this->trans[$lang] = $val;
+        $this->val[$lang] = $val;
 
         return $this;
     }
@@ -120,7 +120,7 @@ class StringType extends AbstractDataType
         if (LanguageCodes::ANY === $lang) {
             throw new WanderlusterException(ErrorMessages::UNABLE_TO_USE_ANY_LANGUAGE);
         }
-        $val = isset($this->trans[$lang]) ? $this->trans[$lang] : null;
+        $val = isset($this->val[$lang]) ? $this->val[$lang] : null;
 
         return $val;
     }
@@ -143,7 +143,7 @@ class StringType extends AbstractDataType
      */
     public function getLanguages(): array
     {
-        $langauges = array_keys($this->trans);
+        $langauges = array_keys($this->val);
         sort($langauges);
 
         return $langauges;
@@ -197,8 +197,20 @@ class StringType extends AbstractDataType
         return $this;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function canMergeWith(DataTypeInterface $type): bool
     {
         return $type instanceof StringType;
+    }
+
+    /**
+     * Only translation types allowed.
+     * {@inheritdoc}
+     */
+    public function isValidValue($val): bool
+    {
+        return $val instanceof TranslationType;
     }
 }

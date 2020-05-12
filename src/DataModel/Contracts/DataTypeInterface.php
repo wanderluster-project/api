@@ -53,6 +53,13 @@ interface DataTypeInterface extends SerializableInterface
     public function getVersion(): int;
 
     /**
+     * Returns TRUE if the data can be used and FALSE otherwise.
+     *
+     * @param mixed|null $val
+     */
+    public function isValidValue($val): bool;
+
+    /**
      * Returns TRUE if identical and FALSE otherweise.
      *
      * @throws WanderlusterException
@@ -75,4 +82,15 @@ interface DataTypeInterface extends SerializableInterface
      * Merge data from an existing type.
      */
     public function merge(DataTypeInterface $type): self;
+
+    /**
+     * Does a type coersion or throws an Exception.
+     *
+     * @param mixed $val
+     *
+     * @return mixed
+     *
+     * @throws WanderlusterException
+     */
+    public function coerce($val);
 }

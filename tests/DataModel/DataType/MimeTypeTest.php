@@ -102,7 +102,7 @@ class MimeTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['type' => 'MIME_TYPE', 'val' => 'test invalid', 'ver' => 10]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to MIME_TYPE data type - Invalid MimeType.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to MIME_TYPE data type.', $e->getMessage());
         }
 
         // invalid value
@@ -111,7 +111,7 @@ class MimeTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['type' => 'MIME_TYPE', 'val' => 3.14, 'ver' => 10]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to MIME_TYPE data type - String required.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to MIME_TYPE data type.', $e->getMessage());
         }
 
         // invalid value
@@ -163,7 +163,7 @@ class MimeTypeTest extends TestCase implements TypeTestInterface
             $sut->setValue('test invalid');
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to MIME_TYPE data type - Invalid MimeType.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to MIME_TYPE data type.', $e->getMessage());
         }
     }
 
@@ -173,7 +173,7 @@ class MimeTypeTest extends TestCase implements TypeTestInterface
             $sut = new MimeType('test invalid');
             $this->fail('Exception not thrown');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to MIME_TYPE data type - Invalid MimeType.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to MIME_TYPE data type.', $e->getMessage());
         }
     }
 

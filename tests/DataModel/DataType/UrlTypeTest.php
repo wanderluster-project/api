@@ -101,7 +101,7 @@ class UrlTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['type' => 'URL', 'ver' => 10, 'val' => 3.14]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to URL data type - String required.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to URL data type.', $e->getMessage());
         }
 
         // invalid value
@@ -110,7 +110,7 @@ class UrlTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['type' => 'URL', 'ver' => 10, 'val' => 'simpkevin']);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to URL data type - Invalid URL.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to URL data type.', $e->getMessage());
         }
 
         // invalid TYPE
@@ -162,7 +162,7 @@ class UrlTypeTest extends TestCase implements TypeTestInterface
             $sut->setValue('I am a string');
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to URL data type - Invalid URL.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to URL data type.', $e->getMessage());
         }
     }
 
@@ -172,7 +172,7 @@ class UrlTypeTest extends TestCase implements TypeTestInterface
             $sut = new UrlType('I am a string');
             $this->fail('Exception not thrown');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to URL data type - Invalid URL.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to URL data type.', $e->getMessage());
         }
     }
 

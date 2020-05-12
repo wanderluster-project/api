@@ -19,7 +19,7 @@ class ErrorMessages
     const OPTION_REQUIRED = 'Configuration option missing - %s.';
     const UNAGLE_DETERMINE_TYPE = 'Unable to determine the type for key - %s';
 
-    const INVALID_DATATYPE_VALUE = 'Invalid value passed to %s data type - %s.';
+    const INVALID_DATATYPE_VALUE = 'Invalid value passed to %s data type.';
     const ERROR_HYDRATING_DATATYPE = 'Error hydrating %s data type - %s.';
 
     const REQUEST_MISSING_PARAMETER = 'Missing parameter: %s.';
@@ -41,4 +41,5 @@ class ErrorMessages
     const VERSION_INVALID = 'Invalid version: %s';
     const MERGE_UNSUCCESSFUL = 'Unable to merge %s with %s.';
     const DATA_TYPE_COMPARISON_UNSUCCESSFUL = 'Unable to compare %s with %s.';
+    const DATA_TYPE_COERSION_UNSUCCESSFUL = 'Unable to coerce %s to data type %s.';
 }

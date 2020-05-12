@@ -216,7 +216,7 @@ class StringTypeTest extends TestCase implements TypeTestInterface
             $sut->setValue(123, ['lang' => 'en']);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to STRING data type - String required.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to STRING data type.', $e->getMessage());
         }
     }
 
@@ -227,7 +227,7 @@ class StringTypeTest extends TestCase implements TypeTestInterface
             $sut = new StringType(['en' => 123]);
             $this->fail('Exception not thrown');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to STRING data type - String required.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to STRING data type.', $e->getMessage());
         }
     }
 

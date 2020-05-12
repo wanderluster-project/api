@@ -102,7 +102,7 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
             $sut->fromArray(['type' => 'BOOL', 'val' => 'I am invalid', 'ver' => 0]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to BOOL data type - Boolean required.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to BOOL data type.', $e->getMessage());
         }
 
         // invalid type
@@ -160,18 +160,17 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
             $sut->setValue('I am a string');
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid value passed to BOOL data type - Boolean required.', $e->getMessage());
+            $this->assertEquals('Invalid value passed to BOOL data type.', $e->getMessage());
         }
     }
 
     public function testInvalidConstructorValue(): void
     {
         try {
-            // @phpstan-ignore-next-line
             $sut = new BooleanType('I am a string');
             $this->fail('Exception not thrown');
-        } catch (\TypeError $e) {
-            $this->assertStringStartsWith('Argument 1 passed to App\DataModel\DataType\BooleanType::__construct() must be of the type bool or null, string given', $e->getMessage());
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Invalid value passed to BOOL data type.', $e->getMessage());
         }
     }
 
