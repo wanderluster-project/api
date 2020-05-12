@@ -233,4 +233,45 @@ class DateTimeTypeTest extends TestCase implements TypeTestInterface
             $this->assertSame('Unable to merge BOOL with DATE_TIME.', $e->getMessage());
         }
     }
+
+    public function testIsValid(): void
+    {
+        $sut = new DateTimeType();
+        $this->assertTrue($sut->isValidValue(new DateTime('1/1/2000')));
+        $this->assertTrue($sut->isValidValue('1/1/2000'));
+        $this->assertFalse($sut->isValidValue('I am invalid'));
+    }
+
+    public function testIsValidNull(): void
+    {
+        $sut = new DateTimeType();
+        $this->assertTrue($sut->isValidValue(null));
+    }
+
+    public function testCoerce(): void
+    {
+        $sut = new DateTimeType();
+        $this->assertNull($sut->coerce(null));
+        $this->assertEquals('01/01/2000', $sut->coerce(new DateTime('1/1/2000'))->format('m/d/Y'));
+        $this->assertEquals('01/01/2000', $sut->coerce('1/1/2000')->format('m/d/Y'));
+    }
+
+    public function testCoerceException(): void
+    {
+        try {
+            $sut = new DateTimeType();
+            $sut->coerce('INVALID');
+            $this->fail('Exception not thrown');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Invalid value passed to DATE_TIME data type.', $e->getMessage());
+        }
+    }
+
+    public function testGetSerializedValue(): void
+    {
+        $sut = new DateTimeType();
+        $this->assertNull($sut->getSerializedValue());
+        $sut->setValue('1/1/2000');
+        $this->assertEquals('2000-01-01T00:00:00+00:00', $sut->getSerializedValue());
+    }
 }

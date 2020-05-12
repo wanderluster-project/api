@@ -37,4 +37,14 @@ interface TypeTestInterface
     public function testMerge(): void;
 
     public function testMergeException(): void;
+
+    public function testIsValid(): void;
+
+    public function testIsValidNull(): void;
+
+    public function testCoerce(): void;
+
+    public function testCoerceException(): void;
+
+    public function testGetSerializedValue(): void;
 }

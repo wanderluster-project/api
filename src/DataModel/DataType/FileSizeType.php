@@ -80,10 +80,12 @@ class FileSizeType extends AbstractDataType
         if (is_string($val)) {
             return $this->parseFileSizeString($val);
         }
+        if (is_null($val)) {
+            return $val;
+        }
 
-        return $val;
+        return (int) $val;
     }
-
 
     /**
      * @param int|float $bytes

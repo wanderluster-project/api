@@ -6,6 +6,8 @@ namespace App\DataModel\DataType;
 
 use App\DataModel\Contracts\AbstractDataType;
 use App\DataModel\Contracts\DataTypeInterface;
+use App\Exception\ErrorMessages;
+use App\Exception\WanderlusterException;
 
 class IntegerType extends AbstractDataType
 {
@@ -36,5 +38,21 @@ class IntegerType extends AbstractDataType
         }
 
         return is_int($val);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function coerce($val)
+    {
+        if (!$this->isValidValue($val)) {
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId()));
+        }
+
+        if (is_null($val)) {
+            return $val;
+        }
+
+        return (int) $val;
     }
 }

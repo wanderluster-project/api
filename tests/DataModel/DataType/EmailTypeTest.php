@@ -207,4 +207,44 @@ class EmailTypeTest extends TestCase implements TypeTestInterface
             $this->assertSame('Unable to merge BOOL with EMAIL.', $e->getMessage());
         }
     }
+
+    public function testIsValid(): void
+    {
+        $sut = new EmailType();
+        $this->assertTrue($sut->isValidValue('simpkevin@gmail.com'));
+        $this->assertFalse($sut->isValidValue(3.14));
+        $this->assertFalse($sut->isValidValue('Invalid email'));
+    }
+
+    public function testIsValidNull(): void
+    {
+        $sut = new EmailType();
+        $this->assertTrue($sut->isValidValue(null));
+    }
+
+    public function testCoerce(): void
+    {
+        $sut = new EmailType();
+        $this->assertNull($sut->coerce(null));
+        $this->assertEquals('simpkevin@gmail.com', $sut->coerce('simpkevin@gmail.com'));
+    }
+
+    public function testCoerceException(): void
+    {
+        try {
+            $sut = new EmailType();
+            $sut->coerce('INVALID');
+            $this->fail('Exception not thrown');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Invalid value passed to EMAIL data type.', $e->getMessage());
+        }
+    }
+
+    public function testGetSerializedValue(): void
+    {
+        $sut = new EmailType();
+        $this->assertNull($sut->getSerializedValue());
+        $sut->setValue('simpkevin@gmail.com');
+        $this->assertEquals('simpkevin@gmail.com', $sut->getSerializedValue());
+    }
 }

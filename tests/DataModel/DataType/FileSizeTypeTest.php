@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\DataModel\DataType;
 
 use App\DataModel\DataType\BooleanType;
+use App\DataModel\DataType\EmailType;
 use App\DataModel\DataType\FileSizeType;
 use App\Exception\WanderlusterException;
 use PHPUnit\Framework\TestCase;
@@ -265,5 +266,46 @@ class FileSizeTypeTest extends TestCase implements TypeTestInterface
         } catch (WanderlusterException $e) {
             $this->assertSame('Unable to merge BOOL with FILE_SIZE.', $e->getMessage());
         }
+    }
+
+    public function testIsValid(): void
+    {
+        $sut = new FileSizeType();
+        $this->assertTrue($sut->isValidValue(1000));
+        $this->assertTrue($sut->isValidValue('1.5 KB'));
+        $this->assertFalse($sut->isValidValue(3.14));
+        $this->assertFalse($sut->isValidValue('Invalid email'));
+    }
+
+    public function testIsValidNull(): void
+    {
+        $sut = new FileSizeType();
+        $this->assertTrue($sut->isValidValue(null));
+    }
+
+    public function testCoerce(): void
+    {
+        $sut = new FileSizeType();
+        $this->assertNull($sut->coerce(null));
+        $this->assertEquals(1181116006, $sut->coerce('1.1 GB'));
+    }
+
+    public function testCoerceException(): void
+    {
+        try {
+            $sut = new FileSizeType();
+            $sut->coerce('INVALID');
+            $this->fail('Exception not thrown');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Invalid value passed to FILE_SIZE data type.', $e->getMessage());
+        }
+    }
+
+    public function testGetSerializedValue(): void
+    {
+        $sut = new EmailType();
+        $this->assertNull($sut->getSerializedValue());
+        $sut->setValue('simpkevin@gmail.com');
+        $this->assertEquals('simpkevin@gmail.com', $sut->getSerializedValue());
     }
 }

@@ -6,6 +6,8 @@ namespace App\DataModel\DataType;
 
 use App\DataModel\Contracts\AbstractDataType;
 use App\DataModel\Contracts\DataTypeInterface;
+use App\Exception\ErrorMessages;
+use App\Exception\WanderlusterException;
 
 class MimeType extends AbstractDataType
 {
@@ -42,5 +44,21 @@ class MimeType extends AbstractDataType
         }
 
         return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function coerce($val)
+    {
+        if (!$this->isValidValue($val)) {
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId()));
+        }
+
+        if (is_null($val)) {
+            return $val;
+        }
+
+        return (string) $val;
     }
 }

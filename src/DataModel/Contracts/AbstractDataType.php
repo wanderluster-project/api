@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\DataModel\Contracts;
 
-use App\DataModel\DataType\BooleanType;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
@@ -28,7 +27,7 @@ abstract class AbstractDataType implements DataTypeInterface
     public function __construct($val = null, array $options = [])
     {
         $this->setValue($val, $options);
-        $ver = isset($options['ver']) ? (int)$options['ver'] : 0;
+        $ver = isset($options['ver']) ? (int) $options['ver'] : 0;
         $this->setVersion($ver);
     }
 
@@ -95,16 +94,16 @@ abstract class AbstractDataType implements DataTypeInterface
         $fields = ['type', 'val', 'ver'];
         foreach ($fields as $field) {
             if (!array_key_exists($field, $data)) {
-                throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Missing Field: ' . $field));
+                throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Missing Field: '.$field));
             }
         }
 
         $type = $data['type'];
         $val = $this->coerce($data['val']);
-        $ver = (int)$data['ver'];
+        $ver = (int) $data['ver'];
 
         if ($type !== $this->getSerializationId()) {
-            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Invalid Type: ' . $type));
+            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Invalid Type: '.$type));
         }
 
         $this->setValue($val);
@@ -188,18 +187,6 @@ abstract class AbstractDataType implements DataTypeInterface
     public function getLanguages(): array
     {
         return [LanguageCodes::ANY];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function coerce($val)
-    {
-        if (!$this->isValidValue($val)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId()));
-        }
-
-        return $val;
     }
 
     /**

@@ -211,6 +211,23 @@ class StringType extends AbstractDataType
      */
     public function isValidValue($val): bool
     {
-        return $val instanceof TranslationType;
+        return is_string($val) || is_null($val);
+        //return $val instanceof TranslationType;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function coerce($val)
+    {
+        if (!$this->isValidValue($val)) {
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId()));
+        }
+
+        if (is_null($val)) {
+            return $val;
+        }
+
+        return (string) $val;
     }
 }

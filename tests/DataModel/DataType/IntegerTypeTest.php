@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\DataModel\DataType;
 
 use App\DataModel\DataType\BooleanType;
+use App\DataModel\DataType\EmailType;
 use App\DataModel\DataType\IntegerType;
 use App\Exception\WanderlusterException;
 use PHPUnit\Framework\TestCase;
@@ -214,5 +215,45 @@ class IntegerTypeTest extends TestCase implements TypeTestInterface
         } catch (WanderlusterException $e) {
             $this->assertSame('Unable to merge BOOL with INT.', $e->getMessage());
         }
+    }
+
+    public function testIsValid(): void
+    {
+        $sut = new IntegerType();
+        $this->assertTrue($sut->isValidValue(1000));
+        $this->assertFalse($sut->isValidValue(3.14));
+        $this->assertFalse($sut->isValidValue('Invalid email'));
+    }
+
+    public function testIsValidNull(): void
+    {
+        $sut = new IntegerType();
+        $this->assertTrue($sut->isValidValue(null));
+    }
+
+    public function testCoerce(): void
+    {
+        $sut = new IntegerType();
+        $this->assertNull($sut->coerce(null));
+        $this->assertEquals(150, $sut->coerce(150));
+    }
+
+    public function testCoerceException(): void
+    {
+        try {
+            $sut = new IntegerType();
+            $sut->coerce('INVALID');
+            $this->fail('Exception not thrown');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Invalid value passed to INT data type.', $e->getMessage());
+        }
+    }
+
+    public function testGetSerializedValue(): void
+    {
+        $sut = new EmailType();
+        $this->assertNull($sut->getSerializedValue());
+        $sut->setValue('simpkevin@gmail.com');
+        $this->assertEquals('simpkevin@gmail.com', $sut->getSerializedValue());
     }
 }

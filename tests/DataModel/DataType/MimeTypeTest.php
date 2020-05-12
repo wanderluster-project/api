@@ -230,4 +230,44 @@ class MimeTypeTest extends TestCase implements TypeTestInterface
             $this->assertSame('Unable to merge BOOL with MIME_TYPE.', $e->getMessage());
         }
     }
+
+    public function testIsValid(): void
+    {
+        $sut = new MimeType();
+        $this->assertTrue($sut->isValidValue('img/png'));
+        $this->assertFalse($sut->isValidValue(3.14));
+        $this->assertFalse($sut->isValidValue('Invalid email'));
+    }
+
+    public function testIsValidNull(): void
+    {
+        $sut = new MimeType();
+        $this->assertTrue($sut->isValidValue(null));
+    }
+
+    public function testCoerce(): void
+    {
+        $sut = new MimeType();
+        $this->assertNull($sut->coerce(null));
+        $this->assertEquals('img/png', $sut->coerce('img/png'));
+    }
+
+    public function testCoerceException(): void
+    {
+        try {
+            $sut = new MimeType();
+            $sut->coerce('INVALID');
+            $this->fail('Exception not thrown');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Invalid value passed to MIME_TYPE data type.', $e->getMessage());
+        }
+    }
+
+    public function testGetSerializedValue(): void
+    {
+        $sut = new MimeType();
+        $this->assertNull($sut->getSerializedValue());
+        $sut->setValue('img/png');
+        $this->assertEquals('img/png', $sut->getSerializedValue());
+    }
 }

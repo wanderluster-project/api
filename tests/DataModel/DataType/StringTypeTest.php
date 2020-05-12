@@ -288,4 +288,43 @@ class StringTypeTest extends TestCase implements TypeTestInterface
             $this->assertSame('Unable to merge BOOL with STRING.', $e->getMessage());
         }
     }
+
+    public function testIsValid(): void
+    {
+        $sut = new StringType();
+        $this->assertTrue($sut->isValidValue('ABC'));
+        $this->assertFalse($sut->isValidValue(150));
+    }
+
+    public function testIsValidNull(): void
+    {
+        $sut = new StringType();
+        $this->assertTrue($sut->isValidValue(null));
+    }
+
+    public function testCoerce(): void
+    {
+        $sut = new StringType();
+        $this->assertNull($sut->coerce(null));
+        $this->assertEquals('test 1..2..3..', $sut->coerce('test 1..2..3..'));
+    }
+
+    public function testCoerceException(): void
+    {
+        try {
+            $sut = new StringType();
+            $sut->coerce(3.14);
+            $this->fail('Exception not thrown');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Invalid value passed to STRING data type.', $e->getMessage());
+        }
+    }
+
+    public function testGetSerializedValue(): void
+    {
+        $sut = new StringType();
+        $this->assertNull($sut->getSerializedValue());
+        $sut->setValue('test 1..2..3..', ['lang' => 'en']);
+        $this->assertEquals(['en' => 'test 1..2..3..'], $sut->getSerializedValue());
+    }
 }

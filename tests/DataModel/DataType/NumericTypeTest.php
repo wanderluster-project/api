@@ -224,4 +224,44 @@ class NumericTypeTest extends TestCase implements TypeTestInterface
             $this->assertSame('Unable to merge BOOL with NUM.', $e->getMessage());
         }
     }
+
+    public function testIsValid(): void
+    {
+        $sut = new NumericType();
+        $this->assertTrue($sut->isValidValue(3.14));
+        $this->assertTrue($sut->isValidValue(150));
+        $this->assertFalse($sut->isValidValue('Invalid email'));
+    }
+
+    public function testIsValidNull(): void
+    {
+        $sut = new NumericType();
+        $this->assertTrue($sut->isValidValue(null));
+    }
+
+    public function testCoerce(): void
+    {
+        $sut = new NumericType();
+        $this->assertNull($sut->coerce(null));
+        $this->assertEquals(3.14, $sut->coerce(3.14));
+    }
+
+    public function testCoerceException(): void
+    {
+        try {
+            $sut = new NumericType();
+            $sut->coerce('INVALID');
+            $this->fail('Exception not thrown');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Invalid value passed to NUM data type.', $e->getMessage());
+        }
+    }
+
+    public function testGetSerializedValue(): void
+    {
+        $sut = new NumericType();
+        $this->assertNull($sut->getSerializedValue());
+        $sut->setValue(3.14);
+        $this->assertEquals(3.14, $sut->getSerializedValue());
+    }
 }

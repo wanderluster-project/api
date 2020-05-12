@@ -217,4 +217,45 @@ class UrlTypeTest extends TestCase implements TypeTestInterface
             $this->assertSame('Unable to merge BOOL with URL.', $e->getMessage());
         }
     }
+
+    public function testIsValid(): void
+    {
+        $sut = new UrlType();
+        $this->assertTrue($sut->isValidValue('https://www.google.com'));
+        $this->assertFalse($sut->isValidValue('I am invalid'));
+    }
+
+    public function testIsValidNull(): void
+    {
+        $sut = new UrlType();
+        $this->assertTrue($sut->isValidValue(null));
+    }
+
+    public function testCoerce(): void
+    {
+        $sut = new UrlType();
+        $this->assertNull($sut->coerce(null));
+        $this->assertEquals('https://www.google.com', $sut->coerce('https://www.google.com'));
+    }
+
+    public function testCoerceException(): void
+    {
+        try {
+            $sut = new UrlType();
+            $sut->coerce('INVALID');
+            $this->fail('Exception not thrown');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Invalid value passed to URL data type.', $e->getMessage());
+        }
+    }
+
+    public function testGetSerializedValue(): void
+    {
+        $sut = new BooleanType();
+        $this->assertNull($sut->getSerializedValue());
+        $sut->setValue(true);
+        $this->assertTrue($sut->getSerializedValue());
+        $sut->setValue(false);
+        $this->assertFalse($sut->getSerializedValue());
+    }
 }

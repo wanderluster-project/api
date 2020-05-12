@@ -216,4 +216,47 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
             $this->assertEquals('Unable to merge DATE_TIME with BOOL.', $e->getMessage());
         }
     }
+
+    public function testIsValid(): void
+    {
+        $sut = new BooleanType();
+        $this->assertTrue($sut->isValidValue(true));
+        $this->assertTrue($sut->isValidValue(false));
+        $this->assertFalse($sut->isValidValue('I am invalid'));
+    }
+
+    public function testIsValidNull(): void
+    {
+        $sut = new BooleanType();
+        $this->assertTrue($sut->isValidValue(null));
+    }
+
+    public function testCoerce(): void
+    {
+        $sut = new BooleanType();
+        $this->assertNull($sut->coerce(null));
+        $this->assertTrue($sut->coerce(true));
+        $this->assertFalse($sut->coerce(false));
+    }
+
+    public function testCoerceException(): void
+    {
+        try {
+            $sut = new BooleanType();
+            $sut->coerce('INVALID');
+            $this->fail('Exception not thrown');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Invalid value passed to BOOL data type.', $e->getMessage());
+        }
+    }
+
+    public function testGetSerializedValue(): void
+    {
+        $sut = new BooleanType();
+        $this->assertNull($sut->getSerializedValue());
+        $sut->setValue(true);
+        $this->assertTrue($sut->getSerializedValue());
+        $sut->setValue(false);
+        $this->assertFalse($sut->getSerializedValue());
+    }
 }
