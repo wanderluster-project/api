@@ -4,13 +4,9 @@ declare(strict_types=1);
 
 namespace App\DataModel\Snapshot;
 
+use App\DataModel\Attributes\AttributeManager;
 use App\DataModel\Contracts\DataTypeInterface;
 use App\DataModel\Contracts\SerializableInterface;
-use App\DataModel\DataType\BooleanType;
-use App\DataModel\DataType\DateTimeType;
-use App\DataModel\DataType\IntegerType;
-use App\DataModel\DataType\NumericType;
-use App\DataModel\DataType\String\LocalizedStringType;
 use App\DataModel\Serializer\Serializer;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
@@ -18,13 +14,13 @@ use App\Exception\WanderlusterException;
 use App\Security\User;
 use DateTime;
 use DateTimeImmutable;
-use DateTimeInterface;
 
 class Snapshot implements SerializableInterface
 {
     const SERIALIZATION_ID = 'SNAPSHOT';
 
     protected Serializer $serializer;
+    protected AttributeManager $attributeManager;
     protected ?int $version = null;
     protected ?DateTimeImmutable $createdAt = null;
     protected ?User $createdBy = null;
@@ -37,9 +33,10 @@ class Snapshot implements SerializableInterface
     /**
      * Snapshot constructor.
      */
-    public function __construct(Serializer $serializer)
+    public function __construct(Serializer $serializer, AttributeManager $attributeManager)
     {
         $this->serializer = $serializer;
+        $this->attributeManager = $attributeManager;
     }
 
     /**
@@ -62,26 +59,11 @@ class Snapshot implements SerializableInterface
         }
 
         $key = (string) $key;
-        $typedVal = null;
-
         if ($this->has($key, LanguageCodes::ANY)) {
             $typedVal = $this->data[$key];
         } else {
-            if (is_bool($value)) {
-                $typedVal = new BooleanType($value);
-            } elseif (is_int($value)) {
-                $typedVal = new IntegerType($value);
-            } elseif (is_float($value)) {
-                $typedVal = new NumericType($value);
-            } elseif (is_object($value) && $value instanceof DateTimeInterface) {
-                $typedVal = new DateTimeType($value);
-            } elseif (is_string($value)) {
-                $typedVal = new LocalizedStringType();
-            } else {
-                throw new WanderlusterException(sprintf(ErrorMessages::UNAGLE_DETERMINE_TYPE, $key));
-            }
+            $typedVal = $this->attributeManager->getDataType($key);
         }
-
         $typedVal->setValue($value, ['lang' => $lang]);
         $this->data[$key] = $typedVal;
         ksort($this->data);

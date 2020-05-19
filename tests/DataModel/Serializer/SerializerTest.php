@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\DataModel\Serializer;
 
+use App\DataModel\Attributes\Attributes;
 use App\DataModel\Contracts\SerializableInterface;
 use App\DataModel\Entity\Entity;
 use App\DataModel\Entity\EntityTypes;
@@ -89,18 +90,18 @@ class SerializerTest extends FunctionalTest
 
         // test with data
         $entity = $this->getEntityManager()->create(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
-        $entity->set('foo1', 'bar1');
-        $entity->set('foo2', 'bar2');
-        $entity->del('foo2');
-        $this->assertEquals('{"type":"ENTITY","entity_id":null,"entity_type":10,"snapshot":{"type":"SNAPSHOT","version":null,"data":{"foo1":{"type":"LOCALIZED_STRING","val":[{"type":"TRANS","val":"bar1","ver":0,"lang":"en"}]}}}}', $this->getSerializer()->encode($entity));
+        $entity->set(Attributes::CORE_TEST_STRING, 'bar1');
+        $entity->set(Attributes::CORE_TEST_STRING_2, 'bar2');
+        $entity->del(Attributes::CORE_TEST_STRING_2);
+        $this->assertEquals('{"type":"ENTITY","entity_id":null,"entity_type":10,"snapshot":{"type":"SNAPSHOT","version":null,"data":{"core.test.string_1":{"type":"LOCALIZED_STRING","val":[{"type":"TRANS","val":"bar1","ver":0,"lang":"en"}]}}}}', $this->getSerializer()->encode($entity));
 
         // test with multiple languages
         $entity = $this->getEntityManager()->create(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
         $entity->load(LanguageCodes::ENGLISH);
-        $entity->set('foo1', 'bar1');
+        $entity->set(Attributes::CORE_TEST_STRING, 'bar1');
         $entity->load(LanguageCodes::SPANISH);
-        $entity->set('foo1', 'bar2');
-        $this->assertEquals('{"type":"ENTITY","entity_id":null,"entity_type":10,"snapshot":{"type":"SNAPSHOT","version":null,"data":{"foo1":{"type":"LOCALIZED_STRING","val":[{"type":"TRANS","val":"bar1","ver":0,"lang":"en"},{"type":"TRANS","val":"bar2","ver":0,"lang":"es"}]}}}}', $this->getSerializer()->encode($entity));
+        $entity->set(Attributes::CORE_TEST_STRING, 'bar2');
+        $this->assertEquals('{"type":"ENTITY","entity_id":null,"entity_type":10,"snapshot":{"type":"SNAPSHOT","version":null,"data":{"core.test.string_1":{"type":"LOCALIZED_STRING","val":[{"type":"TRANS","val":"bar1","ver":0,"lang":"en"},{"type":"TRANS","val":"bar2","ver":0,"lang":"es"}]}}}}', $this->getSerializer()->encode($entity));
     }
 
     public function testDecodingEntity(): void

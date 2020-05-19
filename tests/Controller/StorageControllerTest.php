@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Controller;
 
 use App\Controller\StorageController;
+use App\DataModel\Attributes\Attributes;
 use App\DataModel\Entity\EntityTypes;
 use App\DataModel\Translation\LanguageCodes;
 use App\EntityManager\EntityManager;
@@ -101,10 +102,10 @@ class StorageControllerTest extends FunctionalTest
 
         $entity = $this->getSerializer()->decode($client->getResponse()->getContent());
         $entity->load(LanguageCodes::ENGLISH);
-        $this->assertTrue($entity->has('url'));
-        $this->assertTrue($entity->has('file_size'));
-        $this->assertTrue($entity->has('mime_type'));
-        $this->assertEquals('image/jpeg', $entity->get('mime_type'));
+        $this->assertTrue($entity->has(Attributes::CORE_FILE_URL));
+        $this->assertTrue($entity->has(Attributes::CORE_FILE_SIZE));
+        $this->assertTrue($entity->has(Attributes::CORE_FILE_MIME_TYPE));
+        $this->assertEquals('image/jpeg', $entity->get(Attributes::CORE_FILE_MIME_TYPE));
         $this->assertEquals(EntityTypes::FILE_IMAGE_JPG, $entity->getEntityType());
         $this->assertNotNull($entity->getEntityId());
 
@@ -123,10 +124,10 @@ class StorageControllerTest extends FunctionalTest
 
         $entity = $this->getSerializer()->decode($client->getResponse()->getContent());
         $entity->load(LanguageCodes::ENGLISH);
-        $this->assertTrue($entity->has('url'));
-        $this->assertTrue($entity->has('file_size'));
-        $this->assertTrue($entity->has('mime_type'));
-        $this->assertEquals('image/png', $entity->get('mime_type'));
+        $this->assertTrue($entity->has(Attributes::CORE_FILE_URL));
+        $this->assertTrue($entity->has(Attributes::CORE_FILE_SIZE));
+        $this->assertTrue($entity->has(Attributes::CORE_FILE_MIME_TYPE));
+        $this->assertEquals('image/png', $entity->get(Attributes::CORE_FILE_MIME_TYPE));
         $this->assertEquals(EntityTypes::FILE_IMAGE_PNG, $entity->getEntityType());
         $this->assertNotNull($entity->getEntityId());
 
@@ -145,10 +146,10 @@ class StorageControllerTest extends FunctionalTest
 
         $entity = $this->getSerializer()->decode($client->getResponse()->getContent());
         $entity->load(LanguageCodes::ENGLISH);
-        $this->assertTrue($entity->has('url'));
-        $this->assertTrue($entity->has('file_size'));
-        $this->assertTrue($entity->has('mime_type'));
-        $this->assertEquals('image/gif', $entity->get('mime_type'));
+        $this->assertTrue($entity->has(Attributes::CORE_FILE_URL));
+        $this->assertTrue($entity->has(Attributes::CORE_FILE_SIZE));
+        $this->assertTrue($entity->has(Attributes::CORE_FILE_MIME_TYPE));
+        $this->assertEquals('image/gif', $entity->get(Attributes::CORE_FILE_MIME_TYPE));
         $this->assertEquals(EntityTypes::FILE_IMAGE_GIF, $entity->getEntityType());
         $this->assertNotNull($entity->getEntityId());
 
@@ -167,10 +168,10 @@ class StorageControllerTest extends FunctionalTest
 
         $entity = $this->getSerializer()->decode($client->getResponse()->getContent());
         $entity->load(LanguageCodes::ENGLISH);
-        $this->assertTrue($entity->has('url'));
-        $this->assertTrue($entity->has('file_size'));
-        $this->assertTrue($entity->has('mime_type'));
-        $this->assertEquals('image/webp', $entity->get('mime_type'));
+        $this->assertTrue($entity->has(Attributes::CORE_FILE_URL));
+        $this->assertTrue($entity->has(Attributes::CORE_FILE_SIZE));
+        $this->assertTrue($entity->has(Attributes::CORE_FILE_MIME_TYPE));
+        $this->assertEquals('image/webp', $entity->get(Attributes::CORE_FILE_MIME_TYPE));
         $this->assertEquals(EntityTypes::FILE_IMAGE_WEBP, $entity->getEntityType());
         $this->assertNotNull($entity->getEntityId());
 
@@ -189,10 +190,10 @@ class StorageControllerTest extends FunctionalTest
 
         $entity = $this->getSerializer()->decode($client->getResponse()->getContent());
         $entity->load(LanguageCodes::ENGLISH);
-        $this->assertTrue($entity->has('url'));
-        $this->assertTrue($entity->has('file_size'));
-        $this->assertTrue($entity->has('mime_type'));
-        $this->assertEquals('image/svg+xml', $entity->get('mime_type'));
+        $this->assertTrue($entity->has(Attributes::CORE_FILE_URL));
+        $this->assertTrue($entity->has(Attributes::CORE_FILE_SIZE));
+        $this->assertTrue($entity->has(Attributes::CORE_FILE_MIME_TYPE));
+        $this->assertEquals('image/svg+xml', $entity->get(Attributes::CORE_FILE_MIME_TYPE));
         $this->assertEquals(EntityTypes::FILE_IMAGE_SVG, $entity->getEntityType());
         $this->assertNotNull($entity->getEntityId());
 
@@ -211,10 +212,10 @@ class StorageControllerTest extends FunctionalTest
 
         $entity = $this->getSerializer()->decode($client->getResponse()->getContent());
         $entity->load(LanguageCodes::ENGLISH);
-        $this->assertTrue($entity->has('url'));
-        $this->assertTrue($entity->has('file_size'));
-        $this->assertTrue($entity->has('mime_type'));
-        $this->assertEquals('application/pdf', $entity->get('mime_type'));
+        $this->assertTrue($entity->has(Attributes::CORE_FILE_URL));
+        $this->assertTrue($entity->has(Attributes::CORE_FILE_SIZE));
+        $this->assertTrue($entity->has(Attributes::CORE_FILE_MIME_TYPE));
+        $this->assertEquals('application/pdf', $entity->get(Attributes::CORE_FILE_MIME_TYPE));
         $this->assertEquals(EntityTypes::FILE_PDF, $entity->getEntityType());
         $this->assertNotNull($entity->getEntityId());
 

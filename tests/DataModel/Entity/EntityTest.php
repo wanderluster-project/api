@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\DataModel\Entity;
 
+use App\DataModel\Attributes\Attributes;
 use App\DataModel\Entity\Entity;
 use App\DataModel\Entity\EntityTypes;
 use App\DataModel\Translation\LanguageCodes;
@@ -32,28 +33,28 @@ class EntityTest extends FunctionalTest
         $this->assertEquals([], $sut->all());
 
         // Set a value
-        $sut->set('foo1', 'bar1');
-        $this->assertTrue($sut->has('foo1'));
-        $this->assertEquals('bar1', $sut->get('foo1'));
-        $this->assertEquals(['foo1' => 'bar1'], $sut->all());
+        $sut->set(Attributes::CORE_TEST_STRING, 'bar1');
+        $this->assertTrue($sut->has(Attributes::CORE_TEST_STRING));
+        $this->assertEquals('bar1', $sut->get(Attributes::CORE_TEST_STRING));
+        $this->assertEquals([Attributes::CORE_TEST_STRING => 'bar1'], $sut->all());
 
         // Set another value
-        $sut->set('foo2', 'bar2');
-        $this->assertTrue($sut->has('foo2'));
-        $this->assertEquals('bar2', $sut->get('foo2'));
-        $this->assertEquals(['foo1' => 'bar1', 'foo2' => 'bar2'], $sut->all());
+        $sut->set(Attributes::CORE_TEST_STRING_2, 'bar2');
+        $this->assertTrue($sut->has(Attributes::CORE_TEST_STRING_2));
+        $this->assertEquals('bar2', $sut->get(Attributes::CORE_TEST_STRING_2));
+        $this->assertEquals([Attributes::CORE_TEST_STRING => 'bar1', Attributes::CORE_TEST_STRING_2 => 'bar2'], $sut->all());
 
         // Remove a value
-        $sut->del('foo1');
+        $sut->del(Attributes::CORE_TEST_STRING);
         $this->assertFalse($sut->has('foo1'));
         $this->assertEquals(null, $sut->get('foo1'));
-        $this->assertEquals(['foo2' => 'bar2'], $sut->all());
+        $this->assertEquals([Attributes::CORE_TEST_STRING_2 => 'bar2'], $sut->all());
 
         // Adding back deleted value
-        $sut->set('foo1', 'bar1.1');
-        $this->assertTrue($sut->has('foo1'));
-        $this->assertEquals('bar1.1', $sut->get('foo1'));
-        $this->assertEquals(['foo1' => 'bar1.1', 'foo2' => 'bar2'], $sut->all());
+        $sut->set(Attributes::CORE_TEST_STRING, 'bar1.1');
+        $this->assertTrue($sut->has(Attributes::CORE_TEST_STRING));
+        $this->assertEquals('bar1.1', $sut->get(Attributes::CORE_TEST_STRING));
+        $this->assertEquals([Attributes::CORE_TEST_STRING => 'bar1.1', Attributes::CORE_TEST_STRING_2 => 'bar2'], $sut->all());
     }
 
     public function testDel(): void
@@ -63,19 +64,19 @@ class EntityTest extends FunctionalTest
         $this->assertEquals([], $sut->keys());
 
         // add value
-        $sut->set('foo1', 'bar1');
-        $this->assertEquals(['foo1'], $sut->keys());
+        $sut->set(Attributes::CORE_TEST_STRING, 'bar1');
+        $this->assertEquals([Attributes::CORE_TEST_STRING], $sut->keys());
 
         // add another value
-        $sut->set('foo2', 'bar2');
-        $this->assertEquals(['foo1', 'foo2'], $sut->keys());
+        $sut->set(Attributes::CORE_TEST_STRING_2, 'bar2');
+        $this->assertEquals([Attributes::CORE_TEST_STRING, Attributes::CORE_TEST_STRING_2], $sut->keys());
 
         // delete value
-        $sut->del('foo1');
-        $this->assertEquals(['foo2'], $sut->keys());
+        $sut->del(Attributes::CORE_TEST_STRING);
+        $this->assertEquals([Attributes::CORE_TEST_STRING_2], $sut->keys());
 
         // delete by setting equal to null
-        $sut->set('foo2', null);
+        $sut->set(Attributes::CORE_TEST_STRING_2, null);
         $this->assertEquals([], $sut->keys());
     }
 
@@ -86,16 +87,16 @@ class EntityTest extends FunctionalTest
         $this->assertEquals([], $sut->keys());
 
         // add value
-        $sut->set('foo1', 'bar1');
-        $this->assertEquals(['foo1'], $sut->keys());
+        $sut->set(Attributes::CORE_TEST_STRING, 'bar1');
+        $this->assertEquals([Attributes::CORE_TEST_STRING], $sut->keys());
 
         // add another value
-        $sut->set('foo2', 'bar2');
-        $this->assertEquals(['foo1', 'foo2'], $sut->keys());
+        $sut->set(Attributes::CORE_TEST_STRING_2, 'bar2');
+        $this->assertEquals([Attributes::CORE_TEST_STRING, Attributes::CORE_TEST_STRING_2], $sut->keys());
 
         // delete value
-        $sut->del('foo1');
-        $this->assertEquals(['foo2'], $sut->keys());
+        $sut->del(Attributes::CORE_TEST_STRING);
+        $this->assertEquals([Attributes::CORE_TEST_STRING_2], $sut->keys());
     }
 
     public function testGetLanguages(): void
@@ -103,9 +104,9 @@ class EntityTest extends FunctionalTest
         $sut = $this->getEntityManager()->create(EntityTypes::TEST_ENTITY_TYPE);
 
         $sut->load(LanguageCodes::ENGLISH);
-        $sut->set('animal', 'dog');
+        $sut->set(Attributes::CORE_TEST_STRING, 'dog');
         $sut->load(LanguageCodes::SPANISH);
-        $sut->set('animal', 'perro');
+        $sut->set(Attributes::CORE_TEST_STRING, 'perro');
 
         $this->assertEquals([LanguageCodes::ENGLISH, LanguageCodes::SPANISH], $sut->getLanguages());
     }
@@ -126,18 +127,18 @@ class EntityTest extends FunctionalTest
         $this->assertEquals([], $sut->all());
 
         $sut->load(LanguageCodes::ENGLISH);
-        $sut->set('animal', 'dog');
+        $sut->set(Attributes::CORE_TEST_STRING, 'dog');
 
         $sut->load(LanguageCodes::SPANISH);
-        $sut->set('animal', 'perro');
+        $sut->set(Attributes::CORE_TEST_STRING, 'perro');
 
         $sut->load(LanguageCodes::ENGLISH);
-        $this->assertEquals('dog', $sut->get('animal'));
-        $this->assertEquals(['animal'], $sut->keys());
+        $this->assertEquals('dog', $sut->get(Attributes::CORE_TEST_STRING));
+        $this->assertEquals([Attributes::CORE_TEST_STRING], $sut->keys());
 
         $sut->load(LanguageCodes::SPANISH);
-        $this->assertEquals('perro', $sut->get('animal'));
-        $this->assertEquals(['animal'], $sut->keys());
+        $this->assertEquals('perro', $sut->get(Attributes::CORE_TEST_STRING));
+        $this->assertEquals([Attributes::CORE_TEST_STRING], $sut->keys());
     }
 
     public function testFromArray(): void
@@ -279,9 +280,9 @@ class EntityTest extends FunctionalTest
 
         // test populated
         $sut = $this->getEntityManager()->create(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
-        $sut->set('test.string', 'english string');
+        $sut->set(Attributes::CORE_TEST_STRING, 'english string');
         $sut->load('es');
-        $sut->set('test.string', 'spanish string');
+        $sut->set(Attributes::CORE_TEST_STRING, 'spanish string');
 
         $this->assertEquals([
             'type' => 'ENTITY',
@@ -291,7 +292,7 @@ class EntityTest extends FunctionalTest
                 'type' => 'SNAPSHOT',
                 'version' => null,
                 'data' => [
-                    'test.string' => [
+                    'core.test.string_1' => [
                         'type' => 'LOCALIZED_STRING',
                         'val' => [
                             ['type' => 'TRANS', 'lang' => 'en', 'val' => 'english string', 'ver' => 0],

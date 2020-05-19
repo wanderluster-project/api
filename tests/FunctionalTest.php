@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests;
 
+use App\DataModel\Attributes\AttributeManager;
 use App\DataModel\Serializer\Serializer;
 use App\EntityManager\EntityManager;
 use App\FileStorage\FileAdapters\ChainFileAdapter;
@@ -53,5 +54,12 @@ class FunctionalTest extends WebTestCase
         self::bootKernel();
 
         return self::$container->get('test.entity_manager');
+    }
+
+    public function getAttributeMangager(): AttributeManager
+    {
+        self::bootKernel();
+
+        return self::$container->get('test.attribute_manager');
     }
 }
