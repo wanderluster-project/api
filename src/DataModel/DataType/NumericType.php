@@ -28,31 +28,18 @@ class NumericType extends AbstractDataType
     }
 
     /**
-     * Only integer and floats allowed.
-     * {@inheritdoc}
-     */
-    public function isValidValue($val): bool
-    {
-        if (is_null($val)) {
-            return true;
-        }
-
-        return is_int($val) || is_float($val);
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function coerce($val)
     {
-        if (!$this->isValidValue($val)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId()));
-        }
-
-        if (is_null($val)) {
+        if (is_null($val) || is_float($val)) {
             return $val;
         }
 
-        return $val;
+        if (is_int($val)) {
+            return (float) $val;
+        }
+
+        throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATA_TYPE_VALUE, $this->getSerializationId()));
     }
 }

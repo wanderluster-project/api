@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\DataModel\DataType;
+namespace App\Tests\DataModel\DataType\String;
 
 use App\DataModel\DataType\BooleanType;
-use App\DataModel\DataType\UrlType;
+use App\DataModel\DataType\String\UrlType;
 use App\Exception\WanderlusterException;
+use App\Tests\DataModel\DataType\TypeTestInterface;
+use App\Tests\Fixtures\StringObject;
 use PHPUnit\Framework\TestCase;
 
 class UrlTypeTest extends TestCase implements TypeTestInterface
@@ -123,6 +125,15 @@ class UrlTypeTest extends TestCase implements TypeTestInterface
         }
     }
 
+    public function testCompositionToFromArray(): void
+    {
+        $sut1 = new UrlType('https://www.google.com', ['ver' => 10]);
+        $sut2 = new UrlType();
+        $sut2->fromArray($sut1->toArray());
+        $this->assertEquals('https://www.google.com', $sut2->getValue());
+        $this->assertEquals(10, $sut2->getVersion());
+    }
+
     public function testSetGet(): void
     {
         $sut = new UrlType();
@@ -201,11 +212,66 @@ class UrlTypeTest extends TestCase implements TypeTestInterface
         $this->assertSame(10, $sut->getVersion());
         $this->assertSame('https://www.yahoo.com', $sut->getValue());
 
-        // Merging greater value
+        // Merging greater version
         $sut = new UrlType('https://www.yahoo.com', ['ver' => 10]);
         $sut->merge(new UrlType('https://www.google.com', ['ver' => 11]));
         $this->assertSame(11, $sut->getVersion());
         $this->assertSame('https://www.google.com', $sut->getValue());
+    }
+
+    public function testMergeNull(): void
+    {
+        // Merging previous version
+        $sut = new UrlType('https://www.google.com', ['ver' => 10]);
+        $sut->merge(new UrlType(null, ['ver' => 9]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame('https://www.google.com', $sut->getValue());
+
+        $sut = new UrlType(null, ['ver' => 10]);
+        $sut->merge(new UrlType('https://www.yahoo.com', ['ver' => 9]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertNull($sut->getValue());
+
+        // Merging same version
+        $sut = new UrlType('https://www.google.com', ['ver' => 10]);
+        $sut->merge(new UrlType(null, ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame('https://www.google.com', $sut->getValue());
+
+        $sut = new UrlType(null, ['ver' => 10]);
+        $sut->merge(new UrlType('https://www.google.com', ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame('https://www.google.com', $sut->getValue());
+
+        // Merging greater version
+        $sut = new UrlType('https://www.yahoo.com', ['ver' => 10]);
+        $sut->merge(new UrlType(null, ['ver' => 11]));
+        $this->assertSame(11, $sut->getVersion());
+        $this->assertNull($sut->getValue());
+
+        $sut = new UrlType(null, ['ver' => 10]);
+        $sut->merge(new UrlType('https://www.google.com', ['ver' => 11]));
+        $this->assertSame(11, $sut->getVersion());
+        $this->assertSame('https://www.google.com', $sut->getValue());
+    }
+
+    public function testIsGreaterThan(): void
+    {
+        $obj1 = new UrlType('https://www.yahoo.com');
+        $obj2 = new UrlType('https://www.google.com');
+
+        $this->assertTrue($obj1->isGreaterThan($obj2));
+        $this->assertFalse($obj2->isGreaterThan($obj1));
+    }
+
+    public function testIsEqualTo(): void
+    {
+        $obj1 = new UrlType('https://www.yahoo.com');
+        $obj2 = new UrlType('https://www.google.com');
+        $obj3 = new UrlType('https://www.yahoo.com');
+
+        $this->assertFalse($obj1->isEqualTo($obj2));
+        $this->assertTrue($obj1->isEqualTo($obj3));
     }
 
     public function testMergeException(): void
@@ -234,8 +300,14 @@ class UrlTypeTest extends TestCase implements TypeTestInterface
     public function testCoerce(): void
     {
         $sut = new UrlType();
-        $this->assertNull($sut->coerce(null));
         $this->assertEquals('https://www.google.com', $sut->coerce('https://www.google.com'));
+        $this->assertEquals('https://www.google.com', $sut->coerce(new StringObject('https://www.google.com')));
+    }
+
+    public function testCoerceNull(): void
+    {
+        $sut = new UrlType();
+        $this->assertNull($sut->coerce(null));
     }
 
     public function testCoerceException(): void
@@ -243,6 +315,14 @@ class UrlTypeTest extends TestCase implements TypeTestInterface
         try {
             $sut = new UrlType();
             $sut->coerce('INVALID');
+            $this->fail('Exception not thrown');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Invalid value passed to URL data type.', $e->getMessage());
+        }
+
+        try {
+            $sut = new UrlType();
+            $sut->coerce(new \stdClass());
             $this->fail('Exception not thrown');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to URL data type.', $e->getMessage());

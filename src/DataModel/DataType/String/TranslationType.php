@@ -1,0 +1,82 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\DataModel\DataType\String;
+
+use App\DataModel\Contracts\AbstractStringType;
+use App\DataModel\Contracts\DataTypeInterface;
+
+class TranslationType extends AbstractStringType
+{
+    protected ?string $lang = null;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setValue($val, array $options = []): DataTypeInterface
+    {
+        $lang = isset($options['lang']) ? $options['lang'] : null;
+        if ($lang) {
+            $this->lang = $lang;
+        }
+        parent::setValue($val, $options);
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLanguage(): ?string
+    {
+        return $this->lang;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSerializationId(): string
+    {
+        return 'TRANS';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLanguages(): array
+    {
+        if ($this->lang) {
+            return [$this->lang];
+        }
+
+        return [];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toArray(): array
+    {
+        $ret = parent::toArray();
+        $ret['lang'] = $this->lang;
+
+        return $ret;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function canMergeWith(DataTypeInterface $type): bool
+    {
+        return $type instanceof TranslationType;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isValidPattern(string $val): bool
+    {
+        return true;
+    }
+}

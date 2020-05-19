@@ -28,31 +28,24 @@ class BooleanType extends AbstractDataType
     }
 
     /**
-     * Only boolean data accepted.
-     * {@inheritdoc}
-     */
-    public function isValidValue($val): bool
-    {
-        if (is_null($val)) {
-            return true;
-        }
-
-        return is_bool($val);
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function coerce($val)
     {
-        if (!$this->isValidValue($val)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId()));
-        }
-
-        if (is_null($val)) {
+        if (is_bool($val) || is_null($val)) {
             return $val;
         }
 
-        return (bool) $val;
+        if ('TRUE' === $val || 1 === $val || 'T' === $val) {
+            $val = true;
+        } elseif ('FALSE' === $val || 0 === $val || 'F' === $val) {
+            $val = false;
+        }
+
+        if (is_bool($val)) {
+            return $val;
+        }
+
+        throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATA_TYPE_VALUE, $this->getSerializationId()));
     }
 }

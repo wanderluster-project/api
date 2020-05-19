@@ -73,7 +73,7 @@ interface DataTypeInterface extends SerializableInterface
      *
      * @throws WanderlusterException
      */
-    public function isEqual(DataTypeInterface $type): bool;
+    public function isEqualTo(DataTypeInterface $type): bool;
 
     /**
      * Returns TRUE if greater than $type and FALSE otherwise.

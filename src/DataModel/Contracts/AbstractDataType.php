@@ -26,9 +26,13 @@ abstract class AbstractDataType implements DataTypeInterface
      */
     public function __construct($val = null, array $options = [])
     {
-        $this->setValue($val, $options);
+        if (!is_null($val)) {
+            $this->setValue($val, $options);
+        }
         $ver = isset($options['ver']) ? (int) $options['ver'] : 0;
-        $this->setVersion($ver);
+        if ($ver) {
+            $this->setVersion($ver);
+        }
     }
 
     /**
@@ -57,11 +61,11 @@ abstract class AbstractDataType implements DataTypeInterface
      */
     public function setValue($val, array $options = []): DataTypeInterface
     {
+        $val = $this->coerce($val);
         if (!$this->isValidValue($val)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId()));
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATA_TYPE_VALUE, $this->getSerializationId()));
         }
-
-        $this->val = $this->coerce($val);
+        $this->val = $val;
 
         return $this;
     }
@@ -101,27 +105,44 @@ abstract class AbstractDataType implements DataTypeInterface
         $type = $data['type'];
         $val = $this->coerce($data['val']);
         $ver = (int) $data['ver'];
+        $lang = isset($data['lang']) ? $data['lang'] : null;
 
         if ($type !== $this->getSerializationId()) {
             throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Invalid Type: '.$type));
         }
 
-        $this->setValue($val);
+        $options = [];
+        if ($lang) {
+            $options['lang'] = $lang;
+        }
+
+        $this->setValue($val, $options);
         $this->setVersion($ver);
 
         return $this;
     }
 
+    public function isValidValue($val): bool
+    {
+        try {
+            $this->coerce($val);
+        } catch (WanderlusterException $e) {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * {@inheritdoc}
      */
-    public function isEqual(DataTypeInterface $type): bool
+    public function isEqualTo(DataTypeInterface $type): bool
     {
         if (!$this->canMergeWith($type)) {
             throw new WanderlusterException(sprintf(ErrorMessages::DATA_TYPE_COMPARISON_UNSUCCESSFUL, $type->getSerializationId(), $this->getSerializationId()));
         }
 
-        return null === $type->getValue();
+        return $this->getSerializedValue() === $type->getSerializedValue();
     }
 
     /**
@@ -178,6 +199,10 @@ abstract class AbstractDataType implements DataTypeInterface
      */
     public function isNull(array $options = []): bool
     {
+        if (is_array($this->val)) {
+            return 0 === count($this->val);
+        }
+
         return is_null($this->getValue($options));
     }
 

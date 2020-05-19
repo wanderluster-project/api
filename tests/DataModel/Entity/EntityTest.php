@@ -164,11 +164,10 @@ class EntityTest extends WebTestCase
                 'version' => 100,
                 'data' => [
                     'test.string' => [
-                        'type' => 'STRING',
-                        'ver' => 0,
+                        'type' => 'LOCALIZED_STRING',
                         'val' => [
-                            'en' => 'english string',
-                            'es' => 'spanish string',
+                            ['type' => 'TRANS', 'lang' => 'en', 'val' => 'english string', 'ver' => 10],
+                            ['type' => 'TRANS', 'lang' => 'es', 'val' => 'spanish string', 'ver' => 10],
                         ],
                     ],
                 ],
@@ -293,11 +292,10 @@ class EntityTest extends WebTestCase
                 'version' => null,
                 'data' => [
                     'test.string' => [
-                        'type' => 'STRING',
-                        'ver' => 0,
+                        'type' => 'LOCALIZED_STRING',
                         'val' => [
-                            'en' => 'english string',
-                            'es' => 'spanish string',
+                            ['type' => 'TRANS', 'lang' => 'en', 'val' => 'english string', 'ver' => 0],
+                            ['type' => 'TRANS', 'lang' => 'es', 'val' => 'spanish string', 'ver' => 0],
                         ],
                     ],
                 ],

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\DataModel\DataType;
 
 use App\DataModel\DataType\BooleanType;
-use App\DataModel\DataType\EmailType;
 use App\DataModel\DataType\FileSizeType;
+use App\DataModel\DataType\String\EmailType;
 use App\Exception\WanderlusterException;
 use PHPUnit\Framework\TestCase;
 
@@ -125,6 +125,15 @@ class FileSizeTypeTest extends TestCase implements TypeTestInterface
         } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to FILE_SIZE data type.', $e->getMessage());
         }
+    }
+
+    public function testCompositionToFromArray(): void
+    {
+        $sut1 = new FileSizeType(1000, ['ver' => 10]);
+        $sut2 = new FileSizeType();
+        $sut2->fromArray($sut1->toArray());
+        $this->assertEquals(1000, $sut2->getValue());
+        $this->assertEquals(10, $sut2->getVersion());
     }
 
     public function testSetGet(): void
@@ -251,11 +260,88 @@ class FileSizeTypeTest extends TestCase implements TypeTestInterface
         $this->assertSame(10, $sut->getVersion());
         $this->assertSame(2000, $sut->getValue());
 
-        // Merging greater value
+        // Merging greater version
         $sut = new FileSizeType(3000, ['ver' => 10]);
         $sut->merge(new FileSizeType(2000, ['ver' => 11]));
         $this->assertSame(11, $sut->getVersion());
         $this->assertSame(2000, $sut->getValue());
+    }
+
+    public function testMergeNull(): void
+    {
+        // Merging previous version
+        $sut = new FileSizeType(2000, ['ver' => 10]);
+        $sut->merge(new FileSizeType(null, ['ver' => 9]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame(2000, $sut->getValue());
+
+        $sut = new FileSizeType(null, ['ver' => 10]);
+        $sut->merge(new FileSizeType(2000, ['ver' => 9]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertNull($sut->getValue());
+
+        // Merging same version
+        $sut = new FileSizeType(null, ['ver' => 10]);
+        $sut->merge(new FileSizeType(1000, ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame(1000, $sut->getValue());
+
+        $sut = new FileSizeType(1000, ['ver' => 10]);
+        $sut->merge(new FileSizeType(null, ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame(1000, $sut->getValue());
+
+        $sut = new FileSizeType(null, ['ver' => 10]);
+        $sut->merge(new FileSizeType(null, ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertNull($sut->getValue());
+
+        // Merging greater version
+        $sut = new FileSizeType(3000, ['ver' => 10]);
+        $sut->merge(new FileSizeType(null, ['ver' => 11]));
+        $this->assertSame(11, $sut->getVersion());
+        $this->assertNull($sut->getValue());
+
+        $sut = new FileSizeType(null, ['ver' => 10]);
+        $sut->merge(new FileSizeType(3000, ['ver' => 11]));
+        $this->assertSame(11, $sut->getVersion());
+        $this->assertEquals(3000, $sut->getValue());
+    }
+
+    public function testIsGreaterThan(): void
+    {
+        // numeric constructor
+        $obj1 = new FileSizeType(3000);
+        $obj2 = new FileSizeType(2000);
+
+        $this->assertTrue($obj1->isGreaterThan($obj2));
+        $this->assertFalse($obj2->isGreaterThan($obj1));
+
+        // string constructor
+        $obj1 = new FileSizeType('3.0 GB');
+        $obj2 = new FileSizeType('2.0 GB');
+
+        $this->assertTrue($obj1->isGreaterThan($obj2));
+        $this->assertFalse($obj2->isGreaterThan($obj1));
+    }
+
+    public function testIsEqualTo(): void
+    {
+        // numeric constructor
+        $obj1 = new FileSizeType(3000);
+        $obj2 = new FileSizeType(2000);
+        $obj3 = new FileSizeType(3000);
+
+        $this->assertFalse($obj1->isEqualTo($obj2));
+        $this->assertTrue($obj1->isEqualTo($obj3));
+
+        // string constructor
+        $obj1 = new FileSizeType('3.0 GB');
+        $obj2 = new FileSizeType('2.0 GB');
+        $obj3 = new FileSizeType('3.0 GB');
+
+        $this->assertFalse($obj1->isEqualTo($obj2));
+        $this->assertTrue($obj1->isEqualTo($obj3));
     }
 
     public function testMergeException(): void
@@ -286,8 +372,13 @@ class FileSizeTypeTest extends TestCase implements TypeTestInterface
     public function testCoerce(): void
     {
         $sut = new FileSizeType();
-        $this->assertNull($sut->coerce(null));
         $this->assertEquals(1181116006, $sut->coerce('1.1 GB'));
+    }
+
+    public function testCoerceNull(): void
+    {
+        $sut = new FileSizeType();
+        $this->assertNull($sut->coerce(null));
     }
 
     public function testCoerceException(): void

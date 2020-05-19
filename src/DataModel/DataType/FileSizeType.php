@@ -8,7 +8,6 @@ use App\DataModel\Contracts\AbstractDataType;
 use App\DataModel\Contracts\DataTypeInterface;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
-use Exception;
 
 class FileSizeType extends AbstractDataType
 {
@@ -46,45 +45,19 @@ class FileSizeType extends AbstractDataType
     }
 
     /**
-     * Only valid file size strings or integer representing number of bytes.
      * {@inheritdoc}
      */
-    public function isValidValue($val): bool
-    {
-        if (is_null($val)) {
-            return true;
-        }
-
-        if (is_int($val)) {
-            return true;
-        }
-
-        if (is_string($val)) {
-            try {
-                $this->parseFileSizeString($val);
-
-                return true;
-            } catch (Exception $e) {
-                return false;
-            }
-        }
-
-        return false;
-    }
-
     public function coerce($val)
     {
-        if (!$this->isValidValue($val)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId()));
-        }
-        if (is_string($val)) {
-            return $this->parseFileSizeString($val);
-        }
-        if (is_null($val)) {
+        if (is_null($val) || is_int($val)) {
             return $val;
         }
 
-        return (int) $val;
+        if (is_string($val)) {
+            return $this->parseFileSizeString($val);
+        }
+
+        throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATA_TYPE_VALUE, $this->getSerializationId()));
     }
 
     /**
@@ -124,7 +97,7 @@ class FileSizeType extends AbstractDataType
         $str = str_replace(',', '', $str);
 
         if (!preg_match('/([0-9.]+)\s*(GB|MB|KB|BYTES|BYTE)/', $str, $matches)) {
-            throw new WanderlusterException();
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATA_TYPE_VALUE, $this->getSerializationId()));
         }
 
         $num = $matches[1];

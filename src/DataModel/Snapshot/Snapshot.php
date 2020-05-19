@@ -10,7 +10,7 @@ use App\DataModel\DataType\BooleanType;
 use App\DataModel\DataType\DateTimeType;
 use App\DataModel\DataType\IntegerType;
 use App\DataModel\DataType\NumericType;
-use App\DataModel\DataType\StringType;
+use App\DataModel\DataType\String\LocalizedStringType;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
@@ -64,7 +64,7 @@ class Snapshot implements SerializableInterface
                     $typedVal = new DateTimeType($value);
                 }
             } elseif (is_string($value)) {
-                $typedVal = new StringType();
+                $typedVal = new LocalizedStringType();
             } else {
                 throw new WanderlusterException(sprintf(ErrorMessages::UNAGLE_DETERMINE_TYPE, $key));
             }
@@ -268,8 +268,8 @@ class Snapshot implements SerializableInterface
             $typeObj = null;
 
             switch ($type) {
-                case 'STRING':
-                    $typeObj = new StringType();
+                case 'LOCALIZED_STRING':
+                    $typeObj = new LocalizedStringType();
                     $typeObj->fromArray($typeData);
                     break;
                 case 'INT':

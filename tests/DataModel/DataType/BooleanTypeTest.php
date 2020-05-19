@@ -76,6 +76,15 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
         $this->assertEquals(100, $sut->getVersion());
     }
 
+    public function testCompositionToFromArray(): void
+    {
+        $sut1 = new BooleanType(true, ['ver' => 10]);
+        $sut2 = new BooleanType();
+        $sut2->fromArray($sut1->toArray());
+        $this->assertTrue($sut2->getValue());
+        $this->assertEquals(10, $sut2->getVersion());
+    }
+
     public function testFromArrayException(): void
     {
         // missing type
@@ -99,7 +108,7 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
         // invalid value
         $sut = new BooleanType();
         try {
-            $sut->fromArray(['type' => 'BOOL', 'val' => 'I am invalid', 'ver' => 0]);
+            $sut->fromArray(['type' => 'BOOL', 'val' => new \stdClass(), 'ver' => 0]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to BOOL data type.', $e->getMessage());
@@ -199,11 +208,71 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
         $this->assertSame(10, $sut->getVersion());
         $this->assertTrue($sut->getValue());
 
-        // Merging greater value
+        // Merging greater version
         $sut = new BooleanType(false, ['ver' => 10]);
         $sut->merge(new BooleanType(true, ['ver' => 11]));
         $this->assertSame(11, $sut->getVersion());
         $this->assertTrue($sut->getValue());
+    }
+
+    public function testMergeNull(): void
+    {
+        // Merging previous version
+        $sut = new BooleanType(true, ['ver' => 10]);
+        $sut->merge(new BooleanType(null, ['ver' => 9]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertTrue($sut->getValue());
+
+        $sut = new BooleanType(null, ['ver' => 10]);
+        $sut->merge(new BooleanType(true, ['ver' => 9]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertNull($sut->getValue());
+
+        // Merging same version
+        $sut = new BooleanType(true, ['ver' => 10]);
+        $sut->merge(new BooleanType(null, ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertTrue($sut->getValue());
+
+        $sut = new BooleanType(null, ['ver' => 10]);
+        $sut->merge(new BooleanType(true, ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertTrue($sut->getValue());
+
+        $sut = new BooleanType(null, ['ver' => 10]);
+        $sut->merge(new BooleanType(null, ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertNull($sut->getValue());
+
+        // Merging greater version
+        $sut = new BooleanType(false, ['ver' => 10]);
+        $sut->merge(new BooleanType(null, ['ver' => 11]));
+        $this->assertSame(11, $sut->getVersion());
+        $this->assertNull($sut->getValue());
+
+        $sut = new BooleanType(null, ['ver' => 10]);
+        $sut->merge(new BooleanType(false, ['ver' => 11]));
+        $this->assertSame(11, $sut->getVersion());
+        $this->assertFalse($sut->getValue());
+    }
+
+    public function testIsGreaterThan(): void
+    {
+        $obj1 = new BooleanType(true);
+        $obj2 = new BooleanType(false);
+
+        $this->assertTrue($obj1->isGreaterThan($obj2));
+        $this->assertFalse($obj2->isGreaterThan($obj1));
+    }
+
+    public function testIsEqualTo(): void
+    {
+        $obj1 = new BooleanType(true);
+        $obj2 = new BooleanType(false);
+        $obj3 = new BooleanType(true);
+
+        $this->assertFalse($obj1->isEqualTo($obj2));
+        $this->assertTrue($obj1->isEqualTo($obj3));
     }
 
     public function testMergeException(): void
@@ -233,10 +302,24 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
 
     public function testCoerce(): void
     {
+        // intrinsict data type
         $sut = new BooleanType();
-        $this->assertNull($sut->coerce(null));
         $this->assertTrue($sut->coerce(true));
         $this->assertFalse($sut->coerce(false));
+
+        // type juggling
+        $this->assertTrue($sut->coerce(1));
+        $this->assertTrue($sut->coerce('T'));
+        $this->assertTrue($sut->coerce('TRUE'));
+        $this->assertFalse($sut->coerce(0));
+        $this->assertFalse($sut->coerce('F'));
+        $this->assertFalse($sut->coerce('FALSE'));
+    }
+
+    public function testCoerceNull(): void
+    {
+        $sut = new BooleanType();
+        $this->assertNull($sut->coerce(null));
     }
 
     public function testCoerceException(): void

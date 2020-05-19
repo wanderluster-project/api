@@ -30,50 +30,33 @@ class DateTimeType extends AbstractDataType
     }
 
     /**
-     * Only valid date strings or DateTime objects allowed.
-     * {@inheritdoc}
-     */
-    public function isValidValue($val): bool
-    {
-        if (is_null($val)) {
-            return true;
-        }
-
-        if (!is_string($val) && !($val instanceof DateTimeInterface)) {
-            return false;
-        }
-
-        if (is_string($val)) {
-            try {
-                $dateTime = new DateTime($val);
-
-                return $this->isValidDate($dateTime);
-            } catch (Exception $e) {
-                return false;
-            }
-        }
-
-        if ($val instanceof DateTimeInterface) {
-            return $this->isValidDate($val);
-        }
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function coerce($val)
     {
-        if (!$this->isValidValue($val)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId()));
-        }
-        if (is_string($val)) {
-            return new DateTimeImmutable($val, new DateTimeZone('UTC'));
+        if ($val instanceof DateTimeImmutable || is_null($val)) {
+            return $val;
         }
 
-        if ($val instanceof DateTime) {
-            $val->setTimezone(new DateTimeZone('UTC'));
+        try {
+            if (is_string($val)) {
+                $val = new DateTimeImmutable($val, new DateTimeZone('UTC'));
+            }
 
-            return DateTimeImmutable::createFromMutable($val);
+            if ($val instanceof DateTime) {
+                $val->setTimezone(new DateTimeZone('UTC'));
+                $val = DateTimeImmutable::createFromMutable($val);
+            }
+        } catch (Exception $e) {
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATA_TYPE_VALUE, $this->getSerializationId()));
+        }
+
+        if (!$val instanceof DateTimeImmutable) {
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATA_TYPE_VALUE, $this->getSerializationId()));
+        }
+
+        if (!$this->isValidDate($val)) {
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATA_TYPE_VALUE, $this->getSerializationId()));
         }
 
         return $val;

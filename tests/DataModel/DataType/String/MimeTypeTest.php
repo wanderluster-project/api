@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\DataModel\DataType;
+namespace App\Tests\DataModel\DataType\String;
 
 use App\DataModel\DataType\BooleanType;
-use App\DataModel\DataType\MimeType;
+use App\DataModel\DataType\String\MimeType;
 use App\Exception\WanderlusterException;
+use App\Tests\DataModel\DataType\TypeTestInterface;
+use App\Tests\Fixtures\StringObject;
 use PHPUnit\Framework\TestCase;
 
 class MimeTypeTest extends TestCase implements TypeTestInterface
@@ -124,6 +126,15 @@ class MimeTypeTest extends TestCase implements TypeTestInterface
         }
     }
 
+    public function testCompositionToFromArray(): void
+    {
+        $sut1 = new MimeType('image/png', ['ver' => 10]);
+        $sut2 = new MimeType();
+        $sut2->fromArray($sut1->toArray());
+        $this->assertEquals('image/png', $sut2->getValue());
+        $this->assertEquals(10, $sut2->getVersion());
+    }
+
     public function testSetGet(): void
     {
         $sut = new MimeType();
@@ -214,11 +225,66 @@ class MimeTypeTest extends TestCase implements TypeTestInterface
         $this->assertSame(10, $sut->getVersion());
         $this->assertSame('image/png', $sut->getValue());
 
-        // Merging greater value
+        // Merging greater version
         $sut = new MimeType('image/png', ['ver' => 10]);
         $sut->merge(new MimeType('image/jpeg', ['ver' => 11]));
         $this->assertSame(11, $sut->getVersion());
         $this->assertSame('image/jpeg', $sut->getValue());
+    }
+
+    public function testMergeNull(): void
+    {
+        // Merging previous version
+        $sut = new MimeType('image/jpeg', ['ver' => 10]);
+        $sut->merge(new MimeType(null, ['ver' => 9]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame('image/jpeg', $sut->getValue());
+
+        $sut = new MimeType(null, ['ver' => 10]);
+        $sut->merge(new MimeType('image/png', ['ver' => 9]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertNull($sut->getValue());
+
+        // Merging same version
+        $sut = new MimeType(null, ['ver' => 10]);
+        $sut->merge(new MimeType('image/png', ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame('image/png', $sut->getValue());
+
+        $sut = new MimeType('image/png', ['ver' => 10]);
+        $sut->merge(new MimeType(null, ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame('image/png', $sut->getValue());
+
+        // Merging greater version
+        $sut = new MimeType('image/png', ['ver' => 10]);
+        $sut->merge(new MimeType(null, ['ver' => 11]));
+        $this->assertSame(11, $sut->getVersion());
+        $this->assertNull($sut->getValue());
+
+        $sut = new MimeType(null, ['ver' => 10]);
+        $sut->merge(new MimeType('image/jpeg', ['ver' => 11]));
+        $this->assertSame(11, $sut->getVersion());
+        $this->assertSame('image/jpeg', $sut->getValue());
+    }
+
+    public function testIsGreaterThan(): void
+    {
+        $obj1 = new MimeType('img/png');
+        $obj2 = new MimeType('img/jpeg');
+
+        $this->assertTrue($obj1->isGreaterThan($obj2));
+        $this->assertFalse($obj2->isGreaterThan($obj1));
+    }
+
+    public function testIsEqualTo(): void
+    {
+        $obj1 = new MimeType('img/png');
+        $obj2 = new MimeType('img/jpeg');
+        $obj3 = new MimeType('img/png');
+
+        $this->assertFalse($obj1->isEqualTo($obj2));
+        $this->assertTrue($obj1->isEqualTo($obj3));
     }
 
     public function testMergeException(): void
@@ -248,8 +314,14 @@ class MimeTypeTest extends TestCase implements TypeTestInterface
     public function testCoerce(): void
     {
         $sut = new MimeType();
-        $this->assertNull($sut->coerce(null));
         $this->assertEquals('img/png', $sut->coerce('img/png'));
+        $this->assertEquals('img/png', $sut->coerce(new StringObject('img/png')));
+    }
+
+    public function testCoerceNull(): void
+    {
+        $sut = new MimeType();
+        $this->assertNull($sut->coerce(null));
     }
 
     public function testCoerceException(): void
@@ -257,6 +329,14 @@ class MimeTypeTest extends TestCase implements TypeTestInterface
         try {
             $sut = new MimeType();
             $sut->coerce('INVALID');
+            $this->fail('Exception not thrown');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Invalid value passed to MIME_TYPE data type.', $e->getMessage());
+        }
+
+        try {
+            $sut = new MimeType();
+            $sut->coerce(new \stdClass());
             $this->fail('Exception not thrown');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to MIME_TYPE data type.', $e->getMessage());

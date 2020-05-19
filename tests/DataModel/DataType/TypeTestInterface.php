@@ -20,6 +20,8 @@ interface TypeTestInterface
 
     public function testFromArray(): void;
 
+    public function testCompositionToFromArray(): void;
+
     public function testFromArrayException(): void;
 
     public function testSetGet(): void;
@@ -36,13 +38,21 @@ interface TypeTestInterface
 
     public function testMerge(): void;
 
+    public function testMergeNull(): void;
+
     public function testMergeException(): void;
+
+    public function testIsGreaterThan(): void;
+
+    public function testIsEqualTo(): void;
 
     public function testIsValid(): void;
 
     public function testIsValidNull(): void;
 
     public function testCoerce(): void;
+
+    public function testCoerceNull(): void;
 
     public function testCoerceException(): void;
 

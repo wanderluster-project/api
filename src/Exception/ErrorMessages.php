@@ -19,7 +19,7 @@ class ErrorMessages
     const OPTION_REQUIRED = 'Configuration option missing - %s.';
     const UNAGLE_DETERMINE_TYPE = 'Unable to determine the type for key - %s';
 
-    const INVALID_DATATYPE_VALUE = 'Invalid value passed to %s data type.';
+    const INVALID_DATA_TYPE_VALUE = 'Invalid value passed to %s data type.';
     const ERROR_HYDRATING_DATATYPE = 'Error hydrating %s data type - %s.';
 
     const REQUEST_MISSING_PARAMETER = 'Missing parameter: %s.';
@@ -33,12 +33,15 @@ class ErrorMessages
     const METHOD_NOT_IMPLEMENTED = 'Method not implemented yet - %s.';
     const ENTITY_LANGUAGE_NOT_SET = 'Entity language not set.';
     const UNABLE_TO_USE_ANY_LANGUAGE = 'You must specify a language.  Wildcard (*) is not allowed).';
+    const LANGUAGE_REQUIRED = 'You must specify a language.';
 
     const JWT_KEYS_MISSING = 'JWT Keys Missing.';
     const JWT_INVALID = 'Invalid JWT.';
 
     const TOMBSTONE_EDIT = 'Unable to change tombstone type.';
     const VERSION_INVALID = 'Invalid version: %s';
+    const UNABLE_TO_SET_VERSION = 'Unable to set version for data type: %s';
+    const UNABLE_TO_COMPARE = 'Unable to use comparisons with data type: %s.';
     const MERGE_UNSUCCESSFUL = 'Unable to merge %s with %s.';
     const DATA_TYPE_COMPARISON_UNSUCCESSFUL = 'Unable to compare %s with %s.';
 }

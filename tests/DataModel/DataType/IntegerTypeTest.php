@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\DataModel\DataType;
 
 use App\DataModel\DataType\BooleanType;
-use App\DataModel\DataType\EmailType;
 use App\DataModel\DataType\IntegerType;
+use App\DataModel\DataType\String\EmailType;
 use App\Exception\WanderlusterException;
 use PHPUnit\Framework\TestCase;
 
@@ -103,7 +103,7 @@ class IntegerTypeTest extends TestCase implements TypeTestInterface
         // invalid value
         $sut = new IntegerType();
         try {
-            $sut->fromArray(['type' => 'INT', 'val' => 3.14, 'ver' => 10]);
+            $sut->fromArray(['type' => 'INT', 'val' => new \stdClass(), 'ver' => 10]);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to INT data type.', $e->getMessage());
@@ -117,6 +117,15 @@ class IntegerTypeTest extends TestCase implements TypeTestInterface
         } catch (WanderlusterException $e) {
             $this->assertEquals('Error hydrating INT data type - Invalid Type: FOO.', $e->getMessage());
         }
+    }
+
+    public function testCompositionToFromArray(): void
+    {
+        $sut1 = new IntegerType(150, ['ver' => 10]);
+        $sut2 = new IntegerType();
+        $sut2->fromArray($sut1->toArray());
+        $this->assertEquals(150, $sut2->getValue());
+        $this->assertEquals(10, $sut2->getVersion());
     }
 
     public function testSetGet(): void
@@ -200,11 +209,71 @@ class IntegerTypeTest extends TestCase implements TypeTestInterface
         $this->assertSame(10, $sut->getVersion());
         $this->assertSame(250, $sut->getValue());
 
-        // Merging greater value
+        // Merging greater version
         $sut = new IntegerType(350, ['ver' => 10]);
         $sut->merge(new IntegerType(250, ['ver' => 11]));
         $this->assertSame(11, $sut->getVersion());
         $this->assertSame(250, $sut->getValue());
+    }
+
+    public function testMergeNull(): void
+    {
+        // Merging previous version
+        $sut = new IntegerType(250, ['ver' => 10]);
+        $sut->merge(new IntegerType(null, ['ver' => 9]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame(250, $sut->getValue());
+
+        $sut = new IntegerType(null, ['ver' => 10]);
+        $sut->merge(new IntegerType(250, ['ver' => 9]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertNull($sut->getValue());
+
+        // Merging same version
+        $sut = new IntegerType(250, ['ver' => 10]);
+        $sut->merge(new IntegerType(null, ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame(250, $sut->getValue());
+
+        $sut = new IntegerType(null, ['ver' => 10]);
+        $sut->merge(new IntegerType(250, ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame(250, $sut->getValue());
+
+        $sut = new IntegerType(null, ['ver' => 10]);
+        $sut->merge(new IntegerType(null, ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertNull($sut->getValue());
+
+        // Merging greater version
+        $sut = new IntegerType(350, ['ver' => 10]);
+        $sut->merge(new IntegerType(null, ['ver' => 11]));
+        $this->assertSame(11, $sut->getVersion());
+        $this->assertNull($sut->getValue());
+
+        $sut = new IntegerType(null, ['ver' => 10]);
+        $sut->merge(new IntegerType(250, ['ver' => 11]));
+        $this->assertSame(11, $sut->getVersion());
+        $this->assertSame(250, $sut->getValue());
+    }
+
+    public function testIsGreaterThan(): void
+    {
+        $obj1 = new IntegerType(2);
+        $obj2 = new IntegerType(1);
+
+        $this->assertTrue($obj1->isGreaterThan($obj2));
+        $this->assertFalse($obj2->isGreaterThan($obj1));
+    }
+
+    public function testIsEqualTo(): void
+    {
+        $obj1 = new IntegerType(2);
+        $obj2 = new IntegerType(1);
+        $obj3 = new IntegerType(2);
+
+        $this->assertFalse($obj1->isEqualTo($obj2));
+        $this->assertTrue($obj1->isEqualTo($obj3));
     }
 
     public function testMergeException(): void
@@ -221,7 +290,7 @@ class IntegerTypeTest extends TestCase implements TypeTestInterface
     {
         $sut = new IntegerType();
         $this->assertTrue($sut->isValidValue(1000));
-        $this->assertFalse($sut->isValidValue(3.14));
+        $this->assertTrue($sut->isValidValue(3.14));
         $this->assertFalse($sut->isValidValue('Invalid email'));
     }
 
@@ -234,8 +303,17 @@ class IntegerTypeTest extends TestCase implements TypeTestInterface
     public function testCoerce(): void
     {
         $sut = new IntegerType();
-        $this->assertNull($sut->coerce(null));
         $this->assertEquals(150, $sut->coerce(150));
+
+        // type juggling
+        $this->assertEquals(150, $sut->coerce(150.1));
+        $this->assertEquals(151, $sut->coerce(150.9));
+    }
+
+    public function testCoerceNull(): void
+    {
+        $sut = new IntegerType();
+        $this->assertNull($sut->coerce(null));
     }
 
     public function testCoerceException(): void

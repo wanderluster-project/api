@@ -124,6 +124,15 @@ class NumericTypeTest extends TestCase implements TypeTestInterface
         }
     }
 
+    public function testCompositionToFromArray(): void
+    {
+        $sut1 = new NumericType(3.14, ['ver' => 10]);
+        $sut2 = new NumericType();
+        $sut2->fromArray($sut1->toArray());
+        $this->assertEquals(3.14, $sut2->getValue());
+        $this->assertEquals(10, $sut2->getVersion());
+    }
+
     public function testSetGet(): void
     {
         $sut = new NumericType();
@@ -208,11 +217,66 @@ class NumericTypeTest extends TestCase implements TypeTestInterface
         $this->assertSame(10, $sut->getVersion());
         $this->assertSame(25.0, $sut->getValue());
 
-        // Merging greater value
+        // Merging greater version
         $sut = new NumericType(35.0, ['ver' => 10]);
         $sut->merge(new NumericType(25.0, ['ver' => 11]));
         $this->assertSame(11, $sut->getVersion());
         $this->assertSame(25.0, $sut->getValue());
+    }
+
+    public function testMergeNull(): void
+    {
+        // Merging previous version
+        $sut = new NumericType(25.0, ['ver' => 10]);
+        $sut->merge(new NumericType(null, ['ver' => 9]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame(25.0, $sut->getValue());
+
+        $sut = new NumericType(null, ['ver' => 10]);
+        $sut->merge(new NumericType(15.0, ['ver' => 9]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertNull($sut->getValue());
+
+        // Merging same version
+        $sut = new NumericType(25.0, ['ver' => 10]);
+        $sut->merge(new NumericType(null, ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame(25.0, $sut->getValue());
+
+        $sut = new NumericType(null, ['ver' => 10]);
+        $sut->merge(new NumericType(25.0, ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame(25.0, $sut->getValue());
+
+        // Merging greater version
+        $sut = new NumericType(35.0, ['ver' => 10]);
+        $sut->merge(new NumericType(null, ['ver' => 11]));
+        $this->assertSame(11, $sut->getVersion());
+        $this->assertNull($sut->getValue());
+
+        $sut = new NumericType(null, ['ver' => 10]);
+        $sut->merge(new NumericType(25.0, ['ver' => 11]));
+        $this->assertSame(11, $sut->getVersion());
+        $this->assertSame(25.0, $sut->getValue());
+    }
+
+    public function testIsGreaterThan(): void
+    {
+        $obj1 = new NumericType(3.14);
+        $obj2 = new NumericType(2.71);
+
+        $this->assertTrue($obj1->isGreaterThan($obj2));
+        $this->assertFalse($obj2->isGreaterThan($obj1));
+    }
+
+    public function testIsEqualTo(): void
+    {
+        $obj1 = new NumericType(3.14);
+        $obj2 = new NumericType(2.71);
+        $obj3 = new NumericType(3.14);
+
+        $this->assertFalse($obj1->isEqualTo($obj2));
+        $this->assertTrue($obj1->isEqualTo($obj3));
     }
 
     public function testMergeException(): void
@@ -242,8 +306,14 @@ class NumericTypeTest extends TestCase implements TypeTestInterface
     public function testCoerce(): void
     {
         $sut = new NumericType();
-        $this->assertNull($sut->coerce(null));
         $this->assertEquals(3.14, $sut->coerce(3.14));
+        $this->assertEquals(3, $sut->coerce(3));
+    }
+
+    public function testCoerceNull(): void
+    {
+        $sut = new NumericType();
+        $this->assertNull($sut->coerce(null));
     }
 
     public function testCoerceException(): void

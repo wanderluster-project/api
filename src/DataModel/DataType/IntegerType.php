@@ -28,31 +28,22 @@ class IntegerType extends AbstractDataType
     }
 
     /**
-     * Only integer data types allowed.
-     * {@inheritdoc}
-     */
-    public function isValidValue($val): bool
-    {
-        if (is_null($val)) {
-            return true;
-        }
-
-        return is_int($val);
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function coerce($val)
     {
-        if (!$this->isValidValue($val)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATATYPE_VALUE, $this->getSerializationId()));
-        }
-
-        if (is_null($val)) {
+        if (is_null($val) || is_int($val)) {
             return $val;
         }
 
-        return (int) $val;
+        if (is_float($val)) {
+            $val = (int) round($val);
+        }
+
+        if (!is_int($val)) {
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATA_TYPE_VALUE, $this->getSerializationId()));
+        }
+
+        return $val;
     }
 }

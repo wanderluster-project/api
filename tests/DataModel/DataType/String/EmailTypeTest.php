@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\DataModel\DataType;
+namespace App\Tests\DataModel\DataType\String;
 
 use App\DataModel\DataType\BooleanType;
-use App\DataModel\DataType\EmailType;
+use App\DataModel\DataType\String\EmailType;
 use App\Exception\WanderlusterException;
+use App\Tests\DataModel\DataType\TypeTestInterface;
+use App\Tests\Fixtures\StringObject;
 use PHPUnit\Framework\TestCase;
 
 class EmailTypeTest extends TestCase implements TypeTestInterface
@@ -113,6 +115,15 @@ class EmailTypeTest extends TestCase implements TypeTestInterface
         }
     }
 
+    public function testCompositionToFromArray(): void
+    {
+        $sut1 = new EmailType('simpkevin@gmail.com', ['ver' => 10]);
+        $sut2 = new EmailType();
+        $sut2->fromArray($sut1->toArray());
+        $this->assertEquals('simpkevin@gmail.com', $sut2->getValue());
+        $this->assertEquals(10, $sut2->getVersion());
+    }
+
     public function testSetGet(): void
     {
         $sut = new EmailType();
@@ -191,11 +202,66 @@ class EmailTypeTest extends TestCase implements TypeTestInterface
         $this->assertSame(10, $sut->getVersion());
         $this->assertSame('xyz@gmail.com', $sut->getValue());
 
-        // Merging greater value
+        // Merging greater version
         $sut = new EmailType('xyz@gmail.com', ['ver' => 10]);
         $sut->merge(new EmailType('abc@gmail.com', ['ver' => 11]));
         $this->assertSame(11, $sut->getVersion());
         $this->assertSame('abc@gmail.com', $sut->getValue());
+    }
+
+    public function testMergeNull(): void
+    {
+        // Merging previous version
+        $sut = new EmailType('simpkevin+10@gmail.com', ['ver' => 10]);
+        $sut->merge(new EmailType(null, ['ver' => 9]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame('simpkevin+10@gmail.com', $sut->getValue());
+
+        $sut = new EmailType(null, ['ver' => 10]);
+        $sut->merge(new EmailType('simpkevin+9@gmail.com', ['ver' => 9]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertNull($sut->getValue());
+
+        // Merging same version
+        $sut = new EmailType('abc@gmail.com', ['ver' => 10]);
+        $sut->merge(new EmailType(null, ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame('abc@gmail.com', $sut->getValue());
+
+        $sut = new EmailType(null, ['ver' => 10]);
+        $sut->merge(new EmailType('abc@gmail.com', ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame('abc@gmail.com', $sut->getValue());
+
+        // Merging greater version
+        $sut = new EmailType('xyz@gmail.com', ['ver' => 10]);
+        $sut->merge(new EmailType(null, ['ver' => 11]));
+        $this->assertSame(11, $sut->getVersion());
+        $this->assertNull($sut->getValue());
+
+        $sut = new EmailType(null, ['ver' => 10]);
+        $sut->merge(new EmailType('abc@gmail.com', ['ver' => 11]));
+        $this->assertSame(11, $sut->getVersion());
+        $this->assertSame('abc@gmail.com', $sut->getValue());
+    }
+
+    public function testIsGreaterThan(): void
+    {
+        $obj1 = new EmailType('xyz@gmail.com');
+        $obj2 = new EmailType('abc@gmail.com');
+
+        $this->assertTrue($obj1->isGreaterThan($obj2));
+        $this->assertFalse($obj2->isGreaterThan($obj1));
+    }
+
+    public function testIsEqualTo(): void
+    {
+        $obj1 = new EmailType('xyz@gmail.com');
+        $obj2 = new EmailType('abc@gmail.com');
+        $obj3 = new EmailType('xyz@gmail.com');
+
+        $this->assertFalse($obj1->isEqualTo($obj2));
+        $this->assertTrue($obj1->isEqualTo($obj3));
     }
 
     public function testMergeException(): void
@@ -225,8 +291,14 @@ class EmailTypeTest extends TestCase implements TypeTestInterface
     public function testCoerce(): void
     {
         $sut = new EmailType();
-        $this->assertNull($sut->coerce(null));
         $this->assertEquals('simpkevin@gmail.com', $sut->coerce('simpkevin@gmail.com'));
+        $this->assertEquals('simpkevin@gmail.com', $sut->coerce(new StringObject('simpkevin@gmail.com')));
+    }
+
+    public function testCoerceNull(): void
+    {
+        $sut = new EmailType();
+        $this->assertNull($sut->coerce(null));
     }
 
     public function testCoerceException(): void
@@ -234,6 +306,14 @@ class EmailTypeTest extends TestCase implements TypeTestInterface
         try {
             $sut = new EmailType();
             $sut->coerce('INVALID');
+            $this->fail('Exception not thrown');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Invalid value passed to EMAIL data type.', $e->getMessage());
+        }
+
+        try {
+            $sut = new EmailType();
+            $sut->coerce(new \stdClass());
             $this->fail('Exception not thrown');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to EMAIL data type.', $e->getMessage());

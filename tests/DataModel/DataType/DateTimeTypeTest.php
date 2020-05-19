@@ -133,6 +133,15 @@ class DateTimeTypeTest extends TestCase implements TypeTestInterface
         }
     }
 
+    public function testCompositionToFromArray(): void
+    {
+        $sut1 = new DateTimeType('1/1/2020', ['ver' => 10]);
+        $sut2 = new DateTimeType();
+        $sut2->fromArray($sut1->toArray());
+        $this->assertEquals('01/01/2020', $sut2->getValue()->format('m/d/Y'));
+        $this->assertEquals(10, $sut2->getVersion());
+    }
+
     public function testSetGet(): void
     {
         $sut = new DateTimeType();
@@ -217,11 +226,71 @@ class DateTimeTypeTest extends TestCase implements TypeTestInterface
         $this->assertSame(10, $sut->getVersion());
         $this->assertSame('01/02/2020', $sut->getValue()->format('m/d/Y'));
 
-        // Merging greater value
+        // Merging greater version
         $sut = new DateTimeType('1/2/2020', ['ver' => 10]);
         $sut->merge(new DateTimeType('1/1/2020', ['ver' => 11]));
         $this->assertSame(11, $sut->getVersion());
         $this->assertSame('01/01/2020', $sut->getValue()->format('m/d/Y'));
+    }
+
+    public function testMergeNull(): void
+    {
+        // Merging previous version
+        $sut = new DateTimeType('1/1/2020', ['ver' => 10]);
+        $sut->merge(new DateTimeType(null, ['ver' => 9]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame('01/01/2020', $sut->getValue()->format('m/d/Y'));
+
+        $sut = new DateTimeType(null, ['ver' => 10]);
+        $sut->merge(new DateTimeType('1/1/2020', ['ver' => 9]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertNull($sut->getValue());
+
+        // Merging same version
+        $sut = new DateTimeType(null, ['ver' => 10]);
+        $sut->merge(new DateTimeType('01/02/2020', ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame('01/02/2020', $sut->getValue()->format('m/d/Y'));
+
+        $sut = new DateTimeType('1/1/2020', ['ver' => 10]);
+        $sut->merge(new DateTimeType(null, ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertSame('01/01/2020', $sut->getValue()->format('m/d/Y'));
+
+        $sut = new DateTimeType(null, ['ver' => 10]);
+        $sut->merge(new DateTimeType(null, ['ver' => 10]));
+        $this->assertSame(10, $sut->getVersion());
+        $this->assertNull($sut->getValue());
+
+        // Merging greater version
+        $sut = new DateTimeType('1/2/2020', ['ver' => 10]);
+        $sut->merge(new DateTimeType(null, ['ver' => 11]));
+        $this->assertSame(11, $sut->getVersion());
+        $this->assertNull($sut->getValue());
+
+        $sut = new DateTimeType(null, ['ver' => 10]);
+        $sut->merge(new DateTimeType('1/2/2020', ['ver' => 11]));
+        $this->assertSame(11, $sut->getVersion());
+        $this->assertSame('01/02/2020', $sut->getValue()->format('m/d/Y'));
+    }
+
+    public function testIsGreaterThan(): void
+    {
+        $obj1 = new DateTimeType('1/1/2020');
+        $obj2 = new DateTimeType('1/1/2019');
+
+        $this->assertTrue($obj1->isGreaterThan($obj2));
+        $this->assertFalse($obj2->isGreaterThan($obj1));
+    }
+
+    public function testIsEqualTo(): void
+    {
+        $obj1 = new DateTimeType('1/1/2020');
+        $obj2 = new DateTimeType('1/1/2019');
+        $obj3 = new DateTimeType('1/1/2020');
+
+        $this->assertFalse($obj1->isEqualTo($obj2));
+        $this->assertTrue($obj1->isEqualTo($obj3));
     }
 
     public function testMergeException(): void
@@ -251,9 +320,14 @@ class DateTimeTypeTest extends TestCase implements TypeTestInterface
     public function testCoerce(): void
     {
         $sut = new DateTimeType();
-        $this->assertNull($sut->coerce(null));
         $this->assertEquals('01/01/2000', $sut->coerce(new DateTime('1/1/2000'))->format('m/d/Y'));
         $this->assertEquals('01/01/2000', $sut->coerce('1/1/2000')->format('m/d/Y'));
+    }
+
+    public function testCoerceNull(): void
+    {
+        $sut = new DateTimeType();
+        $this->assertNull($sut->coerce(null));
     }
 
     public function testCoerceException(): void
