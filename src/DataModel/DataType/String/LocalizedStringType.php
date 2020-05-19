@@ -183,19 +183,11 @@ class LocalizedStringType extends AbstractStringType
 
     public function isGreaterThan(DataTypeInterface $type): bool
     {
-        if (!$this->canMergeWith($type)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::DATA_TYPE_COMPARISON_UNSUCCESSFUL, $type->getSerializationId(), $this->getSerializationId()));
-        }
-
         throw new WanderlusterException(sprintf(ErrorMessages::UNABLE_TO_COMPARE, $this->getSerializationId()));
     }
 
     public function isEqualTo(DataTypeInterface $type): bool
     {
-        if (!$this->canMergeWith($type)) {
-            throw new WanderlusterException(sprintf(ErrorMessages::DATA_TYPE_COMPARISON_UNSUCCESSFUL, $type->getSerializationId(), $this->getSerializationId()));
-        }
-
         throw new WanderlusterException(sprintf(ErrorMessages::UNABLE_TO_COMPARE, $this->getSerializationId()));
     }
 

@@ -6,6 +6,7 @@ namespace App\Tests\DataModel\DataType;
 
 use App\DataModel\DataType\BooleanType;
 use App\DataModel\DataType\DateTimeType;
+use App\DataModel\DataType\String\EmailType;
 use App\Exception\WanderlusterException;
 use PHPUnit\Framework\TestCase;
 
@@ -137,6 +138,14 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
 
         $sut->setValue(null);
         $this->assertNull($sut->getValue());
+
+        // exceptions
+        try{
+            $sut->setValue('woot');
+            $this->fail('Exception not thrown.');
+        }catch(WanderlusterException $e){
+            $this->assertEquals('Invalid value passed to BOOL data type.', $e->getMessage());
+        }
     }
 
     public function testSetGetNull(): void
@@ -263,6 +272,13 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
 
         $this->assertTrue($obj1->isGreaterThan($obj2));
         $this->assertFalse($obj2->isGreaterThan($obj1));
+
+        try{
+            $obj1->isGreaterThan(new EmailType());
+            $this->fail('Exception not thrown.');
+        }catch(WanderlusterException $e){
+            $this->assertEquals('Unable to compare EMAIL with BOOL.',$e->getMessage());
+        }
     }
 
     public function testIsEqualTo(): void
@@ -273,6 +289,13 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
 
         $this->assertFalse($obj1->isEqualTo($obj2));
         $this->assertTrue($obj1->isEqualTo($obj3));
+
+        try{
+            $obj1->isEqualTo(new EmailType());
+            $this->fail('Exception not thrown.');
+        }catch(WanderlusterException $e){
+            $this->assertEquals('Unable to compare EMAIL with BOOL.',$e->getMessage());
+        }
     }
 
     public function testMergeException(): void

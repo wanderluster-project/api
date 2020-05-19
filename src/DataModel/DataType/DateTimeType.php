@@ -43,21 +43,17 @@ class DateTimeType extends AbstractDataType
         try {
             if (is_string($val)) {
                 $val = new DateTimeImmutable($val, new DateTimeZone('UTC'));
-            }
-
-            if ($val instanceof DateTime) {
+                $errors = DateTime::getLastErrors();
+                if ($errors['warning_count'] > 0) {
+                    throw new Exception('Error parsing date string.');
+                }
+            } elseif ($val instanceof DateTime) {
                 $val->setTimezone(new DateTimeZone('UTC'));
                 $val = DateTimeImmutable::createFromMutable($val);
+            } elseif(!$val instanceof DateTimeImmutable){
+                throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATA_TYPE_VALUE, $this->getSerializationId()));
             }
         } catch (Exception $e) {
-            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATA_TYPE_VALUE, $this->getSerializationId()));
-        }
-
-        if (!$val instanceof DateTimeImmutable) {
-            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATA_TYPE_VALUE, $this->getSerializationId()));
-        }
-
-        if (!$this->isValidDate($val)) {
             throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATA_TYPE_VALUE, $this->getSerializationId()));
         }
 
@@ -74,20 +70,5 @@ class DateTimeType extends AbstractDataType
         }
 
         return null;
-    }
-
-    /**
-     * Validates that the DateTime object is a valid date.
-     */
-    protected function isValidDate(DateTimeInterface $dateTime): bool
-    {
-        return checkdate(
-        // month
-            (int) $dateTime->format('n'),
-            // day
-            (int) $dateTime->format('j'),
-            // year
-            (int) $dateTime->format('Y')
-        );
     }
 }

@@ -8,11 +8,12 @@ use App\DataModel\DataType\BooleanType;
 use App\DataModel\DataType\String\LocalizedStringType;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\WanderlusterException;
+use App\Tests\DataModel\DataType\TypeTestInterface;
 use App\Tests\Fixtures\StringObject;
 use Exception;
 use PHPUnit\Framework\TestCase;
 
-class LocalizedStringTypeTest extends TestCase // implements TypeTestInterface
+class LocalizedStringTypeTest extends TestCase  implements TypeTestInterface
 {
     public function testNullConstructor(): void
     {
@@ -26,6 +27,24 @@ class LocalizedStringTypeTest extends TestCase // implements TypeTestInterface
         $sut = new LocalizedStringType();
         $this->assertTrue($sut->isNull(['lang' => LanguageCodes::SPANISH]));
         $this->assertTrue($sut->isNull(['lang' => LanguageCodes::ENGLISH]));
+        try{
+            $sut->isNull();
+            $this->fail('Exception not thown.');
+        }catch(WanderlusterException $e){
+            $this->assertEquals('Configuration option missing - lang.',$e->getMessage());
+        }
+        try{
+            $this->assertTrue($sut->isNull(['lang' => LanguageCodes::ANY]));
+            $this->fail('Exception not thown.');
+        }catch(WanderlusterException $e){
+            $this->assertEquals('You must specify a language.  Wildcard (*) is not allowed).',$e->getMessage());
+        }
+
+        $sut = new LocalizedStringType();
+        $sut->setTranslation(LanguageCodes::ENGLISH, 'Dog');
+        $sut->setTranslation(LanguageCodes::SPANISH, 'Perro');
+        $this->assertFalse($sut->isNull(['lang' => LanguageCodes::ENGLISH]));
+        $this->assertFalse($sut->isNull(['lang' => LanguageCodes::SPANISH]));
     }
 
     public function testConstructorWithValue(): void
@@ -146,6 +165,28 @@ class LocalizedStringTypeTest extends TestCase // implements TypeTestInterface
         $sut->setValue('Perro', ['lang' => LanguageCodes::SPANISH, 'ver' => 20]);
         $this->assertEquals('Dog', $sut->getValue(['lang' => LanguageCodes::ENGLISH]));
         $this->assertEquals('Perro', $sut->getValue(['lang' => LanguageCodes::SPANISH]));
+
+        // exceptions
+        try {
+            $sut->setValue('Dog');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Configuration option missing - lang.', $e->getMessage());
+        }
+        try {
+            $sut->setValue('Dog', ['lang' => LanguageCodes::ANY]);
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('You must specify a language.  Wildcard (*) is not allowed).', $e->getMessage());
+        }
+        try {
+            $sut->getValue();
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Configuration option missing - lang.', $e->getMessage());
+        }
+        try {
+            $sut->getValue(['lang' => LanguageCodes::ANY]);
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('You must specify a language.  Wildcard (*) is not allowed).', $e->getMessage());
+        }
     }
 
     public function testSetGetNull(): void
@@ -201,12 +242,15 @@ class LocalizedStringTypeTest extends TestCase // implements TypeTestInterface
         $sut2 = new LocalizedStringType();
         $sut2->setTranslation(LanguageCodes::ENGLISH, 'Apple', 20);
         $sut2->setTranslation(LanguageCodes::SPANISH, 'Manzana', 120);
+        $sut2->setTranslation(LanguageCodes::FRENCH, 'Chienne', 120);
         $sut1->merge($sut2);
         $sut2->merge($sut1);
         $this->assertEquals('Apple', $sut1->getTranslation(LanguageCodes::ENGLISH));
         $this->assertEquals('Manzana', $sut1->getTranslation(LanguageCodes::SPANISH));
+        $this->assertEquals('Chienne', $sut1->getTranslation(LanguageCodes::FRENCH));
         $this->assertEquals('Apple', $sut2->getTranslation(LanguageCodes::ENGLISH));
         $this->assertEquals('Manzana', $sut2->getTranslation(LanguageCodes::SPANISH));
+        $this->assertEquals('Chienne', $sut2->getTranslation(LanguageCodes::FRENCH));
 
         // merging same version
         $sut1 = new LocalizedStringType();
@@ -215,12 +259,15 @@ class LocalizedStringTypeTest extends TestCase // implements TypeTestInterface
         $sut2 = new LocalizedStringType();
         $sut2->setTranslation(LanguageCodes::ENGLISH, 'Apple', 10);
         $sut2->setTranslation(LanguageCodes::SPANISH, 'Manzana', 10);
+        $sut2->setTranslation(LanguageCodes::FRENCH, 'Chienne', 120);
         $sut1->merge($sut2);
         $sut2->merge($sut1);
         $this->assertEquals('Dog', $sut1->getTranslation(LanguageCodes::ENGLISH));
         $this->assertEquals('Perro', $sut1->getTranslation(LanguageCodes::SPANISH));
+        $this->assertEquals('Chienne', $sut1->getTranslation(LanguageCodes::FRENCH));
         $this->assertEquals('Dog', $sut2->getTranslation(LanguageCodes::ENGLISH));
         $this->assertEquals('Perro', $sut2->getTranslation(LanguageCodes::SPANISH));
+        $this->assertEquals('Chienne', $sut2->getTranslation(LanguageCodes::FRENCH));
 
         // merging lesser version
         $sut1 = new LocalizedStringType();
@@ -229,12 +276,15 @@ class LocalizedStringTypeTest extends TestCase // implements TypeTestInterface
         $sut2 = new LocalizedStringType();
         $sut2->setTranslation(LanguageCodes::ENGLISH, 'Apple', 5);
         $sut2->setTranslation(LanguageCodes::SPANISH, 'Manzana', 5);
+        $sut2->setTranslation(LanguageCodes::FRENCH, 'Chienne', 5);
         $sut1->merge($sut2);
         $sut2->merge($sut1);
         $this->assertEquals('Dog', $sut1->getTranslation(LanguageCodes::ENGLISH));
         $this->assertEquals('Perro', $sut1->getTranslation(LanguageCodes::SPANISH));
+        $this->assertEquals('Chienne', $sut1->getTranslation(LanguageCodes::FRENCH));
         $this->assertEquals('Dog', $sut2->getTranslation(LanguageCodes::ENGLISH));
         $this->assertEquals('Perro', $sut2->getTranslation(LanguageCodes::SPANISH));
+        $this->assertEquals('Chienne', $sut2->getTranslation(LanguageCodes::FRENCH));
 
         // each language merges independently
         $sut1 = new LocalizedStringType();
@@ -243,12 +293,15 @@ class LocalizedStringTypeTest extends TestCase // implements TypeTestInterface
         $sut2 = new LocalizedStringType();
         $sut2->setTranslation(LanguageCodes::ENGLISH, 'Apple', 5);
         $sut2->setTranslation(LanguageCodes::SPANISH, 'Manzana', 5);
+        $sut2->setTranslation(LanguageCodes::FRENCH, 'Chienne', 5);
         $sut1->merge($sut2);
         $sut2->merge($sut1);
         $this->assertEquals('Apple', $sut1->getTranslation(LanguageCodes::ENGLISH));
         $this->assertEquals('Perro', $sut1->getTranslation(LanguageCodes::SPANISH));
+        $this->assertEquals('Chienne', $sut1->getTranslation(LanguageCodes::FRENCH));
         $this->assertEquals('Apple', $sut2->getTranslation(LanguageCodes::ENGLISH));
         $this->assertEquals('Perro', $sut2->getTranslation(LanguageCodes::SPANISH));
+        $this->assertEquals('Chienne', $sut2->getTranslation(LanguageCodes::FRENCH));
     }
 
     public function testMergeNull(): void
@@ -257,6 +310,7 @@ class LocalizedStringTypeTest extends TestCase // implements TypeTestInterface
         $sut1 = new LocalizedStringType();
         $sut1->setTranslation(LanguageCodes::ENGLISH, 'Dog', 10);
         $sut1->setTranslation(LanguageCodes::SPANISH, 'Perro', 100);
+        $sut1->setTranslation(LanguageCodes::FRENCH, 'Chienne', 5);
         $sut2 = new LocalizedStringType();
         $sut2->setTranslation(LanguageCodes::ENGLISH, null, 20);
         $sut2->setTranslation(LanguageCodes::SPANISH, null, 120);
@@ -264,8 +318,10 @@ class LocalizedStringTypeTest extends TestCase // implements TypeTestInterface
         $sut2->merge($sut1);
         $this->assertEquals(null, $sut1->getTranslation(LanguageCodes::ENGLISH));
         $this->assertEquals(null, $sut1->getTranslation(LanguageCodes::SPANISH));
+        $this->assertEquals('Chienne', $sut1->getTranslation(LanguageCodes::FRENCH));
         $this->assertEquals(null, $sut2->getTranslation(LanguageCodes::ENGLISH));
         $this->assertEquals(null, $sut2->getTranslation(LanguageCodes::SPANISH));
+        $this->assertEquals('Chienne', $sut2->getTranslation(LanguageCodes::FRENCH));
 
         // merging greater version, switching which one is null
         $sut2 = new LocalizedStringType();
@@ -274,17 +330,21 @@ class LocalizedStringTypeTest extends TestCase // implements TypeTestInterface
         $sut1 = new LocalizedStringType();
         $sut1->setTranslation(LanguageCodes::ENGLISH, 'Dog', 20);
         $sut1->setTranslation(LanguageCodes::SPANISH, 'Perro', 120);
+        $sut1->setTranslation(LanguageCodes::FRENCH, 'Chienne', 50);
         $sut1->merge($sut2);
         $sut2->merge($sut1);
         $this->assertEquals('Dog', $sut1->getTranslation(LanguageCodes::ENGLISH));
         $this->assertEquals('Perro', $sut1->getTranslation(LanguageCodes::SPANISH));
+        $this->assertEquals('Chienne', $sut1->getTranslation(LanguageCodes::FRENCH));
         $this->assertEquals('Dog', $sut2->getTranslation(LanguageCodes::ENGLISH));
         $this->assertEquals('Perro', $sut2->getTranslation(LanguageCodes::SPANISH));
+        $this->assertEquals('Chienne', $sut2->getTranslation(LanguageCodes::FRENCH));
 
         // merging lesser version
         $sut1 = new LocalizedStringType();
         $sut1->setTranslation(LanguageCodes::ENGLISH, 'Dog', 10);
         $sut1->setTranslation(LanguageCodes::SPANISH, 'Perro', 100);
+        $sut1->setTranslation(LanguageCodes::FRENCH, 'Chienne', 5);
         $sut2 = new LocalizedStringType();
         $sut2->setTranslation(LanguageCodes::ENGLISH, null, 20);
         $sut2->setTranslation(LanguageCodes::SPANISH, null, 120);
@@ -292,8 +352,10 @@ class LocalizedStringTypeTest extends TestCase // implements TypeTestInterface
         $sut2->merge($sut1);
         $this->assertEquals(null, $sut1->getTranslation(LanguageCodes::ENGLISH));
         $this->assertEquals(null, $sut1->getTranslation(LanguageCodes::SPANISH));
+        $this->assertEquals('Chienne', $sut1->getTranslation(LanguageCodes::FRENCH));
         $this->assertEquals(null, $sut2->getTranslation(LanguageCodes::ENGLISH));
         $this->assertEquals(null, $sut2->getTranslation(LanguageCodes::SPANISH));
+        $this->assertEquals('Chienne', $sut2->getTranslation(LanguageCodes::FRENCH));
 
         // merging lesser version, switching which one is null
         $sut1 = new LocalizedStringType();
@@ -302,17 +364,21 @@ class LocalizedStringTypeTest extends TestCase // implements TypeTestInterface
         $sut2 = new LocalizedStringType();
         $sut2->setTranslation(LanguageCodes::ENGLISH, 'Dog', 20);
         $sut2->setTranslation(LanguageCodes::SPANISH, 'Perro', 120);
+        $sut2->setTranslation(LanguageCodes::FRENCH, 'Chienne', 50);
         $sut1->merge($sut2);
         $sut2->merge($sut1);
         $this->assertEquals('Dog', $sut1->getTranslation(LanguageCodes::ENGLISH));
         $this->assertEquals('Perro', $sut1->getTranslation(LanguageCodes::SPANISH));
+        $this->assertEquals('Chienne', $sut1->getTranslation(LanguageCodes::FRENCH));
         $this->assertEquals('Dog', $sut2->getTranslation(LanguageCodes::ENGLISH));
         $this->assertEquals('Perro', $sut2->getTranslation(LanguageCodes::SPANISH));
+        $this->assertEquals('Chienne', $sut2->getTranslation(LanguageCodes::FRENCH));
 
         // merging same version
         $sut1 = new LocalizedStringType();
         $sut1->setTranslation(LanguageCodes::ENGLISH, 'Dog', 10);
         $sut1->setTranslation(LanguageCodes::SPANISH, 'Perro', 100);
+        $sut1->setTranslation(LanguageCodes::FRENCH, 'Chienne', 5);
         $sut2 = new LocalizedStringType();
         $sut2->setTranslation(LanguageCodes::ENGLISH, null, 10);
         $sut2->setTranslation(LanguageCodes::SPANISH, null, 100);
@@ -320,8 +386,10 @@ class LocalizedStringTypeTest extends TestCase // implements TypeTestInterface
         $sut2->merge($sut1);
         $this->assertEquals('Dog', $sut1->getTranslation(LanguageCodes::ENGLISH));
         $this->assertEquals('Perro', $sut1->getTranslation(LanguageCodes::SPANISH));
+        $this->assertEquals('Chienne', $sut1->getTranslation(LanguageCodes::FRENCH));
         $this->assertEquals('Dog', $sut2->getTranslation(LanguageCodes::ENGLISH));
         $this->assertEquals('Perro', $sut2->getTranslation(LanguageCodes::SPANISH));
+        $this->assertEquals('Chienne', $sut2->getTranslation(LanguageCodes::FRENCH));
     }
 
     public function testMergeException(): void

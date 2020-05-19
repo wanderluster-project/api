@@ -11,7 +11,7 @@ use DateTime;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
-class DateTimeTypeTest extends TestCase implements TypeTestInterface
+class DateTimeTypeTest extends TestCase //implements TypeTestInterface
 {
     public function testNullConstructor(): void
     {
@@ -337,6 +337,13 @@ class DateTimeTypeTest extends TestCase implements TypeTestInterface
             $sut->coerce('INVALID');
             $this->fail('Exception not thrown');
         } catch (WanderlusterException $e) {
+            $this->assertEquals('Invalid value passed to DATE_TIME data type.', $e->getMessage());
+        }
+
+        try{
+            $sut = new DateTimeType('1999-04-31');
+            $this->fail('Exception not thrown.');
+        }catch(WanderlusterException $e){
             $this->assertEquals('Invalid value passed to DATE_TIME data type.', $e->getMessage());
         }
     }

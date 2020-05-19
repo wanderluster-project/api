@@ -24,10 +24,10 @@ class Snapshot implements SerializableInterface
 {
     const SERIALIZATION_ID = 'SNAPSHOT';
 
+    protected Serializer $serializer;
     protected ?int $version = null;
     protected ?DateTimeImmutable $createdAt = null;
     protected ?User $createdBy = null;
-    protected Serializer $serializer;
 
     /**
      * @var DataTypeInterface[]|null[]
@@ -57,9 +57,10 @@ class Snapshot implements SerializableInterface
 
         if (is_null($value)) {
             $this->del($key, $lang);
+            return;
         }
 
-        $key = (string) $key;
+        $key = (string)$key;
         $typedVal = null;
 
         if ($this->has($key, LanguageCodes::ANY)) {
@@ -71,10 +72,8 @@ class Snapshot implements SerializableInterface
                 $typedVal = new IntegerType($value);
             } elseif (is_float($value)) {
                 $typedVal = new NumericType($value);
-            } elseif (is_object($value)) {
-                if ($value instanceof DateTimeInterface) {
-                    $typedVal = new DateTimeType($value);
-                }
+            } elseif (is_object($value) && $value instanceof DateTimeInterface) {
+                $typedVal = new DateTimeType($value);
             } elseif (is_string($value)) {
                 $typedVal = new LocalizedStringType();
             } else {
@@ -259,16 +258,16 @@ class Snapshot implements SerializableInterface
         $fields = ['type', 'version', 'data'];
         foreach ($fields as $field) {
             if (!array_key_exists($field, $data)) {
-                throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Missing Field: '.$field));
+                throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Missing Field: ' . $field));
             }
         }
 
         $type = $data['type'];
-        $version = (int) $data['version'];
+        $version = (int)$data['version'];
         $data = $data['data'];
 
         if ($type !== $this->getSerializationId()) {
-            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Invalid Type: '.$type));
+            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Invalid Type: ' . $type));
         }
 
         if ($version) {
