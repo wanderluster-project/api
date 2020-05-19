@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\DataModel\Serializer;
 
+use App\DataModel\Attributes\AttributeManager;
 use App\DataModel\Contracts\DataTypeInterface;
 use App\DataModel\Contracts\SerializableInterface;
 use App\DataModel\DataType\BooleanType;
@@ -29,6 +30,7 @@ class Serializer
     protected EntityUtilites $entityUtilites;
     protected LanguageCodes $languageCodes;
     protected EntityTypeManager $entityTypeManager;
+    protected AttributeManager $attributeManager;
 
     /**
      * @var string[]
@@ -52,11 +54,12 @@ class Serializer
     /**
      * Serializer constructor.
      */
-    public function __construct(EntityUtilites $entityUtilites, LanguageCodes $languageCodes, EntityTypeManager $entityTypeManager)
+    public function __construct(EntityUtilites $entityUtilites, LanguageCodes $languageCodes, EntityTypeManager $entityTypeManager, AttributeManager $attributeManager)
     {
         $this->entityUtilites = $entityUtilites;
         $this->languageCodes = $languageCodes;
         $this->entityTypeManager = $entityTypeManager;
+        $this->attributeManager = $attributeManager;
     }
 
     /**
@@ -110,9 +113,9 @@ class Serializer
     {
         // Instantiate object
         if (Entity::SERIALIZATION_ID === $type) {
-            $obj = new Entity($this);
+            $obj = new Entity($this, $this->attributeManager);
         } elseif (Snapshot::SERIALIZATION_ID === $type) {
-            $obj = new Snapshot($this);
+            $obj = new Snapshot($this, $this->attributeManager);
         } else {
             $class = $this->objRegistry[$type];
             $obj = new $class();

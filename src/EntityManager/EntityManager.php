@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\EntityManager;
 
+use App\DataModel\Attributes\AttributeManager;
 use App\DataModel\Entity\Entity;
 use App\DataModel\Entity\EntityId;
 use App\DataModel\Serializer\Serializer;
@@ -41,15 +42,27 @@ class EntityManager
     protected $serializer;
 
     /**
+     * @var AttributeManager
+     */
+    protected $attributeManager;
+
+    /**
      * EntityManager constructor.
      */
-    public function __construct(ShardCoordinator $shardCoordinator, EntityTypeManager $typeCoordinator, EntityUtilites $entityUtilites, LanguageCodes $languageCodes, Serializer $serializer)
-    {
+    public function __construct(
+        ShardCoordinator $shardCoordinator,
+        EntityTypeManager $typeCoordinator,
+        EntityUtilites $entityUtilites,
+        LanguageCodes $languageCodes,
+        Serializer $serializer,
+        AttributeManager $attributeManager
+    ) {
         $this->shardCoordinator = $shardCoordinator;
         $this->typeCoordinator = $typeCoordinator;
         $this->entityUtilities = $entityUtilites;
         $this->languageCodes = $languageCodes;
         $this->serializer = $serializer;
+        $this->attributeManager = $attributeManager;
     }
 
     /**
@@ -94,6 +107,6 @@ class EntityManager
      */
     public function create(int $defaultEntityType = 0, string $defaultLang = LanguageCodes::ANY): Entity
     {
-        return new Entity($this->serializer, $defaultEntityType, $defaultLang);
+        return new Entity($this->serializer, $this->attributeManager, $defaultEntityType, $defaultLang);
     }
 }

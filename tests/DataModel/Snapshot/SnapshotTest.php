@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\DataModel\Snapshot;
 
+use App\DataModel\Attributes\Attributes;
 use App\DataModel\Snapshot\Snapshot;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\WanderlusterException;
@@ -14,51 +15,44 @@ class SnapshotTest extends FunctionalTest
     public function testConstructor(): void
     {
         // naked constructor
-        $sut = new Snapshot($this->getSerializer());
+        $sut = new Snapshot($this->getSerializer(), $this->getAttributeMangager());
         $this->assertEquals([], $sut->getLanguages());
     }
 
     public function testSetGetHas(): void
     {
-        $sut = new Snapshot($this->getSerializer());
+        $sut = new Snapshot($this->getSerializer(), $this->getAttributeMangager());
 
         // assert key does not exist
         $this->assertFalse($sut->has('foo', LanguageCodes::ANY));
 
         // set new value
-        $sut->set('foo', 'bar', LanguageCodes::ENGLISH);
-        $sut->set('sample_float', 3.14, LanguageCodes::ENGLISH);
-        $sut->set('sample_boolean', false, LanguageCodes::ENGLISH);
-        $sut->set('sample_datetime', new \DateTime('1/1/2010'), LanguageCodes::ENGLISH);
-        try {
-            // @phpstan-ignore-next-line
-            $sut->set('sample_obj', new \stdClass(), LanguageCodes::ENGLISH);
-            $this->fail('Exception not thown.');
-        } catch (WanderlusterException $e) {
-            $this->assertEquals('Unable to determine the type for key - sample_obj.', $e->getMessage());
-        }
+        $sut->set(Attributes::CORE_TEST_STRING, 'bar', LanguageCodes::ENGLISH);
+        $sut->set(Attributes::CORE_TEST_NUM, 3.14, LanguageCodes::ENGLISH);
+        $sut->set(Attributes::CORE_TEST_BOOLEAN, false, LanguageCodes::ENGLISH);
+        $sut->set(Attributes::CORE_TEST_DATE_TIME, new \DateTime('1/1/2010'), LanguageCodes::ENGLISH);
 
         try {
-            $sut->set('foo', 'bar', LanguageCodes::ANY);
+            $sut->set(Attributes::CORE_TEST_STRING, 'bar', LanguageCodes::ANY);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
             $this->assertEquals('You must specify a language.  Wildcard (*) is not allowed).', $e->getMessage());
         }
 
         // confirm exists
-        $this->assertEquals('bar', $sut->get('foo', LanguageCodes::ENGLISH));
-        $this->assertEquals(null, $sut->get('foo', LanguageCodes::SPANISH));
+        $this->assertEquals('bar', $sut->get(Attributes::CORE_TEST_STRING, LanguageCodes::ENGLISH));
+        $this->assertEquals(null, $sut->get(Attributes::CORE_TEST_STRING, LanguageCodes::SPANISH));
 
         try {
-            $sut->get('foo', LanguageCodes::ANY);
+            $sut->get(Attributes::CORE_TEST_STRING, LanguageCodes::ANY);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
             $this->assertEquals('You must specify a language.  Wildcard (*) is not allowed).', $e->getMessage());
         }
 
-        $this->assertTrue($sut->has('foo', LanguageCodes::ANY));
-        $this->assertTrue($sut->has('foo', LanguageCodes::ENGLISH));
-        $this->assertFalse($sut->has('foo', LanguageCodes::SPANISH));
+        $this->assertTrue($sut->has(Attributes::CORE_TEST_STRING, LanguageCodes::ANY));
+        $this->assertTrue($sut->has(Attributes::CORE_TEST_STRING, LanguageCodes::ENGLISH));
+        $this->assertFalse($sut->has(Attributes::CORE_TEST_STRING, LanguageCodes::SPANISH));
     }
 
     public function testDel(): void
@@ -66,51 +60,51 @@ class SnapshotTest extends FunctionalTest
         /**
          * Test Case #1 - Invariant to language.
          */
-        $sut = new Snapshot($this->getSerializer());
-        $this->assertFalse($sut->has('foo', LanguageCodes::ANY));
+        $sut = new Snapshot($this->getSerializer(), $this->getAttributeMangager());
+        $this->assertFalse($sut->has(Attributes::CORE_TEST_INT, LanguageCodes::ANY));
 
         // set value
-        $sut->set('foo', 150, LanguageCodes::ENGLISH);
-        $this->assertTrue($sut->has('foo', LanguageCodes::ENGLISH));
-        $this->assertTrue($sut->has('foo', LanguageCodes::SPANISH));
-        $this->assertTrue($sut->has('foo', LanguageCodes::ANY));
+        $sut->set(Attributes::CORE_TEST_INT, 150, LanguageCodes::ENGLISH);
+        $this->assertTrue($sut->has(Attributes::CORE_TEST_INT, LanguageCodes::ENGLISH));
+        $this->assertTrue($sut->has(Attributes::CORE_TEST_INT, LanguageCodes::SPANISH));
+        $this->assertTrue($sut->has(Attributes::CORE_TEST_INT, LanguageCodes::ANY));
 
         // delete
-        $sut->set('foo', null, LanguageCodes::ENGLISH);
-        $sut->del('foo', LanguageCodes::ENGLISH);
-        $this->assertFalse($sut->has('foo', LanguageCodes::ENGLISH));
-        $this->assertFalse($sut->has('foo', LanguageCodes::SPANISH));
-        $this->assertFalse($sut->has('foo', LanguageCodes::ANY));
+        $sut->set(Attributes::CORE_TEST_INT, null, LanguageCodes::ENGLISH);
+        $sut->del(Attributes::CORE_TEST_INT, LanguageCodes::ENGLISH);
+        $this->assertFalse($sut->has(Attributes::CORE_TEST_INT, LanguageCodes::ENGLISH));
+        $this->assertFalse($sut->has(Attributes::CORE_TEST_INT, LanguageCodes::SPANISH));
+        $this->assertFalse($sut->has(Attributes::CORE_TEST_INT, LanguageCodes::ANY));
 
         /**
          * Test Case #2 - Multi-language.
          */
-        $sut = new Snapshot($this->getSerializer());
-        $this->assertFalse($sut->has('foo', LanguageCodes::ANY));
+        $sut = new Snapshot($this->getSerializer(), $this->getAttributeMangager());
+        $this->assertFalse($sut->has(Attributes::CORE_TEST_STRING, LanguageCodes::ANY));
 
         // set value
-        $sut->set('foo', 'english version', LanguageCodes::ENGLISH);
-        $sut->set('foo', 'spanish version', LanguageCodes::SPANISH);
-        $sut->set('foo', 'french version', LanguageCodes::FRENCH);
+        $sut->set(Attributes::CORE_TEST_STRING, 'english version', LanguageCodes::ENGLISH);
+        $sut->set(Attributes::CORE_TEST_STRING, 'spanish version', LanguageCodes::SPANISH);
+        $sut->set(Attributes::CORE_TEST_STRING, 'french version', LanguageCodes::FRENCH);
 
-        $this->assertTrue($sut->has('foo', LanguageCodes::ANY));
-        $this->assertTrue($sut->has('foo', LanguageCodes::ENGLISH));
-        $this->assertTrue($sut->has('foo', LanguageCodes::SPANISH));
-        $this->assertTrue($sut->has('foo', LanguageCodes::FRENCH));
+        $this->assertTrue($sut->has(Attributes::CORE_TEST_STRING, LanguageCodes::ANY));
+        $this->assertTrue($sut->has(Attributes::CORE_TEST_STRING, LanguageCodes::ENGLISH));
+        $this->assertTrue($sut->has(Attributes::CORE_TEST_STRING, LanguageCodes::SPANISH));
+        $this->assertTrue($sut->has(Attributes::CORE_TEST_STRING, LanguageCodes::FRENCH));
 
         // delete english value only
-        $sut->del('foo', LanguageCodes::ENGLISH);
-        $this->assertFalse($sut->has('foo', LanguageCodes::ENGLISH));
-        $this->assertTrue($sut->has('foo', LanguageCodes::SPANISH));
-        $this->assertTrue($sut->has('foo', LanguageCodes::FRENCH));
-        $this->assertTrue($sut->has('foo', LanguageCodes::ANY));
+        $sut->del(Attributes::CORE_TEST_STRING, LanguageCodes::ENGLISH);
+        $this->assertFalse($sut->has(Attributes::CORE_TEST_STRING, LanguageCodes::ENGLISH));
+        $this->assertTrue($sut->has(Attributes::CORE_TEST_STRING, LanguageCodes::SPANISH));
+        $this->assertTrue($sut->has(Attributes::CORE_TEST_STRING, LanguageCodes::FRENCH));
+        $this->assertTrue($sut->has(Attributes::CORE_TEST_STRING, LanguageCodes::ANY));
 
         // delete any
-        $sut->del('foo', LanguageCodes::ANY);
-        $this->assertFalse($sut->has('foo', LanguageCodes::ENGLISH));
-        $this->assertFalse($sut->has('foo', LanguageCodes::SPANISH));
-        $this->assertFalse($sut->has('foo', LanguageCodes::FRENCH));
-        $this->assertFalse($sut->has('foo', LanguageCodes::ANY));
+        $sut->del(Attributes::CORE_TEST_STRING, LanguageCodes::ANY);
+        $this->assertFalse($sut->has(Attributes::CORE_TEST_STRING, LanguageCodes::ENGLISH));
+        $this->assertFalse($sut->has(Attributes::CORE_TEST_STRING, LanguageCodes::SPANISH));
+        $this->assertFalse($sut->has(Attributes::CORE_TEST_STRING, LanguageCodes::FRENCH));
+        $this->assertFalse($sut->has(Attributes::CORE_TEST_STRING, LanguageCodes::ANY));
     }
 
     public function testKeys(): void
@@ -118,42 +112,42 @@ class SnapshotTest extends FunctionalTest
         /**
          * Test Case #1 - Invariant to language.
          */
-        $sut = new Snapshot($this->getSerializer());
+        $sut = new Snapshot($this->getSerializer(), $this->getAttributeMangager());
         $this->assertEquals([], $sut->keys(LanguageCodes::ANY));
 
         // set values
-        $sut->set('foo1', 150, LanguageCodes::ENGLISH);
-        $sut->set('foo2', 100, LanguageCodes::ENGLISH);
-        $sut->set('foo3', 250, LanguageCodes::SPANISH);
-        $this->assertEquals(['foo1', 'foo2', 'foo3'], $sut->keys(LanguageCodes::ENGLISH));
-        $this->assertEquals(['foo1', 'foo2', 'foo3'], $sut->keys(LanguageCodes::SPANISH));
-        $this->assertEquals(['foo1', 'foo2', 'foo3'], $sut->keys(LanguageCodes::ANY));
+        $sut->set(Attributes::CORE_TEST_STRING, 150, LanguageCodes::ENGLISH);
+        $sut->set(Attributes::CORE_TEST_STRING_2, 100, LanguageCodes::ENGLISH);
+        $sut->set(Attributes::CORE_TEST_STRING_3, 250, LanguageCodes::SPANISH);
+        $this->assertEquals([Attributes::CORE_TEST_STRING, Attributes::CORE_TEST_STRING_2], $sut->keys(LanguageCodes::ENGLISH));
+        $this->assertEquals([Attributes::CORE_TEST_STRING_3], $sut->keys(LanguageCodes::SPANISH));
+        $this->assertEquals([Attributes::CORE_TEST_STRING, Attributes::CORE_TEST_STRING_2, Attributes::CORE_TEST_STRING_3], $sut->keys(LanguageCodes::ANY));
 
         // delete value
-        $sut->del('foo1', LanguageCodes::ENGLISH);
-        $this->assertEquals(['foo2', 'foo3'], $sut->keys(LanguageCodes::ENGLISH));
-        $this->assertEquals(['foo2', 'foo3'], $sut->keys(LanguageCodes::SPANISH));
-        $this->assertEquals(['foo2', 'foo3'], $sut->keys(LanguageCodes::ANY));
+        $sut->del(Attributes::CORE_TEST_STRING, LanguageCodes::ENGLISH);
+        $this->assertEquals([Attributes::CORE_TEST_STRING_2], $sut->keys(LanguageCodes::ENGLISH));
+        $this->assertEquals([Attributes::CORE_TEST_STRING_3], $sut->keys(LanguageCodes::SPANISH));
+        $this->assertEquals([Attributes::CORE_TEST_STRING_2, Attributes::CORE_TEST_STRING_3], $sut->keys(LanguageCodes::ANY));
 
         /**
          * Test Case #2 - Multi-language.
          */
-        $sut = new Snapshot($this->getSerializer());
+        $sut = new Snapshot($this->getSerializer(), $this->getAttributeMangager());
         $this->assertEquals([], $sut->keys(LanguageCodes::ANY));
 
         // set values
-        $sut->set('foo1', 'bar1', LanguageCodes::ENGLISH);
-        $sut->set('foo2', 'bar2', LanguageCodes::ENGLISH);
-        $sut->set('foo3', 'bar3', LanguageCodes::SPANISH);
-        $this->assertEquals(['foo1', 'foo2'], $sut->keys(LanguageCodes::ENGLISH));
-        $this->assertEquals(['foo3'], $sut->keys(LanguageCodes::SPANISH));
-        $this->assertEquals(['foo1', 'foo2', 'foo3'], $sut->keys(LanguageCodes::ANY));
+        $sut->set(Attributes::CORE_TEST_STRING, 'bar1', LanguageCodes::ENGLISH);
+        $sut->set(Attributes::CORE_TEST_STRING_2, 'bar2', LanguageCodes::ENGLISH);
+        $sut->set(Attributes::CORE_TEST_STRING_3, 'bar3', LanguageCodes::SPANISH);
+        $this->assertEquals([Attributes::CORE_TEST_STRING, Attributes::CORE_TEST_STRING_2], $sut->keys(LanguageCodes::ENGLISH));
+        $this->assertEquals([Attributes::CORE_TEST_STRING_3], $sut->keys(LanguageCodes::SPANISH));
+        $this->assertEquals([Attributes::CORE_TEST_STRING, Attributes::CORE_TEST_STRING_2, Attributes::CORE_TEST_STRING_3], $sut->keys(LanguageCodes::ANY));
 
         // delete value
-        $sut->del('foo1', LanguageCodes::ENGLISH);
-        $this->assertEquals(['foo2'], $sut->keys(LanguageCodes::ENGLISH));
-        $this->assertEquals(['foo3'], $sut->keys(LanguageCodes::SPANISH));
-        $this->assertEquals(['foo2', 'foo3'], $sut->keys(LanguageCodes::ANY));
+        $sut->del(Attributes::CORE_TEST_STRING, LanguageCodes::ENGLISH);
+        $this->assertEquals([Attributes::CORE_TEST_STRING_2], $sut->keys(LanguageCodes::ENGLISH));
+        $this->assertEquals([Attributes::CORE_TEST_STRING_3], $sut->keys(LanguageCodes::SPANISH));
+        $this->assertEquals([Attributes::CORE_TEST_STRING_2, Attributes::CORE_TEST_STRING_3], $sut->keys(LanguageCodes::ANY));
     }
 
     public function testAll(): void
@@ -161,17 +155,17 @@ class SnapshotTest extends FunctionalTest
         /**
          * Test Case #1 - Invariant to language.
          */
-        $sut = new Snapshot($this->getSerializer());
+        $sut = new Snapshot($this->getSerializer(), $this->getAttributeMangager());
         $this->assertEquals([], $sut->keys(LanguageCodes::ANY));
 
         // set values
-        $sut->set('foo', 150, LanguageCodes::ENGLISH);
-        $this->assertEquals(['foo' => 150], $sut->all(LanguageCodes::ENGLISH));
-        $this->assertEquals(['foo' => 150], $sut->all(LanguageCodes::SPANISH));
-        $this->assertEquals(['foo' => 150], $sut->all(LanguageCodes::FRENCH));
+        $sut->set(Attributes::CORE_TEST_STRING, 150, LanguageCodes::ENGLISH);
+        $this->assertEquals([Attributes::CORE_TEST_STRING => 150], $sut->all(LanguageCodes::ENGLISH));
+        $this->assertEquals([], $sut->all(LanguageCodes::SPANISH));
+        $this->assertEquals([], $sut->all(LanguageCodes::FRENCH));
 
         // delete value
-        $sut->del('foo', LanguageCodes::ENGLISH);
+        $sut->del(Attributes::CORE_TEST_STRING, LanguageCodes::ENGLISH);
         $this->assertEquals([], $sut->all(LanguageCodes::ENGLISH));
         $this->assertEquals([], $sut->all(LanguageCodes::SPANISH));
         $this->assertEquals([], $sut->all(LanguageCodes::FRENCH));
@@ -179,16 +173,16 @@ class SnapshotTest extends FunctionalTest
         /**
          * Test Case #2 - Multi-language.
          */
-        $sut = new Snapshot($this->getSerializer());
+        $sut = new Snapshot($this->getSerializer(), $this->getAttributeMangager());
         $this->assertEquals([], $sut->all(LanguageCodes::ENGLISH));
 
         // set values
-        $sut->set('foo', 'english value', LanguageCodes::ENGLISH);
-        $sut->set('foo', 'spanish value', LanguageCodes::SPANISH);
-        $sut->set('foo', 'french value', LanguageCodes::FRENCH);
-        $this->assertEquals(['foo' => 'english value'], $sut->all(LanguageCodes::ENGLISH));
-        $this->assertEquals(['foo' => 'spanish value'], $sut->all(LanguageCodes::SPANISH));
-        $this->assertEquals(['foo' => 'french value'], $sut->all(LanguageCodes::FRENCH));
+        $sut->set(Attributes::CORE_TEST_STRING, 'english value', LanguageCodes::ENGLISH);
+        $sut->set(Attributes::CORE_TEST_STRING, 'spanish value', LanguageCodes::SPANISH);
+        $sut->set(Attributes::CORE_TEST_STRING, 'french value', LanguageCodes::FRENCH);
+        $this->assertEquals([Attributes::CORE_TEST_STRING => 'english value'], $sut->all(LanguageCodes::ENGLISH));
+        $this->assertEquals([Attributes::CORE_TEST_STRING => 'spanish value'], $sut->all(LanguageCodes::SPANISH));
+        $this->assertEquals([Attributes::CORE_TEST_STRING => 'french value'], $sut->all(LanguageCodes::FRENCH));
 
         // confirm exception
         try {
@@ -198,12 +192,12 @@ class SnapshotTest extends FunctionalTest
         }
 
         // delete
-        $sut->del('foo', LanguageCodes::ENGLISH);
+        $sut->del(Attributes::CORE_TEST_STRING, LanguageCodes::ENGLISH);
         $this->assertEquals([], $sut->all(LanguageCodes::ENGLISH));
-        $this->assertEquals(['foo' => 'spanish value'], $sut->all(LanguageCodes::SPANISH));
-        $this->assertEquals(['foo' => 'french value'], $sut->all(LanguageCodes::FRENCH));
+        $this->assertEquals([Attributes::CORE_TEST_STRING => 'spanish value'], $sut->all(LanguageCodes::SPANISH));
+        $this->assertEquals([Attributes::CORE_TEST_STRING => 'french value'], $sut->all(LanguageCodes::FRENCH));
 
-        $sut->del('foo', LanguageCodes::ANY);
+        $sut->del(Attributes::CORE_TEST_STRING, LanguageCodes::ANY);
         $this->assertEquals([], $sut->all(LanguageCodes::ENGLISH));
         $this->assertEquals([], $sut->all(LanguageCodes::SPANISH));
         $this->assertEquals([], $sut->all(LanguageCodes::FRENCH));
@@ -220,7 +214,7 @@ class SnapshotTest extends FunctionalTest
 
     public function testFromArrayExceptions(): void
     {
-        $sut = new Snapshot($this->getSerializer());
+        $sut = new Snapshot($this->getSerializer(), $this->getAttributeMangager());
 
         // missing type
         try {

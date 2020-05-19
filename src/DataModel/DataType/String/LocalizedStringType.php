@@ -176,6 +176,7 @@ class LocalizedStringType extends AbstractStringType
                 $this->val[$lang] = new TranslationType();
             }
             $this->val[$lang]->merge($item);
+            $this->val[$lang]->setLanguage($lang);
         }
 
         return $this;

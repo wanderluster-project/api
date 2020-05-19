@@ -35,6 +35,13 @@ class TranslationType extends AbstractStringType
         return $this;
     }
 
+    public function setLanguage(string $lang): self
+    {
+        $this->lang = $lang;
+
+        return $this;
+    }
+
     /**
      * {@inheritdoc}
      */

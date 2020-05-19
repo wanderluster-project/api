@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\FileStorage;
 
+use App\DataModel\Attributes\Attributes;
 use App\DataModel\Entity\Entity;
 use App\DataModel\Entity\EntityId;
 use App\DataModel\Translation\LanguageCodes;
@@ -64,9 +65,9 @@ class FileUtilities
         // @todo determine language
         $entity->load(LanguageCodes::ENGLISH);
 
-        $entity->set('mime_type', $mimeType)
-            ->set('file_size', $file->getSize())
-            ->set('url', $this->remoteStorageAdapter->generateFileUrl($pathPrefix.'/'.$filename));
+        $entity->set(Attributes::CORE_FILE_MIME_TYPE, $mimeType)
+            ->set(Attributes::CORE_FILE_SIZE, $file->getSize())
+            ->set(Attributes::CORE_FILE_URL, $this->remoteStorageAdapter->generateFileUrl($pathPrefix.'/'.$filename));
 
         $this->entityUtilities->setEntityId($entity, $entityId);
 

@@ -48,6 +48,6 @@ class TestingAdapter implements StorageAdapterInterface
      */
     public function generateFileUrl($path): string
     {
-        return 'localhost/storage/default/'.$path;
+        return 'http://localhost/storage/default/'.$path;
     }
 }

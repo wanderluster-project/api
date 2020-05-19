@@ -8,3 +8,6 @@ services:
   test.entity_manager:
     alias: 'App\EntityManager\EntityManager'
     public: true
+  test.attribute_manager:
+    alias: 'App\DataModel\Attributes\AttributeManager'
+    public: true
