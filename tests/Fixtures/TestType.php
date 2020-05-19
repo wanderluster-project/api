@@ -6,6 +6,7 @@ namespace App\Tests\Fixtures;
 
 use App\DataModel\Contracts\DataTypeInterface;
 use App\DataModel\Contracts\SerializableInterface;
+use App\DataModel\Serializer\Serializer;
 use App\DataModel\Translation\LanguageCodes;
 
 class TestType implements DataTypeInterface
@@ -86,6 +87,11 @@ class TestType implements DataTypeInterface
     }
 
     public function fromArray(array $data): SerializableInterface
+    {
+        return $this;
+    }
+
+    public function setSerializer(Serializer $serializer): SerializableInterface
     {
         return $this;
     }

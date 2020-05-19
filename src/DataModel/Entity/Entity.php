@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\DataModel\Entity;
 
 use App\DataModel\Contracts\SerializableInterface;
+use App\DataModel\Serializer\Serializer;
 use App\DataModel\Snapshot\Snapshot;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
@@ -18,6 +19,7 @@ class Entity implements SerializableInterface
     protected string $lang;
     protected EntityId $entityId;
     protected Snapshot $snapshot;
+    protected Serializer $serializer;
 
     /**
      * Entity constructor.
@@ -193,5 +195,16 @@ class Entity implements SerializableInterface
     public function getSerializationId(): string
     {
         return self::SERIALIZATION_ID;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setSerializer(Serializer $serializer): SerializableInterface
+    {
+        $this->serializer = $serializer;
+        $this->snapshot->setSerializer($serializer);
+
+        return $this;
     }
 }

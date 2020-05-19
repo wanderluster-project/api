@@ -8,9 +8,9 @@ use App\DataModel\Entity\Entity;
 use App\DataModel\Entity\EntityTypes;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\WanderlusterException;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\FunctionalTest;
 
-class EntityTest extends WebTestCase
+class EntityTest extends FunctionalTest
 {
     public function testConstuctor(): void
     {
@@ -155,6 +155,7 @@ class EntityTest extends WebTestCase
 
         // with some data
         $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
+        $sut->setSerializer($this->getSerializer());
         $sut->fromArray([
             'type' => 'ENTITY',
             'entity_id' => '31159eca-522c-4d09-8a5d-ee3438e6bb6f',

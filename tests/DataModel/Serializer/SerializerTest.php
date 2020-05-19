@@ -7,6 +7,7 @@ namespace App\Tests\DataModel\Serializer;
 use App\DataModel\Contracts\SerializableInterface;
 use App\DataModel\Entity\Entity;
 use App\DataModel\Entity\EntityTypes;
+use App\DataModel\Serializer\Serializer;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\WanderlusterException;
 use App\Tests\Fixtures\TestType;
@@ -31,6 +32,11 @@ class SerializerTest extends FunctionalTest
             }
 
             public function fromArray(array $data): SerializableInterface
+            {
+                return $this;
+            }
+
+            public function setSerializer(Serializer $serializer): SerializableInterface
             {
                 return $this;
             }

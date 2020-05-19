@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\DataModel\Serializer;
 
+use App\DataModel\Contracts\DataTypeInterface;
 use App\DataModel\Contracts\SerializableInterface;
 use App\DataModel\DataType\BooleanType;
 use App\DataModel\DataType\DateTimeType;
@@ -16,7 +17,6 @@ use App\DataModel\DataType\String\MimeType;
 use App\DataModel\DataType\String\TranslationType;
 use App\DataModel\DataType\String\UrlType;
 use App\DataModel\Entity\Entity;
-use App\DataModel\Entity\EntityId;
 use App\DataModel\Snapshot\Snapshot;
 use App\DataModel\Translation\LanguageCodes;
 use App\EntityManager\EntityTypeManager;
@@ -77,7 +77,7 @@ class Serializer
     /**
      * Decode a string representation into an Object.
      *
-     * @return Entity|EntityId
+     * @return Entity|DataTypeInterface|Snapshot
      *
      * @throws WanderlusterException
      */
@@ -98,9 +98,20 @@ class Serializer
             throw new WanderlusterException(sprintf(ErrorMessages::DESERIALIZATION_ERROR, 'Invalid type: '.$type));
         }
 
-        // instantiate object
+        return $this->instantiate($type, $data);
+    }
+
+    /**
+     * Instantiate data type.
+     *
+     * @return mixed
+     */
+    public function instantiate(string $type, array $data)
+    {
+        // Instantiate object
         $class = $this->objRegistry[$type];
         $obj = new $class();
+        $obj->setSerializer($this);
         $obj->fromArray($data);
 
         return $obj;

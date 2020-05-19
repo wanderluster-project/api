@@ -11,6 +11,7 @@ use App\DataModel\DataType\DateTimeType;
 use App\DataModel\DataType\IntegerType;
 use App\DataModel\DataType\NumericType;
 use App\DataModel\DataType\String\LocalizedStringType;
+use App\DataModel\Serializer\Serializer;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
@@ -26,6 +27,7 @@ class Snapshot implements SerializableInterface
     protected ?int $version = null;
     protected ?DateTimeImmutable $createdAt = null;
     protected ?User $createdBy = null;
+    protected Serializer $serializer;
 
     /**
      * @var DataTypeInterface[]|null[]
@@ -267,21 +269,7 @@ class Snapshot implements SerializableInterface
 
         foreach ($data as $key => $typeData) {
             $type = $typeData['type'];
-            $typeObj = null;
-
-            switch ($type) {
-                case 'LOCALIZED_STRING':
-                    $typeObj = new LocalizedStringType();
-                    $typeObj->fromArray($typeData);
-                    break;
-                case 'INT':
-                    $typeObj = new IntegerType();
-                    $typeObj->fromArray($typeData);
-                    break;
-                default:
-                    // @todo move this logic to the serializer
-                    throw new \Exception('@todo - '.$type);
-            }
+            $typeObj = $this->serializer->instantiate($type, $typeData);
             $this->data[$key] = $typeObj;
         }
 
@@ -291,5 +279,12 @@ class Snapshot implements SerializableInterface
     public function getSerializationId(): string
     {
         return self::SERIALIZATION_ID;
+    }
+
+    public function setSerializer(Serializer $serializer): SerializableInterface
+    {
+        $this->serializer = $serializer;
+
+        return $this;
     }
 }

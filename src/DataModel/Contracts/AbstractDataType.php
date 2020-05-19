@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\DataModel\Contracts;
 
+use App\DataModel\Serializer\Serializer;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
@@ -16,6 +17,7 @@ abstract class AbstractDataType implements DataTypeInterface
      * @var mixed
      */
     protected $val;
+    protected Serializer $serializer;
 
     /**
      * AbstractDataType constructor.
@@ -122,6 +124,19 @@ abstract class AbstractDataType implements DataTypeInterface
         return $this;
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function setSerializer(Serializer $serializer): SerializableInterface
+    {
+        $this->serializer = $serializer;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function isValidValue($val): bool
     {
         try {
