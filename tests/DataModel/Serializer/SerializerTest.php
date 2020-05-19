@@ -9,6 +9,7 @@ use App\DataModel\Entity\Entity;
 use App\DataModel\Entity\EntityTypes;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\WanderlusterException;
+use App\Tests\Fixtures\TestType;
 use App\Tests\FunctionalTest;
 use Exception;
 
@@ -118,5 +119,20 @@ class SerializerTest extends FunctionalTest
         $this->assertEquals('bar1', $entity->get('foo1'));
         $this->assertEquals(EntityTypes::TEST_ENTITY_TYPE, $entity->getEntityType());
         $this->assertEquals([LanguageCodes::ENGLISH, LanguageCodes::SPANISH], $entity->getLanguages());
+    }
+
+    public function testRegisterType(): void
+    {
+        $sut = $this->getSerializer();
+        $sut->registerType(TestType::class);
+        try {
+            $sut->registerType(TestType::class);
+            $this->fail('Exception not thrown');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Data type already registered with Serializer - TEST.', $e->getMessage());
+        }
+
+        $sut->registerType(TestType::class, true);
+        $this->assertTrue($sut->isTypeRegistered('TEST'));
     }
 }

@@ -14,6 +14,8 @@ use App\Exception\WanderlusterException;
 
 class LocalizedStringType extends AbstractStringType
 {
+    const SERIALIZATION_ID = 'LOCALIZED_STRING';
+
     /**
      * @var TranslationType[]
      */
@@ -22,6 +24,14 @@ class LocalizedStringType extends AbstractStringType
     public function __construct()
     {
         parent::__construct();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSerializationId(): string
+    {
+        return self::SERIALIZATION_ID;
     }
 
     /**
@@ -229,10 +239,5 @@ class LocalizedStringType extends AbstractStringType
     public function canMergeWith(DataTypeInterface $type): bool
     {
         return $type instanceof LocalizedStringType;
-    }
-
-    public function getSerializationId(): string
-    {
-        return 'LOCALIZED_STRING';
     }
 }

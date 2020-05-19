@@ -11,12 +11,14 @@ use App\Exception\WanderlusterException;
 
 class IntegerType extends AbstractDataType
 {
+    const SERIALIZATION_ID = 'INT';
+
     /**
      * {@inheritdoc}
      */
     public function getSerializationId(): string
     {
-        return 'INT';
+        return self::SERIALIZATION_ID;
     }
 
     /**

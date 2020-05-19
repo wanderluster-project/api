@@ -16,9 +16,11 @@ use Exception;
 
 class DateTimeType extends AbstractDataType
 {
+    const SERIALIZATION_ID = 'DATE_TIME';
+
     public function getSerializationId(): string
     {
-        return 'DATE_TIME';
+        return self::SERIALIZATION_ID;
     }
 
     /**

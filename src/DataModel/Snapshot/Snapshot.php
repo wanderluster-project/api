@@ -21,6 +21,8 @@ use DateTimeInterface;
 
 class Snapshot implements SerializableInterface
 {
+    const SERIALIZATION_ID = 'SNAPSHOT';
+
     protected ?int $version = null;
     protected ?DateTimeImmutable $createdAt = null;
     protected ?User $createdBy = null;
@@ -288,6 +290,6 @@ class Snapshot implements SerializableInterface
 
     public function getSerializationId(): string
     {
-        return 'SNAPSHOT';
+        return self::SERIALIZATION_ID;
     }
 }

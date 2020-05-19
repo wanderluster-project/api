@@ -9,12 +9,14 @@ use App\DataModel\Contracts\DataTypeInterface;
 
 class EmailType extends AbstractStringType
 {
+    const SERIALIZATION_ID = 'EMAIL';
+
     /**
      * {@inheritdoc}
      */
     public function getSerializationId(): string
     {
-        return 'EMAIL';
+        return self::SERIALIZATION_ID;
     }
 
     /**

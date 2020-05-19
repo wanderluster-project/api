@@ -9,12 +9,14 @@ use App\DataModel\Contracts\DataTypeInterface;
 
 class UrlType extends AbstractStringType
 {
+    const SERIALIZATION_ID = 'URL';
+
     /**
      * {@inheritdoc}
      */
     public function getSerializationId(): string
     {
-        return 'URL';
+        return self::SERIALIZATION_ID;
     }
 
     /**

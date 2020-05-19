@@ -12,6 +12,8 @@ use App\Exception\WanderlusterException;
 
 class Entity implements SerializableInterface
 {
+    const SERIALIZATION_ID = 'ENTITY';
+
     protected int $entityType;
     protected string $lang;
     protected EntityId $entityId;
@@ -190,6 +192,6 @@ class Entity implements SerializableInterface
      */
     public function getSerializationId(): string
     {
-        return 'ENTITY';
+        return self::SERIALIZATION_ID;
     }
 }

@@ -17,7 +17,7 @@ class ErrorMessages
     const INVALID_USERNAME = 'Invalid username - %s.';
     const INVALID_JSON = 'Invalid JSON passed as argument.';
     const OPTION_REQUIRED = 'Configuration option missing - %s.';
-    const UNAGLE_DETERMINE_TYPE = 'Unable to determine the type for key - %s';
+    const UNAGLE_DETERMINE_TYPE = 'Unable to determine the type for key - %s.';
 
     const INVALID_DATA_TYPE_VALUE = 'Invalid value passed to %s data type.';
     const ERROR_HYDRATING_DATATYPE = 'Error hydrating %s data type - %s.';
@@ -39,9 +39,10 @@ class ErrorMessages
     const JWT_INVALID = 'Invalid JWT.';
 
     const TOMBSTONE_EDIT = 'Unable to change tombstone type.';
-    const VERSION_INVALID = 'Invalid version: %s';
+    const VERSION_INVALID = 'Invalid version: %s.';
     const UNABLE_TO_SET_VERSION = 'Unable to set version for data type: %s';
     const UNABLE_TO_COMPARE = 'Unable to use comparisons with data type: %s.';
     const MERGE_UNSUCCESSFUL = 'Unable to merge %s with %s.';
     const DATA_TYPE_COMPARISON_UNSUCCESSFUL = 'Unable to compare %s with %s.';
+    const DATA_TYPE_ALREADY_REGISTERED = 'Data type already registered with Serializer - %s.';
 }

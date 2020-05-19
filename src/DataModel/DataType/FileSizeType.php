@@ -11,6 +11,7 @@ use App\Exception\WanderlusterException;
 
 class FileSizeType extends AbstractDataType
 {
+    const SERIALIZATION_ID = 'FILE_SIZE';
     const GB_BYTES = 1073741824;
     const MB_BYTES = 1048576;
     const KB_BYTES = 1024;
@@ -20,7 +21,7 @@ class FileSizeType extends AbstractDataType
      */
     public function getSerializationId(): string
     {
-        return 'FILE_SIZE';
+        return self::SERIALIZATION_ID;
     }
 
     /**

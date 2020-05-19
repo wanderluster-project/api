@@ -9,7 +9,17 @@ use App\DataModel\Contracts\DataTypeInterface;
 
 class TranslationType extends AbstractStringType
 {
+    const SERIALIZATION_ID = 'TRANS';
+
     protected ?string $lang = null;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSerializationId(): string
+    {
+        return self::SERIALIZATION_ID;
+    }
 
     /**
      * {@inheritdoc}
@@ -31,14 +41,6 @@ class TranslationType extends AbstractStringType
     public function getLanguage(): ?string
     {
         return $this->lang;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSerializationId(): string
-    {
-        return 'TRANS';
     }
 
     /**

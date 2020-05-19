@@ -11,12 +11,14 @@ use App\Exception\WanderlusterException;
 
 class BooleanType extends AbstractDataType
 {
+    const SERIALIZATION_ID = 'BOOL';
+
     /**
      * {@inheritdoc}
      */
     public function getSerializationId(): string
     {
-        return 'BOOL';
+        return self::SERIALIZATION_ID;
     }
 
     /**

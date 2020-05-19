@@ -9,6 +9,7 @@ use App\DataModel\Contracts\DataTypeInterface;
 
 class MimeType extends AbstractStringType
 {
+    const SERIALIZATION_ID = 'MIME_TYPE';
     const PATTERN = '/^[-\w]+\/[-\w\.\+]+$/';
 
     /**
@@ -16,7 +17,7 @@ class MimeType extends AbstractStringType
      */
     public function getSerializationId(): string
     {
-        return 'MIME_TYPE';
+        return self::SERIALIZATION_ID;
     }
 
     /**

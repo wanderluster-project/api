@@ -159,7 +159,7 @@ class IntegerTypeTest extends TestCase implements TypeTestInterface
             $sut->setVersion(-1);
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
-            $this->assertEquals('Invalid version: -1', $e->getMessage());
+            $this->assertEquals('Invalid version: -1.', $e->getMessage());
         }
     }
 
