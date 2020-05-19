@@ -140,10 +140,10 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
         $this->assertNull($sut->getValue());
 
         // exceptions
-        try{
+        try {
             $sut->setValue('woot');
             $this->fail('Exception not thrown.');
-        }catch(WanderlusterException $e){
+        } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to BOOL data type.', $e->getMessage());
         }
     }
@@ -273,11 +273,11 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
         $this->assertTrue($obj1->isGreaterThan($obj2));
         $this->assertFalse($obj2->isGreaterThan($obj1));
 
-        try{
+        try {
             $obj1->isGreaterThan(new EmailType());
             $this->fail('Exception not thrown.');
-        }catch(WanderlusterException $e){
-            $this->assertEquals('Unable to compare EMAIL with BOOL.',$e->getMessage());
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Unable to compare EMAIL with BOOL.', $e->getMessage());
         }
     }
 
@@ -290,11 +290,11 @@ class BooleanTypeTest extends TestCase implements TypeTestInterface
         $this->assertFalse($obj1->isEqualTo($obj2));
         $this->assertTrue($obj1->isEqualTo($obj3));
 
-        try{
+        try {
             $obj1->isEqualTo(new EmailType());
             $this->fail('Exception not thrown.');
-        }catch(WanderlusterException $e){
-            $this->assertEquals('Unable to compare EMAIL with BOOL.',$e->getMessage());
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Unable to compare EMAIL with BOOL.', $e->getMessage());
         }
     }
 

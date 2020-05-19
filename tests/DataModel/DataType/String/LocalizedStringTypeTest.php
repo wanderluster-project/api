@@ -13,7 +13,7 @@ use App\Tests\Fixtures\StringObject;
 use Exception;
 use PHPUnit\Framework\TestCase;
 
-class LocalizedStringTypeTest extends TestCase  implements TypeTestInterface
+class LocalizedStringTypeTest extends TestCase implements TypeTestInterface
 {
     public function testNullConstructor(): void
     {
@@ -27,17 +27,17 @@ class LocalizedStringTypeTest extends TestCase  implements TypeTestInterface
         $sut = new LocalizedStringType();
         $this->assertTrue($sut->isNull(['lang' => LanguageCodes::SPANISH]));
         $this->assertTrue($sut->isNull(['lang' => LanguageCodes::ENGLISH]));
-        try{
+        try {
             $sut->isNull();
             $this->fail('Exception not thown.');
-        }catch(WanderlusterException $e){
-            $this->assertEquals('Configuration option missing - lang.',$e->getMessage());
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Configuration option missing - lang.', $e->getMessage());
         }
-        try{
+        try {
             $this->assertTrue($sut->isNull(['lang' => LanguageCodes::ANY]));
             $this->fail('Exception not thown.');
-        }catch(WanderlusterException $e){
-            $this->assertEquals('You must specify a language.  Wildcard (*) is not allowed).',$e->getMessage());
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('You must specify a language.  Wildcard (*) is not allowed).', $e->getMessage());
         }
 
         $sut = new LocalizedStringType();

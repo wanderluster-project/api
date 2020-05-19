@@ -57,10 +57,11 @@ class Snapshot implements SerializableInterface
 
         if (is_null($value)) {
             $this->del($key, $lang);
+
             return;
         }
 
-        $key = (string)$key;
+        $key = (string) $key;
         $typedVal = null;
 
         if ($this->has($key, LanguageCodes::ANY)) {
@@ -258,16 +259,16 @@ class Snapshot implements SerializableInterface
         $fields = ['type', 'version', 'data'];
         foreach ($fields as $field) {
             if (!array_key_exists($field, $data)) {
-                throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Missing Field: ' . $field));
+                throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Missing Field: '.$field));
             }
         }
 
         $type = $data['type'];
-        $version = (int)$data['version'];
+        $version = (int) $data['version'];
         $data = $data['data'];
 
         if ($type !== $this->getSerializationId()) {
-            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Invalid Type: ' . $type));
+            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Invalid Type: '.$type));
         }
 
         if ($version) {

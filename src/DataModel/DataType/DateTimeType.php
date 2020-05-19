@@ -10,7 +10,6 @@ use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 use DateTime;
 use DateTimeImmutable;
-use DateTimeInterface;
 use DateTimeZone;
 use Exception;
 
@@ -50,7 +49,8 @@ class DateTimeType extends AbstractDataType
             } elseif ($val instanceof DateTime) {
                 $val->setTimezone(new DateTimeZone('UTC'));
                 $val = DateTimeImmutable::createFromMutable($val);
-            } elseif(!$val instanceof DateTimeImmutable){
+            //@phpstan-ignore-next-line
+            } elseif (!$val instanceof DateTimeImmutable) {
                 throw new WanderlusterException(sprintf(ErrorMessages::INVALID_DATA_TYPE_VALUE, $this->getSerializationId()));
             }
         } catch (Exception $e) {

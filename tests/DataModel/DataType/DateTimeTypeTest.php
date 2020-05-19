@@ -340,10 +340,10 @@ class DateTimeTypeTest extends TestCase //implements TypeTestInterface
             $this->assertEquals('Invalid value passed to DATE_TIME data type.', $e->getMessage());
         }
 
-        try{
+        try {
             $sut = new DateTimeType('1999-04-31');
             $this->fail('Exception not thrown.');
-        }catch(WanderlusterException $e){
+        } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid value passed to DATE_TIME data type.', $e->getMessage());
         }
     }

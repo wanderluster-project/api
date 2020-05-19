@@ -27,14 +27,15 @@ class SnapshotTest extends FunctionalTest
 
         // set new value
         $sut->set('foo', 'bar', LanguageCodes::ENGLISH);
-        $sut->set('sample_float',3.14, LanguageCodes::ENGLISH);
-        $sut->set('sample_boolean',false, LanguageCodes::ENGLISH);
-        $sut->set('sample_datetime',new \DateTime('1/1/2010'), LanguageCodes::ENGLISH);
-        try{
-            $sut->set('sample_obj',new \stdClass(), LanguageCodes::ENGLISH);
+        $sut->set('sample_float', 3.14, LanguageCodes::ENGLISH);
+        $sut->set('sample_boolean', false, LanguageCodes::ENGLISH);
+        $sut->set('sample_datetime', new \DateTime('1/1/2010'), LanguageCodes::ENGLISH);
+        try {
+            // @phpstan-ignore-next-line
+            $sut->set('sample_obj', new \stdClass(), LanguageCodes::ENGLISH);
             $this->fail('Exception not thown.');
-        } catch(WanderlusterException $e){
-            $this->assertEquals('Unable to determine the type for key - sample_obj.',$e->getMessage());
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Unable to determine the type for key - sample_obj.', $e->getMessage());
         }
 
         try {
@@ -75,7 +76,7 @@ class SnapshotTest extends FunctionalTest
         $this->assertTrue($sut->has('foo', LanguageCodes::ANY));
 
         // delete
-        $sut->set('foo', null,LanguageCodes::ENGLISH);
+        $sut->set('foo', null, LanguageCodes::ENGLISH);
         $sut->del('foo', LanguageCodes::ENGLISH);
         $this->assertFalse($sut->has('foo', LanguageCodes::ENGLISH));
         $this->assertFalse($sut->has('foo', LanguageCodes::SPANISH));
@@ -208,51 +209,53 @@ class SnapshotTest extends FunctionalTest
         $this->assertEquals([], $sut->all(LanguageCodes::FRENCH));
     }
 
-    public function testDecodeSnapshot(){
+    public function testDecodeSnapshot(): void
+    {
         $json = '{"type":"SNAPSHOT","version":10,"data":{"foo1":{"type":"LOCALIZED_STRING","val":[{"type":"TRANS","val":"bar1","ver":0,"lang":"en"},{"type":"TRANS","val":"bar2","ver":0,"lang":"es"}]}}}';
         $sut = $this->getSerializer()->decode($json);
         $this->assertEquals(10, $sut->getVersion());
-        $this->assertTrue($sut->has('foo1',LanguageCodes::ANY));
+        // @phpstan-ignore-next-line
+        $this->assertTrue($sut->has('foo1', LanguageCodes::ANY));
     }
 
-    public function testFromArrayExceptions(){
+    public function testFromArrayExceptions(): void
+    {
         $sut = new Snapshot($this->getSerializer());
 
         // missing type
-        try{
+        try {
             $sut->fromArray([
-                'version' => 10, 'data'=> []
+                'version' => 10, 'data' => [],
             ]);
-        }catch(WanderlusterException $e){
+        } catch (WanderlusterException $e) {
             $this->assertEquals('Error hydrating SNAPSHOT data type - Missing Field: type.', $e->getMessage());
         }
 
         // missing version
-        try{
+        try {
             $sut->fromArray([
-               'type'=>'SNAPSHOT',  'data'=> []
+               'type' => 'SNAPSHOT',  'data' => [],
             ]);
-        }catch(WanderlusterException $e){
+        } catch (WanderlusterException $e) {
             $this->assertEquals('Error hydrating SNAPSHOT data type - Missing Field: version.', $e->getMessage());
         }
 
         // missing data
-        try{
+        try {
             $sut->fromArray([
-                'type'=>'SNAPSHOT',  'version' => 10
+                'type' => 'SNAPSHOT',  'version' => 10,
             ]);
-        }catch(WanderlusterException $e){
+        } catch (WanderlusterException $e) {
             $this->assertEquals('Error hydrating SNAPSHOT data type - Missing Field: data.', $e->getMessage());
         }
 
         // invalid type
-        try{
+        try {
             $sut->fromArray([
-                'type'=>'FOO',  'version' => 10, 'data'=> []
+                'type' => 'FOO',  'version' => 10, 'data' => [],
             ]);
-        }catch(WanderlusterException $e){
+        } catch (WanderlusterException $e) {
             $this->assertEquals('Error hydrating SNAPSHOT data type - Invalid Type: FOO.', $e->getMessage());
         }
-
     }
 }

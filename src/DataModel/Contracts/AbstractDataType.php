@@ -31,7 +31,7 @@ abstract class AbstractDataType implements DataTypeInterface
         if (!is_null($val)) {
             $this->setValue($val, $options);
         }
-        $ver = isset($options['ver']) ? (int)$options['ver'] : 0;
+        $ver = isset($options['ver']) ? (int) $options['ver'] : 0;
         if ($ver) {
             $this->setVersion($ver);
         }
@@ -97,17 +97,17 @@ abstract class AbstractDataType implements DataTypeInterface
         $fields = ['type', 'val', 'ver'];
         foreach ($fields as $field) {
             if (!array_key_exists($field, $data)) {
-                throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Missing Field: ' . $field));
+                throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Missing Field: '.$field));
             }
         }
 
         $type = $data['type'];
         $val = $this->coerce($data['val']);
-        $ver = (int)$data['ver'];
+        $ver = (int) $data['ver'];
         $lang = isset($data['lang']) ? $data['lang'] : null;
 
         if ($type !== $this->getSerializationId()) {
-            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Invalid Type: ' . $type));
+            throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, $this->getSerializationId(), 'Invalid Type: '.$type));
         }
 
         $options = [];
