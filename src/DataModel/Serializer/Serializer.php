@@ -109,9 +109,15 @@ class Serializer
     public function instantiate(string $type, array $data)
     {
         // Instantiate object
-        $class = $this->objRegistry[$type];
-        $obj = new $class();
-        $obj->setSerializer($this);
+        if (Entity::SERIALIZATION_ID === $type) {
+            $obj = new Entity($this);
+        } elseif (Snapshot::SERIALIZATION_ID === $type) {
+            $obj = new Snapshot($this);
+        } else {
+            $class = $this->objRegistry[$type];
+            $obj = new $class();
+            $obj->setSerializer($this);
+        }
         $obj->fromArray($data);
 
         return $obj;

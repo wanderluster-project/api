@@ -7,20 +7,20 @@ namespace App\Tests\DataModel\Snapshot;
 use App\DataModel\Snapshot\Snapshot;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\WanderlusterException;
-use PHPUnit\Framework\TestCase;
+use App\Tests\FunctionalTest;
 
-class SnapshotTest extends TestCase
+class SnapshotTest extends FunctionalTest
 {
     public function testConstructor(): void
     {
         // naked constructor
-        $sut = new Snapshot();
+        $sut = new Snapshot($this->getSerializer());
         $this->assertEquals([], $sut->getLanguages());
     }
 
     public function testSetGetHas(): void
     {
-        $sut = new Snapshot();
+        $sut = new Snapshot($this->getSerializer());
 
         // assert key does not exist
         $this->assertFalse($sut->has('foo', LanguageCodes::ANY));
@@ -56,7 +56,7 @@ class SnapshotTest extends TestCase
         /**
          * Test Case #1 - Invariant to language.
          */
-        $sut = new Snapshot();
+        $sut = new Snapshot($this->getSerializer());
         $this->assertFalse($sut->has('foo', LanguageCodes::ANY));
 
         // set value
@@ -74,7 +74,7 @@ class SnapshotTest extends TestCase
         /**
          * Test Case #2 - Multi-language.
          */
-        $sut = new Snapshot();
+        $sut = new Snapshot($this->getSerializer());
         $this->assertFalse($sut->has('foo', LanguageCodes::ANY));
 
         // set value
@@ -107,7 +107,7 @@ class SnapshotTest extends TestCase
         /**
          * Test Case #1 - Invariant to language.
          */
-        $sut = new Snapshot();
+        $sut = new Snapshot($this->getSerializer());
         $this->assertEquals([], $sut->keys(LanguageCodes::ANY));
 
         // set values
@@ -127,7 +127,7 @@ class SnapshotTest extends TestCase
         /**
          * Test Case #2 - Multi-language.
          */
-        $sut = new Snapshot();
+        $sut = new Snapshot($this->getSerializer());
         $this->assertEquals([], $sut->keys(LanguageCodes::ANY));
 
         // set values
@@ -150,7 +150,7 @@ class SnapshotTest extends TestCase
         /**
          * Test Case #1 - Invariant to language.
          */
-        $sut = new Snapshot();
+        $sut = new Snapshot($this->getSerializer());
         $this->assertEquals([], $sut->keys(LanguageCodes::ANY));
 
         // set values
@@ -168,7 +168,7 @@ class SnapshotTest extends TestCase
         /**
          * Test Case #2 - Multi-language.
          */
-        $sut = new Snapshot();
+        $sut = new Snapshot($this->getSerializer());
         $this->assertEquals([], $sut->all(LanguageCodes::ENGLISH));
 
         // set values

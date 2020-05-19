@@ -59,7 +59,7 @@ class FileUtilities
         $filename = $entityId.'.'.$fileExt;
         $this->remoteStorageAdapter->pushLocalFileToRemote($file->getRealPath(), $pathPrefix.'/'.$filename);
 
-        $entity = new Entity($entityType);
+        $entity = $this->entityManager->create($entityType);
 
         // @todo determine language
         $entity->load(LanguageCodes::ENGLISH);

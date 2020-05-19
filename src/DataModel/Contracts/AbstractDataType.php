@@ -124,10 +124,7 @@ abstract class AbstractDataType implements DataTypeInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setSerializer(Serializer $serializer): SerializableInterface
+    public function setSerializer(Serializer $serializer): DataTypeInterface
     {
         $this->serializer = $serializer;
 

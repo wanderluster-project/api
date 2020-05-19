@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\DataModel\Contracts;
 
-use App\DataModel\Serializer\Serializer;
 use App\Exception\WanderlusterException;
 
 interface SerializableInterface
@@ -27,11 +26,4 @@ interface SerializableInterface
      * @throws WanderlusterException
      */
     public function fromArray(array $data): self;
-
-    /**
-     * Set the serializer.
-     *
-     * @return $this
-     */
-    public function setSerializer(Serializer $serializer): self;
 }

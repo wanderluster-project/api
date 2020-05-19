@@ -91,7 +91,7 @@ class TestType implements DataTypeInterface
         return $this;
     }
 
-    public function setSerializer(Serializer $serializer): SerializableInterface
+    public function setSerializer(Serializer $serializer): DataTypeInterface
     {
         return $this;
     }

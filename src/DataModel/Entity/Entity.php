@@ -24,12 +24,13 @@ class Entity implements SerializableInterface
     /**
      * Entity constructor.
      */
-    public function __construct(int $defaultEntityType = 0, string $defaultLang = LanguageCodes::ANY)
+    public function __construct(Serializer $serializer, int $defaultEntityType = 0, string $defaultLang = LanguageCodes::ANY)
     {
+        $this->serializer = $serializer;
         $this->entityType = $defaultEntityType;
         $this->lang = $defaultLang;
         $this->entityId = new EntityId();
-        $this->snapshot = new Snapshot();
+        $this->snapshot = new Snapshot($serializer);
     }
 
     /**
@@ -195,16 +196,5 @@ class Entity implements SerializableInterface
     public function getSerializationId(): string
     {
         return self::SERIALIZATION_ID;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setSerializer(Serializer $serializer): SerializableInterface
-    {
-        $this->serializer = $serializer;
-        $this->snapshot->setSerializer($serializer);
-
-        return $this;
     }
 }

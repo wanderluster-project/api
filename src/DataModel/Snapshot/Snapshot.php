@@ -35,6 +35,14 @@ class Snapshot implements SerializableInterface
     protected array $data = [];
 
     /**
+     * Snapshot constructor.
+     */
+    public function __construct(Serializer $serializer)
+    {
+        $this->serializer = $serializer;
+    }
+
+    /**
      * Set the value of an attribute.
      *
      * @param bool|int|float|string|DateTime|DateTimeImmutable|DataTypeInterface|null $value
@@ -279,12 +287,5 @@ class Snapshot implements SerializableInterface
     public function getSerializationId(): string
     {
         return self::SERIALIZATION_ID;
-    }
-
-    public function setSerializer(Serializer $serializer): SerializableInterface
-    {
-        $this->serializer = $serializer;
-
-        return $this;
     }
 }

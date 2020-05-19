@@ -84,18 +84,18 @@ class SerializerTest extends FunctionalTest
     public function testEncodingEntity(): void
     {
         // test empty
-        $entity = new Entity(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
+        $entity = $this->getEntityManager()->create(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
         $this->assertEquals('{"type":"ENTITY","entity_id":null,"entity_type":10,"snapshot":{"type":"SNAPSHOT","version":null,"data":[]}}', $this->getSerializer()->encode($entity));
 
         // test with data
-        $entity = new Entity(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
+        $entity = $this->getEntityManager()->create(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
         $entity->set('foo1', 'bar1');
         $entity->set('foo2', 'bar2');
         $entity->del('foo2');
         $this->assertEquals('{"type":"ENTITY","entity_id":null,"entity_type":10,"snapshot":{"type":"SNAPSHOT","version":null,"data":{"foo1":{"type":"LOCALIZED_STRING","val":[{"type":"TRANS","val":"bar1","ver":0,"lang":"en"}]}}}}', $this->getSerializer()->encode($entity));
 
         // test with multiple languages
-        $entity = new Entity(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
+        $entity = $this->getEntityManager()->create(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
         $entity->load(LanguageCodes::ENGLISH);
         $entity->set('foo1', 'bar1');
         $entity->load(LanguageCodes::SPANISH);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\DataModel\Contracts;
 
+use App\DataModel\Serializer\Serializer;
 use App\Exception\WanderlusterException;
 
 interface DataTypeInterface extends SerializableInterface
@@ -102,4 +103,11 @@ interface DataTypeInterface extends SerializableInterface
      * @throws WanderlusterException
      */
     public function coerce($val);
+
+    /**
+     * Set the serializer.
+     *
+     * @return $this
+     */
+    public function setSerializer(Serializer $serializer): self;
 }

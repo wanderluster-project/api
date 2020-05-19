@@ -14,7 +14,7 @@ class EntityTest extends FunctionalTest
 {
     public function testConstuctor(): void
     {
-        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
+        $sut = $this->getEntityManager()->create(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
         $this->assertEquals([], $sut->getLanguages());
         $this->assertEquals(EntityTypes::TEST_ENTITY_TYPE, $sut->getEntityType());
         $this->assertEmpty($sut->all());
@@ -26,7 +26,7 @@ class EntityTest extends FunctionalTest
     public function testSetGetHasAll(): void
     {
         // Empty entity
-        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
+        $sut = $this->getEntityManager()->create(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
         $this->assertNull($sut->get('foo'));
         $this->assertFalse($sut->has('foo'));
         $this->assertEquals([], $sut->all());
@@ -59,7 +59,7 @@ class EntityTest extends FunctionalTest
     public function testDel(): void
     {
         // Empty entity
-        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
+        $sut = $this->getEntityManager()->create(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
         $this->assertEquals([], $sut->keys());
 
         // add value
@@ -82,7 +82,7 @@ class EntityTest extends FunctionalTest
     public function testKeys(): void
     {
         // Empty entity
-        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
+        $sut = $this->getEntityManager()->create(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
         $this->assertEquals([], $sut->keys());
 
         // add value
@@ -100,7 +100,7 @@ class EntityTest extends FunctionalTest
 
     public function testGetLanguages(): void
     {
-        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE);
+        $sut = $this->getEntityManager()->create(EntityTypes::TEST_ENTITY_TYPE);
 
         $sut->load(LanguageCodes::ENGLISH);
         $sut->set('animal', 'dog');
@@ -113,7 +113,7 @@ class EntityTest extends FunctionalTest
     public function testGetVersion(): void
     {
         // no version set
-        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE);
+        $sut = $this->getEntityManager()->create(EntityTypes::TEST_ENTITY_TYPE);
         $this->assertEquals(0, $sut->getVersion());
 
         // version set
@@ -122,7 +122,7 @@ class EntityTest extends FunctionalTest
 
     public function testMultilanguage(): void
     {
-        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
+        $sut = $this->getEntityManager()->create(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
         $this->assertEquals([], $sut->all());
 
         $sut->load(LanguageCodes::ENGLISH);
@@ -143,7 +143,7 @@ class EntityTest extends FunctionalTest
     public function testFromArray(): void
     {
         // empty data
-        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
+        $sut = $this->getEntityManager()->create(EntityTypes::TEST_ENTITY_TYPE);
         $sut->fromArray([
             'type' => 'ENTITY',
             'entity_id' => null,
@@ -154,8 +154,7 @@ class EntityTest extends FunctionalTest
         $this->assertEquals(100, (string) $sut->getEntityType());
 
         // with some data
-        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
-        $sut->setSerializer($this->getSerializer());
+        $sut = $this->getEntityManager()->create(EntityTypes::TEST_ENTITY_TYPE);
         $sut->fromArray([
             'type' => 'ENTITY',
             'entity_id' => '31159eca-522c-4d09-8a5d-ee3438e6bb6f',
@@ -182,7 +181,7 @@ class EntityTest extends FunctionalTest
     public function testFromArrayExceptions(): void
     {
         // Missing Type
-        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
+        $sut = $this->getEntityManager()->create(EntityTypes::TEST_ENTITY_TYPE);
         try {
             $sut->fromArray([]);
             $this->fail('Exception not thrown.');
@@ -266,7 +265,7 @@ class EntityTest extends FunctionalTest
     public function testToArray(): void
     {
         // test empty
-        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
+        $sut = $this->getEntityManager()->create(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
         $this->assertEquals([
             'type' => 'ENTITY',
             'entity_id' => null,
@@ -279,7 +278,7 @@ class EntityTest extends FunctionalTest
         ], $sut->toArray());
 
         // test populated
-        $sut = new Entity(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
+        $sut = $this->getEntityManager()->create(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
         $sut->set('test.string', 'english string');
         $sut->load('es');
         $sut->set('test.string', 'spanish string');
