@@ -6,6 +6,7 @@ namespace App\EntityManager;
 
 use App\DataModel\Entity\Entity;
 use App\DataModel\Entity\EntityId;
+use App\DataModel\Serializer\Serializer;
 use App\DataModel\Translation\LanguageCodes;
 use App\EntityManager\Persistence\ShardCoordinator;
 use App\Exception\ErrorMessages;
@@ -35,14 +36,20 @@ class EntityManager
     protected $languageCodes;
 
     /**
+     * @var Serializer
+     */
+    protected $serializer;
+
+    /**
      * EntityManager constructor.
      */
-    public function __construct(ShardCoordinator $shardCoordinator, EntityTypeManager $typeCoordinator, EntityUtilites $entityUtilites, LanguageCodes $languageCodes)
+    public function __construct(ShardCoordinator $shardCoordinator, EntityTypeManager $typeCoordinator, EntityUtilites $entityUtilites, LanguageCodes $languageCodes, Serializer $serializer)
     {
         $this->shardCoordinator = $shardCoordinator;
         $this->typeCoordinator = $typeCoordinator;
         $this->entityUtilities = $entityUtilites;
         $this->languageCodes = $languageCodes;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -80,5 +87,13 @@ class EntityManager
     public function generateEntityId(): EntityId
     {
         return new EntityId((string) Uuid::uuid4());
+    }
+
+    /**
+     * Create a new Entity.
+     */
+    public function create(int $defaultEntityType = 0, string $defaultLang = LanguageCodes::ANY): Entity
+    {
+        return new Entity($this->serializer, $defaultEntityType, $defaultLang);
     }
 }

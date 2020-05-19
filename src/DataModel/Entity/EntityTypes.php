@@ -7,7 +7,7 @@ namespace App\DataModel\Entity;
 class EntityTypes
 {
     // Types 0-1000 reserved
-    const TEST_ENTITY_TYPE = 0;
+    const TEST_ENTITY_TYPE = 10;
 
     // IMAGES
     const FILE_IMAGE_JPG = 1000;

@@ -58,9 +58,15 @@ Lets recreate the information for Mount Rainier using our PHP classes.
     
     // Create new entity
     $mtRainier = $em->create(EntityTypes::MOUNTAIN);
-    $mtRainier->set('name', new Text('Mount Rainier',LanguageCodes::ENGLISH));
-    $mtRainier->set('elevation', new Distance(14411,'ft'));
-    $mtRainier->set('wikipedia_url', new Url('https://en.wikipedia.org/wiki/Mount_Rainier',LanguageCodes::ENGLISH));
+    $mtRainer->load(
+        [
+            'dist' => DistanceCodes::FEET,
+            'locale' => LocaleCodes::EN_US
+        ]
+    )
+    $mtRainier->set('name', 'Mount Rainier'));
+    $mtRainier->set('elevation', 14411);
+    $mtRainier->set('wikipedia_url', 'https://en.wikipedia.org/wiki/Mount_Rainier');
     $mtRainier->set('mountain_range',$cascades);
     $mtRainier->set('mountain_type',$stratovolcano);
     

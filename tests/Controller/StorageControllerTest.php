@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Tests\Controller;
 
 use App\Controller\StorageController;
-use App\DataModel\Entity\EntityId;
 use App\DataModel\Entity\EntityTypes;
+use App\DataModel\Translation\LanguageCodes;
 use App\EntityManager\EntityManager;
+use App\FileStorage\FileAdapters\ChainFileAdapter;
 use App\Tests\FunctionalTest;
 use Exception;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -55,26 +56,28 @@ class StorageControllerTest extends FunctionalTest
         }
     }
 
-//    public function testDeleteExceptions(): void
-//    {
-//        // 404 error should be thrown if issuing DEL to endpoint without entity id
-//        $client = self::getClient('simpkevin@gmail.com');
-//        $client->request('DELETE', '/api/v1/storage/');
-//        $this->assertEquals(404, $client->getResponse()->getStatusCode());
-//
-//        // 400 error if issuing DEL with invalid entity id
-//        $client->request('DELETE', '/api/v1/storage/I-AM-INVALID');
-//        $this->assertEquals(400, $client->getResponse()->getStatusCode());
-//
+    public function testDeleteExceptions(): void
+    {
+        // 404 error should be thrown if issuing DEL to endpoint without entity id
+        $client = self::getClient('simpkevin@gmail.com');
+        $client->request('DELETE', '/api/v1/storage/');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+
+        // 400 error if issuing DEL with invalid entity id
+        $client->request('DELETE', '/api/v1/storage/I-AM-INVALID');
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+
+        // @todo Implement
 //        // 404 error should be thrown if issuing DEL to non-existent entity id
-//        $client->request('DELETE', '/api/v1/storage/1-1000-0000000000000000');
+//        $client->request('DELETE', '/api/v1/storage/0877bb25-8bf7-4b0b-926a-8c416f3a2624');
 //        $this->assertEquals(404, $client->getResponse()->getStatusCode());
-//    }
-//
+    }
+
 //    public function testDeleteServerError(): void
 //    {
+    // @todo Implement
 //        // mock error encountered deleting file
-//        $entityId = '1-1000-0000000000000000';
+//        $entityId = '0877bb25-8bf7-4b0b-926a-8c416f3a2624';
 //        $sut = new StorageController();
 //        $mockFileAdapter = \Mockery::mock(ChainFileAdapter::class);
 //        $mockFileAdapter->shouldReceive('deleteRemoteFile')->andThrow(new Exception());
@@ -96,17 +99,17 @@ class StorageControllerTest extends FunctionalTest
         $client->request('POST', '/api/v1/storage', [], ['file' => $file]);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
-        $data = json_decode($client->getResponse()->getContent(), true);
-
-        $this->assertArrayHasKey('id', $data);
-        $entityId = new EntityId($data['id']);
-        $this->assertArrayHasKey('url', $data['data']['en']);
-        $this->assertEquals(EntityTypes::FILE_IMAGE_JPG, $data['type']);
-        $this->assertEquals('image/jpeg', $data['data']['en']['mime_type']);
-        $this->assertEquals(filesize($filename), $data['data']['en']['file_size']);
+        $entity = $this->getSerializer()->decode($client->getResponse()->getContent());
+        $entity->load(LanguageCodes::ENGLISH);
+        $this->assertTrue($entity->has('url'));
+        $this->assertTrue($entity->has('file_size'));
+        $this->assertTrue($entity->has('mime_type'));
+        $this->assertEquals('image/jpeg', $entity->get('mime_type'));
+        $this->assertEquals(EntityTypes::FILE_IMAGE_JPG, $entity->getEntityType());
+        $this->assertNotNull($entity->getEntityId());
 
         // delete this file
-        $client->request('DELETE', '/api/v1/storage/'.$entityId);
+        $client->request('DELETE', '/api/v1/storage/'.$entity->getEntityId());
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
@@ -118,18 +121,17 @@ class StorageControllerTest extends FunctionalTest
         $client->request('POST', '/api/v1/storage', [], ['file' => $file]);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
-        $data = json_decode($client->getResponse()->getContent(), true);
-
-        $this->assertArrayHasKey('id', $data);
-        $this->assertArrayHasKey('type', $data);
-        $entityId = new EntityId($data['id']);
-        $this->assertArrayHasKey('url', $data['data']['en']);
-        $this->assertEquals(EntityTypes::FILE_IMAGE_PNG, $data['type']);
-        $this->assertEquals('image/png', $data['data']['en']['mime_type']);
-        $this->assertEquals(filesize($filename), $data['data']['en']['file_size']);
+        $entity = $this->getSerializer()->decode($client->getResponse()->getContent());
+        $entity->load(LanguageCodes::ENGLISH);
+        $this->assertTrue($entity->has('url'));
+        $this->assertTrue($entity->has('file_size'));
+        $this->assertTrue($entity->has('mime_type'));
+        $this->assertEquals('image/png', $entity->get('mime_type'));
+        $this->assertEquals(EntityTypes::FILE_IMAGE_PNG, $entity->getEntityType());
+        $this->assertNotNull($entity->getEntityId());
 
         // delete this file
-        $client->request('DELETE', '/api/v1/storage/'.$entityId);
+        $client->request('DELETE', '/api/v1/storage/'.$entity->getEntityId());
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
@@ -141,18 +143,17 @@ class StorageControllerTest extends FunctionalTest
         $client->request('POST', '/api/v1/storage', [], ['file' => $file]);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
-        $data = json_decode($client->getResponse()->getContent(), true);
-
-        $this->assertArrayHasKey('id', $data);
-        $this->assertArrayHasKey('type', $data);
-        $entityId = new EntityId($data['id']);
-        $this->assertArrayHasKey('url', $data['data']['en']);
-        $this->assertEquals(EntityTypes::FILE_IMAGE_GIF, $data['type']);
-        $this->assertEquals('image/gif', $data['data']['en']['mime_type']);
-        $this->assertEquals(filesize($filename), $data['data']['en']['file_size']);
+        $entity = $this->getSerializer()->decode($client->getResponse()->getContent());
+        $entity->load(LanguageCodes::ENGLISH);
+        $this->assertTrue($entity->has('url'));
+        $this->assertTrue($entity->has('file_size'));
+        $this->assertTrue($entity->has('mime_type'));
+        $this->assertEquals('image/gif', $entity->get('mime_type'));
+        $this->assertEquals(EntityTypes::FILE_IMAGE_GIF, $entity->getEntityType());
+        $this->assertNotNull($entity->getEntityId());
 
         // delete this file
-        $client->request('DELETE', '/api/v1/storage/'.$entityId);
+        $client->request('DELETE', '/api/v1/storage/'.$entity->getEntityId());
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
@@ -164,18 +165,17 @@ class StorageControllerTest extends FunctionalTest
         $client->request('POST', '/api/v1/storage', [], ['file' => $file]);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
-        $data = json_decode($client->getResponse()->getContent(), true);
-
-        $this->assertArrayHasKey('id', $data);
-        $this->assertArrayHasKey('type', $data);
-        $entityId = new EntityId($data['id']);
-        $this->assertArrayHasKey('url', $data['data']['en']);
-        $this->assertEquals(EntityTypes::FILE_IMAGE_WEBP, $data['type']);
-        $this->assertEquals('image/webp', $data['data']['en']['mime_type']);
-        $this->assertEquals(filesize($filename), $data['data']['en']['file_size']);
+        $entity = $this->getSerializer()->decode($client->getResponse()->getContent());
+        $entity->load(LanguageCodes::ENGLISH);
+        $this->assertTrue($entity->has('url'));
+        $this->assertTrue($entity->has('file_size'));
+        $this->assertTrue($entity->has('mime_type'));
+        $this->assertEquals('image/webp', $entity->get('mime_type'));
+        $this->assertEquals(EntityTypes::FILE_IMAGE_WEBP, $entity->getEntityType());
+        $this->assertNotNull($entity->getEntityId());
 
         // delete this file
-        $client->request('DELETE', '/api/v1/storage/'.$entityId);
+        $client->request('DELETE', '/api/v1/storage/'.$entity->getEntityId());
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
@@ -187,18 +187,17 @@ class StorageControllerTest extends FunctionalTest
         $client->request('POST', '/api/v1/storage', [], ['file' => $file]);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
-        $data = json_decode($client->getResponse()->getContent(), true);
-
-        $this->assertArrayHasKey('id', $data);
-        $this->assertArrayHasKey('type', $data);
-        $entityId = new EntityId($data['id']);
-        $this->assertArrayHasKey('url', $data['data']['en']);
-        $this->assertEquals(EntityTypes::FILE_IMAGE_SVG, $data['type']);
-        $this->assertEquals('image/svg+xml', $data['data']['en']['mime_type']);
-        $this->assertEquals(filesize($filename), $data['data']['en']['file_size']);
+        $entity = $this->getSerializer()->decode($client->getResponse()->getContent());
+        $entity->load(LanguageCodes::ENGLISH);
+        $this->assertTrue($entity->has('url'));
+        $this->assertTrue($entity->has('file_size'));
+        $this->assertTrue($entity->has('mime_type'));
+        $this->assertEquals('image/svg+xml', $entity->get('mime_type'));
+        $this->assertEquals(EntityTypes::FILE_IMAGE_SVG, $entity->getEntityType());
+        $this->assertNotNull($entity->getEntityId());
 
         // delete this file
-        $client->request('DELETE', '/api/v1/storage/'.$entityId);
+        $client->request('DELETE', '/api/v1/storage/'.$entity->getEntityId());
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
@@ -210,18 +209,17 @@ class StorageControllerTest extends FunctionalTest
         $client->request('POST', '/api/v1/storage', [], ['file' => $file]);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
-        $data = json_decode($client->getResponse()->getContent(), true);
-
-        $this->assertArrayHasKey('id', $data);
-        $this->assertArrayHasKey('type', $data);
-        $entityId = new EntityId($data['id']);
-        $this->assertArrayHasKey('url', $data['data']['en']);
-        $this->assertEquals(EntityTypes::FILE_PDF, $data['type']);
-        $this->assertEquals('application/pdf', $data['data']['en']['mime_type']);
-        $this->assertEquals(filesize($filename), $data['data']['en']['file_size']);
+        $entity = $this->getSerializer()->decode($client->getResponse()->getContent());
+        $entity->load(LanguageCodes::ENGLISH);
+        $this->assertTrue($entity->has('url'));
+        $this->assertTrue($entity->has('file_size'));
+        $this->assertTrue($entity->has('mime_type'));
+        $this->assertEquals('application/pdf', $entity->get('mime_type'));
+        $this->assertEquals(EntityTypes::FILE_PDF, $entity->getEntityType());
+        $this->assertNotNull($entity->getEntityId());
 
         // delete this file
-        $client->request('DELETE', '/api/v1/storage/'.$entityId);
+        $client->request('DELETE', '/api/v1/storage/'.$entity->getEntityId());
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 

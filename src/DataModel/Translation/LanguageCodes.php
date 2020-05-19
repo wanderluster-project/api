@@ -6,8 +6,12 @@ namespace App\DataModel\Translation;
 
 class LanguageCodes
 {
+    const ANY = '*';
     const ENGLISH = 'en';
     const SPANISH = 'es';
+    const FRENCH = 'fr';
+    const CHINESE = 'zh';
+    const JAPANES = 'ja';
 
     /**
      * @return string[]
@@ -15,8 +19,12 @@ class LanguageCodes
     public function getLanguageCodes(): array
     {
         return [
+            self::ANY,
             self::ENGLISH,
             self::SPANISH,
+            self::FRENCH,
+            self::CHINESE,
+            self::JAPANES,
         ];
     }
 

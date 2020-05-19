@@ -4,175 +4,141 @@ declare(strict_types=1);
 
 namespace App\Tests\DataModel\Serializer;
 
+use App\DataModel\Contracts\SerializableInterface;
 use App\DataModel\Entity\Entity;
-use App\DataModel\Entity\EntityId;
 use App\DataModel\Entity\EntityTypes;
-use App\DataModel\Snapshot\SnapshotId;
+use App\DataModel\Serializer\Serializer;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\WanderlusterException;
+use App\Tests\Fixtures\TestType;
 use App\Tests\FunctionalTest;
 use Exception;
-use StdClass;
 
 class SerializerTest extends FunctionalTest
 {
-    public function testEncodingExceptions(): void
+    public function testEncodingException(): void
     {
-        // RESOURCES SHOULD THROW ERROR RATHER THAN BEING SERIALIZED
-        try {
-            $this->getSerializer()->encode(fopen('/var/www/wanderluster/tests/Fixtures/Files/sample.jpg', 'r'));
-            $this->fail('Exception not thrown');
-        } catch (Exception $e) {
-            $this->assertInstanceOf(WanderlusterException::class, $e);
-            $this->assertEquals('Error serializing - Invalid data type', $e->getMessage());
-        }
+        $invalidObj = new class() implements SerializableInterface {
+            public function getSerializationId(): string
+            {
+                return 'INVALID';
+            }
 
-        // INVALID CLASS PASSED TO SERIALIZE
+            public function toArray(): array
+            {
+                return [
+                  'foo' => fopen(__DIR__.'/../../Fixtures/mime-types.txt', 'r'),
+                ];
+            }
+
+            public function fromArray(array $data): SerializableInterface
+            {
+                return $this;
+            }
+
+            public function setSerializer(Serializer $serializer): SerializableInterface
+            {
+                return $this;
+            }
+        };
+
+        // resources are not serializable so this should throw errr.
         try {
-            $this->getSerializer()->encode(new StdClass());
-            $this->fail('Exception not thrown');
-        } catch (Exception $e) {
-            $this->assertInstanceOf(WanderlusterException::class, $e);
-            $this->assertEquals('Error serializing - Invalid class: stdClass', $e->getMessage());
+            $sut = $this->getSerializer()->encode($invalidObj);
+            $this->fail('Exception not thrown.');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Error serializing - Error encountered encoding to JSON.', $e->getMessage());
         }
     }
 
     public function testDecodingExceptions(): void
     {
-        // INVALID CLASS PASSED TO DESERIALIZE
+        // INVALID JSON PASSED TO DESERIALIZE
         try {
-            $this->getSerializer()->decode('{}', StdClass::class);
+            $this->getSerializer()->decode('["test" : 123]');
             $this->fail('Exception not thrown');
         } catch (Exception $e) {
             $this->assertInstanceOf(WanderlusterException::class, $e);
-            $this->assertEquals('Error deserializing - Invalid class: StdClass', $e->getMessage());
+            $this->assertEquals('Error serializing - Error encountered decoding from JSON.', $e->getMessage());
         }
 
-        // MISSING ID WHEN DESERIALIZING ENTITY
+        // INVALID DATA PASSED TO DESERIALIZE
         try {
-            $this->getSerializer()->decode('{}', Entity::class);
+            $this->getSerializer()->decode('{}');
             $this->fail('Exception not thrown');
         } catch (Exception $e) {
             $this->assertInstanceOf(WanderlusterException::class, $e);
-            $this->assertEquals('Error deserializing - Missing parameter: id', $e->getMessage());
+            $this->assertEquals('Error hydrating UNKNOWN data type - Missing field: type.', $e->getMessage());
         }
 
-        // MISSING ENTITY TYPE WHEN DESERIALIZING ENTITY
+        // INVALID TYPE
         try {
-            $this->getSerializer()->decode('{"id":"09857e03-fca1-45a3-ab98-9cb1702fa1df"}', Entity::class);
+            $this->getSerializer()->decode('{"type": "INVALID"}');
             $this->fail('Exception not thrown');
         } catch (Exception $e) {
             $this->assertInstanceOf(WanderlusterException::class, $e);
-            $this->assertEquals('Error deserializing - Missing parameter: type', $e->getMessage());
+            $this->assertEquals('Error deserializing - Invalid type: INVALID.', $e->getMessage());
         }
-
-        // MISSING DATA WHEN DESERIALIZING ENTITY
-        try {
-            $this->getSerializer()->decode('{"id":"09857e03-fca1-45a3-ab98-9cb1702fa1df","type":100}', Entity::class);
-            $this->fail('Exception not thrown');
-        } catch (Exception $e) {
-            $this->assertInstanceOf(WanderlusterException::class, $e);
-            $this->assertEquals('Error deserializing - Missing parameter: data', $e->getMessage());
-        }
-    }
-
-    public function testEncodingScalar(): void
-    {
-        // null
-        $this->assertSame('null', $this->getSerializer()->encode(null));
-
-        // boolean
-        $this->assertSame('true', $this->getSerializer()->encode(true));
-        $this->assertSame('false', $this->getSerializer()->encode(false));
-
-        // numeric
-        $this->assertSame('0', $this->getSerializer()->encode(0));
-        $this->assertSame('100', $this->getSerializer()->encode(100));
-        $this->assertSame('-7.5', $this->getSerializer()->encode(-7.5));
-
-        // string
-        $this->assertSame('foo', $this->getSerializer()->encode('foo'));
-    }
-
-    public function testEncodingArray(): void
-    {
-        // empty array
-        $this->assertSame('[]', $this->getSerializer()->encode([]));
-
-        // indexed array
-        $this->assertSame('["foo",false,0,-1.4,null]', $this->getSerializer()->encode(['foo', false, 0, -1.4, null]));
-
-        // associative array
-        $this->assertSame('{"a":"foo","b":false,"c":0,"d":-1.4,"e":null}', $this->getSerializer()->encode(['a' => 'foo', 'b' => false, 'c' => 0, 'd' => -1.4, 'e' => null]));
-    }
-
-    public function testEncodingEntityId(): void
-    {
-        $entityId = new EntityId('bf838d09-39e8-4619-92b9-3ecdd95bbdd4');
-        $this->assertEquals('bf838d09-39e8-4619-92b9-3ecdd95bbdd4', $this->getSerializer()->encode($entityId));
-    }
-
-    public function testDecodingEntityId(): void
-    {
-        $entityId = $this->getSerializer()->decode('fe1ec5b1-f311-40a7-9e53-e0bb4fbab197', EntityId::class);
-        $this->assertInstanceOf(EntityId::class, $entityId);
-        $this->assertEquals('fe1ec5b1-f311-40a7-9e53-e0bb4fbab197', $entityId->getUuid());
-    }
-
-    public function testEncodingSnapshotId(): void
-    {
-        $snapshotId = new SnapshotId('41693129-fb93-4158-b81f-420840fb4205.es-150');
-        $this->assertEquals('41693129-fb93-4158-b81f-420840fb4205.es-150', $this->getSerializer()->encode($snapshotId));
-    }
-
-    public function testDecodingSnapshotId(): void
-    {
-        $snapshotId = $this->getSerializer()->decode('a5f334dd-7953-4faa-b708-c14bfd6213a2.es-50', SnapshotId::class);
-        $this->assertInstanceOf(SnapshotId::class, $snapshotId);
-        $this->assertEquals('a5f334dd-7953-4faa-b708-c14bfd6213a2', (string) $snapshotId->getEntityId());
-        $this->assertEquals(50, $snapshotId->getVersion());
-        $this->assertEquals('es', $snapshotId->getLanguage());
     }
 
     public function testEncodingEntity(): void
     {
         // test empty
-        $entity = new Entity(EntityTypes::TEST_ENTITY_TYPE);
-        $this->assertEquals('{"id":null,"type":0,"data":{}}', $this->getSerializer()->encode($entity));
+        $entity = $this->getEntityManager()->create(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
+        $this->assertEquals('{"type":"ENTITY","entity_id":null,"entity_type":10,"snapshot":{"type":"SNAPSHOT","version":null,"data":[]}}', $this->getSerializer()->encode($entity));
 
         // test with data
-        $entity = new Entity(EntityTypes::TEST_ENTITY_TYPE);
-        $entity->set('foo1', 'bar1', LanguageCodes::ENGLISH);
-        $entity->set('foo2', 'bar2', LanguageCodes::ENGLISH);
-        $entity->del('foo2', LanguageCodes::ENGLISH);
-        $this->assertEquals('{"id":null,"type":0,"data":{"en":{"foo1":"bar1"}}}', $this->getSerializer()->encode($entity));
+        $entity = $this->getEntityManager()->create(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
+        $entity->set('foo1', 'bar1');
+        $entity->set('foo2', 'bar2');
+        $entity->del('foo2');
+        $this->assertEquals('{"type":"ENTITY","entity_id":null,"entity_type":10,"snapshot":{"type":"SNAPSHOT","version":null,"data":{"foo1":{"type":"LOCALIZED_STRING","val":[{"type":"TRANS","val":"bar1","ver":0,"lang":"en"}]}}}}', $this->getSerializer()->encode($entity));
 
         // test with multiple languages
-        $entity = new Entity(EntityTypes::TEST_ENTITY_TYPE);
-        $entity->set('foo1', 'bar1', LanguageCodes::ENGLISH);
-        $entity->set('foo2', 'bar2', LanguageCodes::SPANISH);
-        $this->assertEquals('{"id":null,"type":0,"data":{"en":{"foo1":"bar1"},"es":{"foo2":"bar2"}}}', $this->getSerializer()->encode($entity));
+        $entity = $this->getEntityManager()->create(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
+        $entity->load(LanguageCodes::ENGLISH);
+        $entity->set('foo1', 'bar1');
+        $entity->load(LanguageCodes::SPANISH);
+        $entity->set('foo1', 'bar2');
+        $this->assertEquals('{"type":"ENTITY","entity_id":null,"entity_type":10,"snapshot":{"type":"SNAPSHOT","version":null,"data":{"foo1":{"type":"LOCALIZED_STRING","val":[{"type":"TRANS","val":"bar1","ver":0,"lang":"en"},{"type":"TRANS","val":"bar2","ver":0,"lang":"es"}]}}}}', $this->getSerializer()->encode($entity));
     }
 
     public function testDecodingEntity(): void
     {
         // test empty
-        $json = '{"id":null,"type":0,"data":[]}';
-        $entity = $this->getSerializer()->decode($json, Entity::class);
+        $json = '{"type":"ENTITY","entity_id":"","entity_type":10,"snapshot":{"type":"SNAPSHOT","version":null,"data":[]}}';
+        $entity = $this->getSerializer()->decode($json);
+        $entity->load(LanguageCodes::ENGLISH);
         $this->assertInstanceOf(Entity::class, $entity);
-        $this->assertEquals(null, $entity->getEntityId());
+        $this->assertEquals('', $entity->getEntityId());
         $this->assertEquals([], $entity->getLanguages());
-        $this->assertEquals(0, $entity->getEntityType());
-        $this->assertEquals([], $entity->all(LanguageCodes::ENGLISH));
+        $this->assertEquals(EntityTypes::TEST_ENTITY_TYPE, $entity->getEntityType());
+        $this->assertEquals([], $entity->all());
 
         // test fully realized
-        $json = '{"id":"c7a556c7-6f27-4049-bdbf-963379154a6f","type":0,"data":{"en":{"foo1":"bar1"},"es":{"foo2":"bar2"}}}';
-        $entity = $this->getSerializer()->decode($json, Entity::class);
+        $json = '{"type":"ENTITY","entity_id":"c7a556c7-6f27-4049-bdbf-963379154a6f","entity_type":10,"snapshot":{"type":"SNAPSHOT","version":null,"data":{"foo1":{"type":"LOCALIZED_STRING","val":[{"type":"TRANS","val":"bar1","ver":0,"lang":"en"},{"type":"TRANS","val":"bar2","ver":0,"lang":"es"}]}}}}';
+        $entity = $this->getSerializer()->decode($json);
+        $entity->load(LanguageCodes::ENGLISH);
         $this->assertInstanceOf(Entity::class, $entity);
         $this->assertEquals('c7a556c7-6f27-4049-bdbf-963379154a6f', (string) $entity->getEntityId());
-        $this->assertTrue($entity->has('foo1', LanguageCodes::ENGLISH));
-        $this->assertEquals('bar1', $entity->get('foo1', LanguageCodes::ENGLISH));
-        $this->assertEquals(0, $entity->getEntityType());
+        $this->assertTrue($entity->has('foo1'));
+        $this->assertEquals('bar1', $entity->get('foo1'));
+        $this->assertEquals(EntityTypes::TEST_ENTITY_TYPE, $entity->getEntityType());
         $this->assertEquals([LanguageCodes::ENGLISH, LanguageCodes::SPANISH], $entity->getLanguages());
+    }
+
+    public function testRegisterType(): void
+    {
+        $sut = $this->getSerializer();
+        $sut->registerType(TestType::class);
+        try {
+            $sut->registerType(TestType::class);
+            $this->fail('Exception not thrown');
+        } catch (WanderlusterException $e) {
+            $this->assertEquals('Data type already registered with Serializer - TEST.', $e->getMessage());
+        }
+
+        $sut->registerType(TestType::class, true);
+        $this->assertTrue($sut->isTypeRegistered('TEST'));
     }
 }
