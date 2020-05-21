@@ -9,18 +9,12 @@ use App\DataModel\Entity\Entity;
 use App\DataModel\Entity\EntityId;
 use App\DataModel\Serializer\Serializer;
 use App\DataModel\Translation\LanguageCodes;
-use App\EntityManager\Persistence\ShardCoordinator;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 use Ramsey\Uuid\Uuid;
 
 class EntityManager
 {
-    /**
-     * @var ShardCoordinator
-     */
-    protected $shardCoordinator;
-
     /**
      * @var EntityTypeManager
      */
@@ -47,22 +41,27 @@ class EntityManager
     protected $attributeManager;
 
     /**
+     * @var EntityTypeManager
+     */
+    protected $entityTypeManager;
+
+    /**
      * EntityManager constructor.
      */
     public function __construct(
-        ShardCoordinator $shardCoordinator,
         EntityTypeManager $typeCoordinator,
         EntityUtilites $entityUtilites,
         LanguageCodes $languageCodes,
         Serializer $serializer,
-        AttributeManager $attributeManager
+        AttributeManager $attributeManager,
+        EntityTypeManager $entityTypeManager
     ) {
-        $this->shardCoordinator = $shardCoordinator;
         $this->typeCoordinator = $typeCoordinator;
         $this->entityUtilities = $entityUtilites;
         $this->languageCodes = $languageCodes;
         $this->serializer = $serializer;
         $this->attributeManager = $attributeManager;
+        $this->entityTypeManager = $entityTypeManager;
     }
 
     /**
@@ -82,11 +81,11 @@ class EntityManager
             }
         }
 
-        if (is_null($entityType)) {
+        if (!$this->entityTypeManager->isValidType($entity->getEntityType())) {
             throw new WanderlusterException(sprintf(ErrorMessages::INVALID_ENTITY_TYPE, $entityType));
         }
 
-        if (!$entityId) {
+        if ($entityId->isNull()) {
             $entityId = $this->generateEntityId();
             $this->entityUtilities->setEntityId($entity, $entityId);
         }

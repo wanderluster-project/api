@@ -13,6 +13,7 @@ class EntityTypeManagerTest extends TestCase
     {
         $sut = new EntityTypeManager();
         $this->assertFalse($sut->isValidType(0 - 1));
+        $this->assertFalse($sut->isValidType(null));
         $this->assertTrue($sut->isValidType(0));
         $this->assertTrue($sut->isValidType(2000));
         $this->assertFalse($sut->isValidType(1000000 + 1));

@@ -13,7 +13,7 @@ class ErrorMessages
     const INVALID_S3_BUCKET = 'Invalid S3 Bucket - %s.';
     const INVALID_ENTITY_ID = 'Invalid EntityID format - %s.';
     const INVALID_SNAPSHOT_ID = 'Invalid SnapshotId format - %s.';
-    const INVALID_LANGUAGE_CODE = 'Invalid language code -  %s.';
+    const INVALID_LANGUAGE_CODE = 'Invalid language code - %s.';
     const INVALID_USERNAME = 'Invalid username - %s.';
     const INVALID_JSON = 'Invalid JSON passed as argument.';
     const OPTION_REQUIRED = 'Configuration option missing - %s.';
