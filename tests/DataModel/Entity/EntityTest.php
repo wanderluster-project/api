@@ -19,7 +19,7 @@ class EntityTest extends FunctionalTest
         $this->assertEquals([], $sut->getLanguages());
         $this->assertEquals(EntityTypes::TEST_ENTITY_TYPE, $sut->getEntityType());
         $this->assertEmpty($sut->all());
-        $this->assertEquals('', (string) $sut->getEntityId());
+        $this->assertNotEmpty((string) $sut->getEntityId());
         $this->assertNull($sut->get('foo'));
         $this->assertFalse($sut->has('foo'));
     }
@@ -151,7 +151,7 @@ class EntityTest extends FunctionalTest
             'entity_type' => 100,
             'snapshot' => null,
         ]);
-        $this->assertEquals('', (string) $sut->getEntityId());
+        $this->assertNotEmpty((string) $sut->getEntityId());
         $this->assertEquals(100, (string) $sut->getEntityType());
 
         // with some data
@@ -269,7 +269,7 @@ class EntityTest extends FunctionalTest
         $sut = $this->getEntityManager()->create(EntityTypes::TEST_ENTITY_TYPE, LanguageCodes::ENGLISH);
         $this->assertEquals([
             'type' => 'ENTITY',
-            'entity_id' => null,
+            'entity_id' => (string) $sut->getEntityId(),
             'entity_type' => 10,
             'snapshot' => [
                 'type' => 'SNAPSHOT',
@@ -286,7 +286,7 @@ class EntityTest extends FunctionalTest
 
         $this->assertEquals([
             'type' => 'ENTITY',
-            'entity_id' => null,
+            'entity_id' => (string) $sut->getEntityId(),
             'entity_type' => 10,
             'snapshot' => [
                 'type' => 'SNAPSHOT',

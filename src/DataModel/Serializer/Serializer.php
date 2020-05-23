@@ -21,13 +21,11 @@ use App\DataModel\Entity\Entity;
 use App\DataModel\Snapshot\Snapshot;
 use App\DataModel\Translation\LanguageCodes;
 use App\EntityManager\EntityTypeManager;
-use App\EntityManager\EntityUtilites;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 
 class Serializer
 {
-    protected EntityUtilites $entityUtilites;
     protected LanguageCodes $languageCodes;
     protected EntityTypeManager $entityTypeManager;
     protected AttributeManager $attributeManager;
@@ -54,9 +52,8 @@ class Serializer
     /**
      * Serializer constructor.
      */
-    public function __construct(EntityUtilites $entityUtilites, LanguageCodes $languageCodes, EntityTypeManager $entityTypeManager, AttributeManager $attributeManager)
+    public function __construct(LanguageCodes $languageCodes, EntityTypeManager $entityTypeManager, AttributeManager $attributeManager)
     {
-        $this->entityUtilites = $entityUtilites;
         $this->languageCodes = $languageCodes;
         $this->entityTypeManager = $entityTypeManager;
         $this->attributeManager = $attributeManager;

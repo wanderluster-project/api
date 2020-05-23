@@ -12,7 +12,8 @@ class EntityTypeManagerTest extends TestCase
     public function testIsValidType(): void
     {
         $sut = new EntityTypeManager();
-        $this->assertFalse($sut->isValidType(0 - 1));
+        $this->assertFalse($sut->isValidType('foo'));
+        $this->assertFalse($sut->isValidType(-1));
         $this->assertFalse($sut->isValidType(null));
         $this->assertTrue($sut->isValidType(0));
         $this->assertTrue($sut->isValidType(2000));

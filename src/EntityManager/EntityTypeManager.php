@@ -8,10 +8,16 @@ class EntityTypeManager
 {
     /**
      * Returns TRUE if valid EntityType or FALSE otherwise.
+     *
+     * @var mixed
      */
-    public function isValidType(?int $entityTypeID): bool
+    public function isValidType($entityTypeID): bool
     {
         if (is_null($entityTypeID)) {
+            return false;
+        }
+
+        if (!is_int($entityTypeID)) {
             return false;
         }
 

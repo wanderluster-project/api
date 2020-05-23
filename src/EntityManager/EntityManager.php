@@ -12,19 +12,10 @@ use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 use Ramsey\Uuid\Uuid;
+use ReflectionClass;
 
 class EntityManager
 {
-    /**
-     * @var EntityTypeManager
-     */
-    protected $typeCoordinator;
-
-    /**
-     * @var EntityUtilites
-     */
-    protected $entityUtilities;
-
     /**
      * @var LanguageCodes
      */
@@ -49,15 +40,11 @@ class EntityManager
      * EntityManager constructor.
      */
     public function __construct(
-        EntityTypeManager $typeCoordinator,
-        EntityUtilites $entityUtilites,
         LanguageCodes $languageCodes,
         Serializer $serializer,
         AttributeManager $attributeManager,
         EntityTypeManager $entityTypeManager
     ) {
-        $this->typeCoordinator = $typeCoordinator;
-        $this->entityUtilities = $entityUtilites;
         $this->languageCodes = $languageCodes;
         $this->serializer = $serializer;
         $this->attributeManager = $attributeManager;
@@ -65,13 +52,11 @@ class EntityManager
     }
 
     /**
-     * @return Entity
-     *
      * @throws WanderlusterException
      */
-    public function commit(Entity $entity)
+    public function commit(Entity $entity): Entity
     {
-        $entityId = $entity->getEntityId();
+        $this->allocateEntityId($entity);
         $entityType = $entity->getEntityType();
         $languages = $entity->getLanguages();
 
@@ -85,20 +70,7 @@ class EntityManager
             throw new WanderlusterException(sprintf(ErrorMessages::INVALID_ENTITY_TYPE, $entityType));
         }
 
-        if ($entityId->isNull()) {
-            $entityId = $this->generateEntityId();
-            $this->entityUtilities->setEntityId($entity, $entityId);
-        }
-
         return $entity;
-    }
-
-    /**
-     * @throws WanderlusterException
-     */
-    public function generateEntityId(): EntityId
-    {
-        return new EntityId((string) Uuid::uuid4());
     }
 
     /**
@@ -106,6 +78,32 @@ class EntityManager
      */
     public function create(int $defaultEntityType = 0, string $defaultLang = LanguageCodes::ANY): Entity
     {
-        return new Entity($this->serializer, $this->attributeManager, $defaultEntityType, $defaultLang);
+        $entity = new Entity($this->serializer, $this->attributeManager, $defaultEntityType, $defaultLang);
+        $this->allocateEntityId($entity);
+
+        return $entity;
+    }
+
+    /**
+     * Allocate entity id to entity if it does not exist.
+     *
+     * @throws WanderlusterException
+     * @throws \ReflectionException
+     */
+    protected function allocateEntityId(Entity $entity): Entity
+    {
+        if (!$entity->getEntityId()->isNull()) {
+            return $entity;
+        }
+
+        // @todo persist entity id
+
+        $entityId = new EntityId((string) Uuid::uuid4());
+        $reflection = new ReflectionClass(Entity::class);
+        $prop = $reflection->getProperty('entityId');
+        $prop->setAccessible(true);
+        $prop->setValue($entity, $entityId);
+
+        return $entity;
     }
 }
