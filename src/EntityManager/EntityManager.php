@@ -61,6 +61,14 @@ class EntityManager
      */
     public function create(int $defaultEntityType = 0, string $defaultLang = LanguageCodes::ANY): Entity
     {
+        if (!in_array($defaultLang, $this->languageCodes->getLanguageCodes())) {
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_LANGUAGE_CODE, $defaultLang));
+        }
+
+        if (!$this->entityTypeManager->isValidType($defaultEntityType)) {
+            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_ENTITY_TYPE, $defaultEntityType));
+        }
+
         $entity = new Entity($this->serializer, $this->attributeManager, $defaultEntityType, $defaultLang);
         $this->allocateEntityId($entity);
         $this->trackedEntities[spl_object_hash($entity)] = $entity;
