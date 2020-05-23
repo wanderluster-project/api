@@ -39,7 +39,7 @@ class StorageController
 
         try {
             $entity = $fileAdapter->saveFileToRemote($file);
-            $entityManager->commit($entity);
+            $entityManager->commit();
 
             return new JsonResponse($serializer->encode($entity), Response::HTTP_OK, [], true);
         } catch (Exception $e) {

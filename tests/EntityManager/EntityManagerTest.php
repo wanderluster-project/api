@@ -15,10 +15,10 @@ class EntityManagerTest extends FunctionalTest
     public function testCommit(): void
     {
         $sut = $this->getEntityManager();
-        $entity = new Entity($this->getSerializer(), $this->getAttributeMangager(), 0, LanguageCodes::ENGLISH);
+        $entity = $sut->create(0, LanguageCodes::ENGLISH);
         $entity->set(Attributes::CORE_TEST_STRING, 'test');
-        $this->assertNull($entity->getEntityId()->getUuid());
-        $sut->commit($entity);
+        $this->assertNotEmpty((string) $entity->getEntityId());
+        $sut->commit();
         $this->assertNotNull($entity->getEntityId()->getUuid());
     }
 
@@ -27,10 +27,11 @@ class EntityManagerTest extends FunctionalTest
         // Test Case: Invalid Language
         $sut = $this->getEntityManager();
         $entity = new Entity($this->getSerializer(), $this->getAttributeMangager(), 0, 'INVALID');
+        $sut->trackEntity($entity);
         $entity->set(Attributes::CORE_TEST_STRING, 'test');
 
         try {
-            $sut->commit($entity);
+            $sut->commit();
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid language code - INVALID.', $e->getMessage());
@@ -39,9 +40,10 @@ class EntityManagerTest extends FunctionalTest
         // Test Case: Invalid EntityType
         $sut = $this->getEntityManager();
         $entity = new Entity($this->getSerializer(), $this->getAttributeMangager(), -1);
+        $sut->trackEntity($entity);
 
         try {
-            $sut->commit($entity);
+            $sut->commit();
             $this->fail('Exception not thrown.');
         } catch (WanderlusterException $e) {
             $this->assertEquals('Invalid Entity Type - -1.', $e->getMessage());

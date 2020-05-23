@@ -37,6 +37,11 @@ class EntityManager
     protected $entityTypeManager;
 
     /**
+     * @var Entity[]
+     */
+    protected $trackedEntities = [];
+
+    /**
      * EntityManager constructor.
      */
     public function __construct(
@@ -52,36 +57,53 @@ class EntityManager
     }
 
     /**
-     * @throws WanderlusterException
-     */
-    public function commit(Entity $entity): Entity
-    {
-        $this->allocateEntityId($entity);
-        $entityType = $entity->getEntityType();
-        $languages = $entity->getLanguages();
-
-        foreach ($languages as $language) {
-            if (!in_array($language, $this->languageCodes->getLanguageCodes())) {
-                throw new WanderlusterException(sprintf(ErrorMessages::INVALID_LANGUAGE_CODE, $language));
-            }
-        }
-
-        if (!$this->entityTypeManager->isValidType($entity->getEntityType())) {
-            throw new WanderlusterException(sprintf(ErrorMessages::INVALID_ENTITY_TYPE, $entityType));
-        }
-
-        return $entity;
-    }
-
-    /**
      * Create a new Entity.
      */
     public function create(int $defaultEntityType = 0, string $defaultLang = LanguageCodes::ANY): Entity
     {
         $entity = new Entity($this->serializer, $this->attributeManager, $defaultEntityType, $defaultLang);
         $this->allocateEntityId($entity);
+        $this->trackedEntities[spl_object_hash($entity)] = $entity;
 
         return $entity;
+    }
+
+    /**
+     * @throws WanderlusterException
+     */
+    public function commit(): self
+    {
+        foreach ($this->trackedEntities as $entity) {
+            $this->allocateEntityId($entity);
+            $entityType = $entity->getEntityType();
+            $languages = $entity->getLanguages();
+
+            foreach ($languages as $language) {
+                if (!in_array($language, $this->languageCodes->getLanguageCodes())) {
+                    throw new WanderlusterException(sprintf(ErrorMessages::INVALID_LANGUAGE_CODE, $language));
+                }
+            }
+
+            if (!$this->entityTypeManager->isValidType($entity->getEntityType())) {
+                throw new WanderlusterException(sprintf(ErrorMessages::INVALID_ENTITY_TYPE, $entityType));
+            }
+        }
+
+        return $this;
+    }
+
+    public function trackEntity(Entity $entity): self
+    {
+        $this->trackedEntities[spl_object_hash($entity)] = $entity;
+
+        return $this;
+    }
+
+    public function stopTrackingEntity(Entity $entity): self
+    {
+        unset($this->trackedEntities[spl_object_hash($entity)]);
+
+        return $this;
     }
 
     /**
@@ -90,10 +112,10 @@ class EntityManager
      * @throws WanderlusterException
      * @throws \ReflectionException
      */
-    protected function allocateEntityId(Entity $entity): Entity
+    protected function allocateEntityId(Entity $entity): self
     {
         if (!$entity->getEntityId()->isNull()) {
-            return $entity;
+            return $this;
         }
 
         // @todo persist entity id
@@ -104,6 +126,6 @@ class EntityManager
         $prop->setAccessible(true);
         $prop->setValue($entity, $entityId);
 
-        return $entity;
+        return $this;
     }
 }
