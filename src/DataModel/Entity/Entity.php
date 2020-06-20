@@ -33,7 +33,7 @@ class Entity implements SerializableInterface
         $this->entityType = $defaultEntityType;
         $this->lang = $defaultLang;
         $this->entityId = new EntityId();
-        $this->snapshot = new Snapshot($serializer, $attributeManager);
+        $this->snapshot = new Snapshot($attributeManager);
     }
 
     /**

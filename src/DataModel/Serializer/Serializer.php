@@ -112,7 +112,7 @@ class Serializer
         if (Entity::SERIALIZATION_ID === $type) {
             $obj = new Entity($this, $this->attributeManager);
         } elseif (Snapshot::SERIALIZATION_ID === $type) {
-            $obj = new Snapshot($this, $this->attributeManager);
+            $obj = new Snapshot($this->attributeManager);
         } else {
             $obj = DataTypeRegistry::instantiate($type);
             $obj->setSerializer($this);

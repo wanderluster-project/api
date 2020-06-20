@@ -66,8 +66,6 @@ class DataTypeRegistry
 
     /**
      * Instantiate data type.
-     *
-     * @return mixed
      */
     public static function instantiate(string $serializationId): DataTypeInterface
     {

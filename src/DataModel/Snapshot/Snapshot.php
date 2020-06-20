@@ -7,6 +7,7 @@ namespace App\DataModel\Snapshot;
 use App\DataModel\Attributes\AttributeManager;
 use App\DataModel\Contracts\DataTypeInterface;
 use App\DataModel\Contracts\SerializableInterface;
+use App\DataModel\Serializer\DataTypeRegistry;
 use App\DataModel\Serializer\Serializer;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
@@ -33,9 +34,8 @@ class Snapshot implements SerializableInterface
     /**
      * Snapshot constructor.
      */
-    public function __construct(Serializer $serializer, AttributeManager $attributeManager)
+    public function __construct(AttributeManager $attributeManager)
     {
-        $this->serializer = $serializer;
         $this->attributeManager = $attributeManager;
     }
 
@@ -259,8 +259,9 @@ class Snapshot implements SerializableInterface
 
         foreach ($data as $key => $typeData) {
             $type = $typeData['type'];
-            $typeObj = $this->serializer->instantiate($type, $typeData);
-            $this->data[$key] = $typeObj;
+            $obj = DataTypeRegistry::instantiate($type);
+            $obj->fromArray($typeData);
+            $this->data[$key] = $obj;
         }
 
         return $this;

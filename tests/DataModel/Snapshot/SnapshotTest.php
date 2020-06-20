@@ -15,13 +15,13 @@ class SnapshotTest extends FunctionalTest
     public function testConstructor(): void
     {
         // naked constructor
-        $sut = new Snapshot($this->getSerializer(), $this->getAttributeMangager());
+        $sut = new Snapshot($this->getAttributeMangager());
         $this->assertEquals([], $sut->getLanguages());
     }
 
     public function testSetGetHas(): void
     {
-        $sut = new Snapshot($this->getSerializer(), $this->getAttributeMangager());
+        $sut = new Snapshot($this->getAttributeMangager());
 
         // assert key does not exist
         $this->assertFalse($sut->has('foo', LanguageCodes::ANY));
@@ -60,7 +60,7 @@ class SnapshotTest extends FunctionalTest
         /**
          * Test Case #1 - Invariant to language.
          */
-        $sut = new Snapshot($this->getSerializer(), $this->getAttributeMangager());
+        $sut = new Snapshot($this->getAttributeMangager());
         $this->assertFalse($sut->has(Attributes::CORE_TEST_INT, LanguageCodes::ANY));
 
         // set value
@@ -79,7 +79,7 @@ class SnapshotTest extends FunctionalTest
         /**
          * Test Case #2 - Multi-language.
          */
-        $sut = new Snapshot($this->getSerializer(), $this->getAttributeMangager());
+        $sut = new Snapshot($this->getAttributeMangager());
         $this->assertFalse($sut->has(Attributes::CORE_TEST_STRING, LanguageCodes::ANY));
 
         // set value
@@ -112,7 +112,7 @@ class SnapshotTest extends FunctionalTest
         /**
          * Test Case #1 - Invariant to language.
          */
-        $sut = new Snapshot($this->getSerializer(), $this->getAttributeMangager());
+        $sut = new Snapshot($this->getAttributeMangager());
         $this->assertEquals([], $sut->keys(LanguageCodes::ANY));
 
         // set values
@@ -132,7 +132,7 @@ class SnapshotTest extends FunctionalTest
         /**
          * Test Case #2 - Multi-language.
          */
-        $sut = new Snapshot($this->getSerializer(), $this->getAttributeMangager());
+        $sut = new Snapshot($this->getAttributeMangager());
         $this->assertEquals([], $sut->keys(LanguageCodes::ANY));
 
         // set values
@@ -155,7 +155,7 @@ class SnapshotTest extends FunctionalTest
         /**
          * Test Case #1 - Invariant to language.
          */
-        $sut = new Snapshot($this->getSerializer(), $this->getAttributeMangager());
+        $sut = new Snapshot($this->getAttributeMangager());
         $this->assertEquals([], $sut->keys(LanguageCodes::ANY));
 
         // set values
@@ -173,7 +173,7 @@ class SnapshotTest extends FunctionalTest
         /**
          * Test Case #2 - Multi-language.
          */
-        $sut = new Snapshot($this->getSerializer(), $this->getAttributeMangager());
+        $sut = new Snapshot($this->getAttributeMangager());
         $this->assertEquals([], $sut->all(LanguageCodes::ENGLISH));
 
         // set values
@@ -214,7 +214,7 @@ class SnapshotTest extends FunctionalTest
 
     public function testFromArrayExceptions(): void
     {
-        $sut = new Snapshot($this->getSerializer(), $this->getAttributeMangager());
+        $sut = new Snapshot($this->getAttributeMangager());
 
         // missing type
         try {
@@ -228,7 +228,7 @@ class SnapshotTest extends FunctionalTest
         // missing version
         try {
             $sut->fromArray([
-               'type' => 'SNAPSHOT',  'data' => [],
+                'type' => 'SNAPSHOT', 'data' => [],
             ]);
         } catch (WanderlusterException $e) {
             $this->assertEquals('Error hydrating SNAPSHOT data type - Missing Field: version.', $e->getMessage());
@@ -237,7 +237,7 @@ class SnapshotTest extends FunctionalTest
         // missing data
         try {
             $sut->fromArray([
-                'type' => 'SNAPSHOT',  'version' => 10,
+                'type' => 'SNAPSHOT', 'version' => 10,
             ]);
         } catch (WanderlusterException $e) {
             $this->assertEquals('Error hydrating SNAPSHOT data type - Missing Field: data.', $e->getMessage());
@@ -246,7 +246,7 @@ class SnapshotTest extends FunctionalTest
         // invalid type
         try {
             $sut->fromArray([
-                'type' => 'FOO',  'version' => 10, 'data' => [],
+                'type' => 'FOO', 'version' => 10, 'data' => [],
             ]);
         } catch (WanderlusterException $e) {
             $this->assertEquals('Error hydrating SNAPSHOT data type - Invalid Type: FOO.', $e->getMessage());
