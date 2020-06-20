@@ -205,7 +205,7 @@ class SnapshotTest extends FunctionalTest
 
     public function testDecodeSnapshot(): void
     {
-        $json = '{"type":"SNAPSHOT","version":10,"data":{"foo1":{"type":"LOCALIZED_STRING","val":[{"type":"TRANS","val":"bar1","ver":0,"lang":"en"},{"type":"TRANS","val":"bar2","ver":0,"lang":"es"}]}}}';
+        $json = '{"type":"SNAPSHOT","version":10,"data":{"foo1":{"type":"STRING","val":[{"type":"TRANS","val":"bar1","ver":0,"lang":"en"},{"type":"TRANS","val":"bar2","ver":0,"lang":"es"}]}}}';
         $sut = $this->getSerializer()->decode($json);
         $this->assertEquals(10, $sut->getVersion());
         // @phpstan-ignore-next-line

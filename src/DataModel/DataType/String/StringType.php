@@ -12,9 +12,9 @@ use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 
-class LocalizedStringType extends AbstractStringType
+class StringType extends AbstractStringType
 {
-    const SERIALIZATION_ID = 'LOCALIZED_STRING';
+    const SERIALIZATION_ID = 'STRING';
 
     /**
      * @var TranslationType[]
@@ -163,13 +163,13 @@ class LocalizedStringType extends AbstractStringType
             throw new WanderlusterException(sprintf(ErrorMessages::MERGE_UNSUCCESSFUL, $type->getSerializationId(), $this->getSerializationId()));
         }
 
-        $reflection = new \ReflectionClass(LocalizedStringType::class);
+        $reflection = new \ReflectionClass(StringType::class);
         $prop = $reflection->getProperty('val');
         $prop->setAccessible(true);
         $thatTranslations = $prop->getValue($type);
 
         /*
-         * @var LocalizedStringType $type
+         * @var StringType $type
          */
         foreach ($thatTranslations as $lang => $item) {
             if (!isset($this->val[$lang])) {
@@ -231,6 +231,6 @@ class LocalizedStringType extends AbstractStringType
 
     public function canMergeWith(DataTypeInterface $type): bool
     {
-        return $type instanceof LocalizedStringType;
+        return $type instanceof StringType;
     }
 }
