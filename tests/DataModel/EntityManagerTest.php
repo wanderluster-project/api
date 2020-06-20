@@ -26,7 +26,7 @@ class EntityManagerTest extends FunctionalTest
     {
         // Test Case: Invalid Language
         $sut = $this->getEntityManager();
-        $entity = new Entity($this->getSerializer(), $this->getAttributeMangager(), 0, 'INVALID');
+        $entity = new Entity($this->getAttributeMangager(), 0, 'INVALID');
         $sut->trackEntity($entity);
         $entity->set(Attributes::CORE_TEST_STRING, 'test');
 
@@ -39,7 +39,7 @@ class EntityManagerTest extends FunctionalTest
 
         // Test Case: Invalid EntityType
         $sut = $this->getEntityManager();
-        $entity = new Entity($this->getSerializer(), $this->getAttributeMangager(), -1);
+        $entity = new Entity($this->getAttributeMangager(), -1);
         $sut->trackEntity($entity);
 
         try {
