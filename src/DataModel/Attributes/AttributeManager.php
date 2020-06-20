@@ -10,8 +10,8 @@ use App\DataModel\DataType\DateTimeType;
 use App\DataModel\DataType\FileSizeType;
 use App\DataModel\DataType\IntegerType;
 use App\DataModel\DataType\NumericType;
-use App\DataModel\DataType\String\LocalizedStringType;
 use App\DataModel\DataType\String\MimeType;
+use App\DataModel\DataType\String\StringType;
 use App\DataModel\DataType\String\UrlType;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
@@ -28,11 +28,11 @@ class AttributeManager
             case Attributes::CORE_FILE_URL:
                 return new UrlType();
             case Attributes::CORE_TEST_STRING:
-                return new LocalizedStringType();
+                return new StringType();
             case Attributes::CORE_TEST_STRING_2:
-                return new LocalizedStringType();
+                return new StringType();
             case Attributes::CORE_TEST_STRING_3:
-                return new LocalizedStringType();
+                return new StringType();
             case Attributes::CORE_TEST_BOOLEAN:
                 return new BooleanType();
             case Attributes::CORE_TEST_DATE_TIME:

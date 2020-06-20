@@ -165,7 +165,7 @@ class EntityTest extends FunctionalTest
                 'version' => 100,
                 'data' => [
                     'test.string' => [
-                        'type' => 'LOCALIZED_STRING',
+                        'type' => 'STRING',
                         'val' => [
                             ['type' => 'TRANS', 'lang' => 'en', 'val' => 'english string', 'ver' => 10],
                             ['type' => 'TRANS', 'lang' => 'es', 'val' => 'spanish string', 'ver' => 10],
@@ -293,7 +293,7 @@ class EntityTest extends FunctionalTest
                 'version' => null,
                 'data' => [
                     'core.test.string_1' => [
-                        'type' => 'LOCALIZED_STRING',
+                        'type' => 'STRING',
                         'val' => [
                             ['type' => 'TRANS', 'lang' => 'en', 'val' => 'english string', 'ver' => 0],
                             ['type' => 'TRANS', 'lang' => 'es', 'val' => 'spanish string', 'ver' => 0],

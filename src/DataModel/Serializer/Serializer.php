@@ -13,8 +13,8 @@ use App\DataModel\DataType\FileSizeType;
 use App\DataModel\DataType\IntegerType;
 use App\DataModel\DataType\NumericType;
 use App\DataModel\DataType\String\EmailType;
-use App\DataModel\DataType\String\LocalizedStringType;
 use App\DataModel\DataType\String\MimeType;
+use App\DataModel\DataType\String\StringType;
 use App\DataModel\DataType\String\TranslationType;
 use App\DataModel\DataType\String\UrlType;
 use App\DataModel\Entity\Entity;
@@ -40,7 +40,7 @@ class Serializer
         Snapshot::SERIALIZATION_ID => Snapshot::class,
         // Data Types
         EmailType::SERIALIZATION_ID => EmailType::class,
-        LocalizedStringType::SERIALIZATION_ID => LocalizedStringType::class,
+        StringType::SERIALIZATION_ID => StringType::class,
         MimeType::SERIALIZATION_ID => MimeType::class,
         TranslationType::SERIALIZATION_ID => TranslationType::class,
         UrlType::SERIALIZATION_ID => UrlType::class,
