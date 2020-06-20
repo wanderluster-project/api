@@ -45,5 +45,6 @@ class ErrorMessages
     const MERGE_UNSUCCESSFUL = 'Unable to merge %s with %s.';
     const DATA_TYPE_COMPARISON_UNSUCCESSFUL = 'Unable to compare %s with %s.';
     const DATA_TYPE_ALREADY_REGISTERED = 'Data type already registered with Serializer - %s.';
+    const DATA_TYPE_UNKOWN = 'Data type unknown - %s';
     const UNKNOWN_ATTRIBUTE_NAME = 'Unknown attribute - %s';
 }
