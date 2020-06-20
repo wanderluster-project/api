@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\DataModel;
+namespace App\Persistence;
 
 class EntityTypeManager
 {

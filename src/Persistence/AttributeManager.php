@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\DataModel\Attributes;
+namespace App\Persistence;
 
+use App\DataModel\Attributes\Attributes;
 use App\DataModel\Contracts\DataTypeInterface;
 use App\DataModel\DataType\BooleanType;
 use App\DataModel\DataType\DateTimeType;

@@ -7,10 +7,10 @@ namespace App\FileStorage;
 use App\DataModel\Attributes\Attributes;
 use App\DataModel\Entity\Entity;
 use App\DataModel\Entity\EntityId;
-use App\DataModel\EntityManager;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\WanderlusterException;
 use App\FileStorage\FileSystemAdapters\StorageAdapterInterface;
+use App\Persistence\EntityManager;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 

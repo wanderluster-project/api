@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\DataModel\Entity\EntityId;
-use App\DataModel\EntityManager;
 use App\DataModel\Serializer\Serializer;
 use App\Exception\ErrorMessages;
 use App\Exception\InvalidEntityIdFormatException;
 use App\FileStorage\FileAdapters\ChainFileAdapter;
+use App\Persistence\EntityManager;
 use Exception;
 use League\Flysystem\FileNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;

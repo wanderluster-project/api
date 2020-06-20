@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\DataModel\Attributes;
 
-use App\DataModel\Attributes\AttributeManager;
 use App\DataModel\Attributes\Attributes;
 use App\DataModel\DataType\BooleanType;
 use App\DataModel\DataType\DateTimeType;
@@ -16,6 +15,7 @@ use App\DataModel\DataType\String\StringType;
 use App\DataModel\DataType\String\TranslationType;
 use App\DataModel\DataType\String\UrlType;
 use App\Exception\WanderlusterException;
+use App\Persistence\AttributeManager;
 use PHPUnit\Framework\TestCase;
 
 class AttributeManagerTest extends TestCase

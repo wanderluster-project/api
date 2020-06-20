@@ -6,8 +6,8 @@ services:
     alias: 'App\FileStorage\FileAdapters\ChainFileAdapter'
     public: true
   test.entity_manager:
-    alias: 'App\DataModel\EntityManager'
+    alias: 'App\Persistence\EntityManager'
     public: true
   test.attribute_manager:
-    alias: 'App\DataModel\Attributes\AttributeManager'
+    alias: 'App\Persistence\AttributeManager'
     public: true

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\DataModel\Snapshot;
 
-use App\DataModel\Attributes\AttributeManager;
 use App\DataModel\Contracts\DataTypeInterface;
 use App\DataModel\Contracts\SerializableInterface;
 use App\DataModel\Serializer\DataTypeRegistry;
@@ -12,6 +11,7 @@ use App\DataModel\Serializer\Serializer;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
+use App\Persistence\AttributeManager;
 use App\Security\User;
 use DateTime;
 use DateTimeImmutable;

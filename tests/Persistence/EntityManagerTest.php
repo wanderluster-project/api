@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\DataModel;
+namespace App\Tests\Persistence;
 
 use App\DataModel\Attributes\Attributes;
 use App\DataModel\Entity\Entity;

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\DataModel\Entity;
 
-use App\DataModel\Attributes\AttributeManager;
 use App\DataModel\Contracts\SerializableInterface;
 use App\DataModel\Snapshot\Snapshot;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
+use App\Persistence\AttributeManager;
 
 class Entity implements SerializableInterface
 {

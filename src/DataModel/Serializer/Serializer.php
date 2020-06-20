@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\DataModel\Serializer;
 
-use App\DataModel\Attributes\AttributeManager;
 use App\DataModel\Contracts\DataTypeInterface;
 use App\DataModel\Contracts\SerializableInterface;
 use App\DataModel\DataType\BooleanType;
@@ -18,11 +17,12 @@ use App\DataModel\DataType\String\StringType;
 use App\DataModel\DataType\String\TranslationType;
 use App\DataModel\DataType\String\UrlType;
 use App\DataModel\Entity\Entity;
-use App\DataModel\EntityTypeManager;
 use App\DataModel\Snapshot\Snapshot;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
+use App\Persistence\AttributeManager;
+use App\Persistence\EntityTypeManager;
 
 class Serializer
 {

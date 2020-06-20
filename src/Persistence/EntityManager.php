@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace App\DataModel;
+namespace App\Persistence;
 
-use App\DataModel\Attributes\AttributeManager;
 use App\DataModel\Entity\Entity;
 use App\DataModel\Entity\EntityId;
 use App\DataModel\Serializer\Serializer;

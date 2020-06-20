@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests;
 
-use App\DataModel\Attributes\AttributeManager;
-use App\DataModel\EntityManager;
 use App\DataModel\Serializer\Serializer;
 use App\FileStorage\FileAdapters\ChainFileAdapter;
+use App\Persistence\AttributeManager;
+use App\Persistence\EntityManager;
 use App\Security\JwtTokenUtilities;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
