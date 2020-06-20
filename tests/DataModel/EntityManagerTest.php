@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\EntityManager;
+namespace App\Tests\DataModel;
 
 use App\DataModel\Attributes\Attributes;
 use App\DataModel\Entity\Entity;

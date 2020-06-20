@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\EntityManager;
+namespace App\DataModel;
 
 use App\DataModel\Attributes\AttributeManager;
 use App\DataModel\Entity\Entity;

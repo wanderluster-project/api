@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\EntityManager;
+namespace App\Tests\DataModel;
 
-use App\EntityManager\EntityTypeManager;
+use App\DataModel\EntityTypeManager;
 use PHPUnit\Framework\TestCase;
 
 class EntityTypeManagerTest extends TestCase

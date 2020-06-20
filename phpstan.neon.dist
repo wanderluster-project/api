@@ -9,5 +9,5 @@ parameters:
         - vendor/autoload.php
         - bin/.phpunit/phpunit-7.5-0/vendor/autoload.php
     checkMissingIterableValueType: false
-    ignoreErrors:
-        - '/Method App\\EntityManager\\EntityTypeManager::isValidType\(\)/'
+#    ignoreErrors:
+#        - '/Method App\\EntityManager\\EntityTypeManager::isValidType\(\)/'

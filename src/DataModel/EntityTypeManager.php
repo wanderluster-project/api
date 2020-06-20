@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\EntityManager;
+namespace App\DataModel;
 
 class EntityTypeManager
 {
     /**
      * Returns TRUE if valid EntityType or FALSE otherwise.
      *
-     * @var mixed
+     * @param mixed $entityTypeID
      */
     public function isValidType($entityTypeID): bool
     {

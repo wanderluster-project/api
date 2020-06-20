@@ -18,9 +18,9 @@ use App\DataModel\DataType\String\StringType;
 use App\DataModel\DataType\String\TranslationType;
 use App\DataModel\DataType\String\UrlType;
 use App\DataModel\Entity\Entity;
+use App\DataModel\EntityTypeManager;
 use App\DataModel\Snapshot\Snapshot;
 use App\DataModel\Translation\LanguageCodes;
-use App\EntityManager\EntityTypeManager;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 

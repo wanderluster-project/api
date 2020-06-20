@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Factory;
+namespace App\FileStorage\Factory;
 
 use App\FileStorage\FileSystemAdapters\S3StorageAdapter;
 use App\FileStorage\FileSystemAdapters\StorageAdapterInterface;
