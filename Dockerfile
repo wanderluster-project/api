@@ -3,7 +3,7 @@ FROM ubuntu:20.04
 
 # Dependencies
 RUN export DEBIAN_FRONTEND=noninteractive && \
-    apt-get update && \
+    apt-get update --fix-missing && \
     apt -y upgrade && \
     apt-get install -y curl wget gzip git zip && \
     apt-get install -y apache2 && \

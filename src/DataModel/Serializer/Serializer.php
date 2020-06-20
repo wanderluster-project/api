@@ -88,7 +88,7 @@ class Serializer
             throw new WanderlusterException(sprintf(ErrorMessages::SERIALIZATION_ERROR, 'Error encountered decoding from JSON'));
         }
 
-        $type = isset($data['type']) ? $data['type'] : null;
+        $type = isset($data['type']) ? (string) $data['type'] : '';
 
         if (!$type) {
             throw new WanderlusterException(sprintf(ErrorMessages::ERROR_HYDRATING_DATATYPE, 'UNKNOWN', 'Missing field: type'));
@@ -98,24 +98,13 @@ class Serializer
             throw new WanderlusterException(sprintf(ErrorMessages::DESERIALIZATION_ERROR, 'Invalid type: '.$type));
         }
 
-        return $this->instantiate($type, $data);
-    }
-
-    /**
-     * Instantiate data type.
-     *
-     * @return mixed
-     */
-    public function instantiate(string $type, array $data)
-    {
         // Instantiate object
         if (Entity::SERIALIZATION_ID === $type) {
-            $obj = new Entity($this, $this->attributeManager);
+            $obj = new Entity($this->attributeManager);
         } elseif (Snapshot::SERIALIZATION_ID === $type) {
-            $obj = new Snapshot($this, $this->attributeManager);
+            $obj = new Snapshot($this->attributeManager);
         } else {
-            $class = $this->objRegistry[$type];
-            $obj = new $class();
+            $obj = DataTypeRegistry::instantiate($type);
             $obj->setSerializer($this);
         }
         $obj->fromArray($data);

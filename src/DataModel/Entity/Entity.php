@@ -6,7 +6,6 @@ namespace App\DataModel\Entity;
 
 use App\DataModel\Attributes\AttributeManager;
 use App\DataModel\Contracts\SerializableInterface;
-use App\DataModel\Serializer\Serializer;
 use App\DataModel\Snapshot\Snapshot;
 use App\DataModel\Translation\LanguageCodes;
 use App\Exception\ErrorMessages;
@@ -16,7 +15,6 @@ class Entity implements SerializableInterface
 {
     const SERIALIZATION_ID = 'ENTITY';
 
-    protected Serializer $serializer;
     protected AttributeManager $attributeManager;
     protected int $entityType;
     protected string $lang;
@@ -26,14 +24,13 @@ class Entity implements SerializableInterface
     /**
      * Entity constructor.
      */
-    public function __construct(Serializer $serializer, AttributeManager $attributeManager, int $defaultEntityType = 0, string $defaultLang = LanguageCodes::ANY)
+    public function __construct(AttributeManager $attributeManager, int $defaultEntityType = 0, string $defaultLang = LanguageCodes::ANY)
     {
-        $this->serializer = $serializer;
         $this->attributeManager = $attributeManager;
         $this->entityType = $defaultEntityType;
         $this->lang = $defaultLang;
         $this->entityId = new EntityId();
-        $this->snapshot = new Snapshot($serializer, $attributeManager);
+        $this->snapshot = new Snapshot($attributeManager);
     }
 
     /**

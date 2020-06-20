@@ -69,7 +69,7 @@ class EntityManager
             throw new WanderlusterException(sprintf(ErrorMessages::INVALID_ENTITY_TYPE, $defaultEntityType));
         }
 
-        $entity = new Entity($this->serializer, $this->attributeManager, $defaultEntityType, $defaultLang);
+        $entity = new Entity($this->attributeManager, $defaultEntityType, $defaultLang);
         $this->allocateEntityId($entity);
         $this->trackedEntities[spl_object_hash($entity)] = $entity;
 
