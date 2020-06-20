@@ -71,7 +71,7 @@ class DataTypeRegistry
      */
     public static function instantiate(string $serializationId): DataTypeInterface
     {
-        if (self::isTypeRegistered($serializationId)) {
+        if (!self::isTypeRegistered($serializationId)) {
             throw new WanderlusterException(sprintf(ErrorMessages::DATA_TYPE_UNKOWN, $serializationId));
         }
         $class = self::$registry[$serializationId];

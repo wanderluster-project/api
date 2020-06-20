@@ -114,8 +114,7 @@ class Serializer
         } elseif (Snapshot::SERIALIZATION_ID === $type) {
             $obj = new Snapshot($this, $this->attributeManager);
         } else {
-            $class = $this->objRegistry[$type];
-            $obj = new $class();
+            $obj = DataTypeRegistry::instantiate($type);
             $obj->setSerializer($this);
         }
         $obj->fromArray($data);
