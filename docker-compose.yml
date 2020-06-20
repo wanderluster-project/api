@@ -10,6 +10,7 @@ services:
       - mysql1
       - mysql2
       - mysql3
+      - couchdb
     ports:
       - "80:80"
     links:
@@ -17,12 +18,20 @@ services:
       - mysql1:mysql1
       - mysql2:mysql2
       - mysql3:mysql3
+      - couchdb
     volumes:
       - ./:/var/www/wanderluster
   redis:
-    image: redis
+    image: redis:6.0
     ports:
       - "6379:6379"
+  couchdb:
+    image: couchdb:3.1
+    ports:
+      - "5984:5984"
+    environment:
+      COUCHDB_USER: admin
+      COUCHDB_PASSWORD: passpass
   mysql1:
     image: mysql:8.0
     ports:
@@ -30,8 +39,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: 237Ml1X8370D5nQ
       MYSQL_USER: wanderluster_api
-      MYSQL_PASSWORD: P81Rp51UwxhCkvE
-      MYSQL_DATABASE: P81Rp51UwxhCkvE
+      MYSQL_PASSWORD: passpass
+      MYSQL_DATABASE: wanderluster_api
     volumes:
       - db1_data:/var/lib/mysql
   mysql2:
