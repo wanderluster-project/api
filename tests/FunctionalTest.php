@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Tests;
 
 use App\DataModel\Attributes\AttributeManager;
+use App\DataModel\EntityManager;
 use App\DataModel\Serializer\Serializer;
-use App\EntityManager\EntityManager;
 use App\FileStorage\FileAdapters\ChainFileAdapter;
 use App\Security\JwtTokenUtilities;
 use PHPUnit\Framework\TestCase;

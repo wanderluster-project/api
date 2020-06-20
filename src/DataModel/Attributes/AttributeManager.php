@@ -10,14 +10,19 @@ use App\DataModel\DataType\DateTimeType;
 use App\DataModel\DataType\FileSizeType;
 use App\DataModel\DataType\IntegerType;
 use App\DataModel\DataType\NumericType;
+use App\DataModel\DataType\String\EmailType;
 use App\DataModel\DataType\String\MimeType;
 use App\DataModel\DataType\String\StringType;
+use App\DataModel\DataType\String\TranslationType;
 use App\DataModel\DataType\String\UrlType;
 use App\Exception\ErrorMessages;
 use App\Exception\WanderlusterException;
 
 class AttributeManager
 {
+    /**
+     * @throws WanderlusterException
+     */
     public function getDataType(string $attr): DataTypeInterface
     {
         switch ($attr) {
@@ -33,6 +38,14 @@ class AttributeManager
                 return new StringType();
             case Attributes::CORE_TEST_STRING_3:
                 return new StringType();
+            case Attributes::CORE_TEST_EMAIL:
+                return new EmailType();
+            case Attributes::CORE_TEST_MIME_TYPE:
+                return new MimeType();
+            case Attributes::CORE_TEST_TRANSLATION:
+                return new TranslationType();
+            case Attributes::CORE_TEST_URL:
+                return new UrlType();
             case Attributes::CORE_TEST_BOOLEAN:
                 return new BooleanType();
             case Attributes::CORE_TEST_DATE_TIME:

@@ -30,7 +30,7 @@ services:
 
     # FACTORIES
     App\FileStorage\FileAdapters\ChainFileAdapter:
-        factory: ['App\Factory\ChainFileAdapterFactory', 'create']
+        factory: ['App\FileStorage\Factory\ChainFileAdapterFactory', 'create']
 
     App\FileStorage\FileSystemAdapters\StorageAdapterInterface:
-        factory: ['App\Factory\FileSystemAdapterFactory', 'create']
+        factory: ['App\FileStorage\Factory\FileSystemAdapterFactory', 'create']

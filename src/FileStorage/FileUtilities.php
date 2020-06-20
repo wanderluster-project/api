@@ -7,9 +7,8 @@ namespace App\FileStorage;
 use App\DataModel\Attributes\Attributes;
 use App\DataModel\Entity\Entity;
 use App\DataModel\Entity\EntityId;
+use App\DataModel\EntityManager;
 use App\DataModel\Translation\LanguageCodes;
-use App\EntityManager\EntityManager;
-use App\EntityManager\EntityUtilites;
 use App\Exception\WanderlusterException;
 use App\FileStorage\FileSystemAdapters\StorageAdapterInterface;
 use Symfony\Component\HttpFoundation\File\File;
@@ -28,18 +27,12 @@ class FileUtilities
     protected $entityManager;
 
     /**
-     * @var EntityUtilites
-     */
-    protected $entityUtilities;
-
-    /**
      * JpegImageStorage constructor.
      */
-    public function __construct(StorageAdapterInterface $remoteStorageAdapter, EntityManager $entityManager, EntityUtilites $entityUtilites)
+    public function __construct(StorageAdapterInterface $remoteStorageAdapter, EntityManager $entityManager)
     {
         $this->remoteStorageAdapter = $remoteStorageAdapter;
         $this->entityManager = $entityManager;
-        $this->entityUtilities = $entityUtilites;
     }
 
     /**
@@ -56,11 +49,10 @@ class FileUtilities
             throw new BadRequestHttpException(sprintf('Invalid MIME type: %s', $mimeType));
         }
 
-        $entityId = $this->entityManager->generateEntityId();
+        $entity = $this->entityManager->create($entityType);
+        $entityId = $entity->getEntityId();
         $filename = $entityId.'.'.$fileExt;
         $this->remoteStorageAdapter->pushLocalFileToRemote($file->getRealPath(), $pathPrefix.'/'.$filename);
-
-        $entity = $this->entityManager->create($entityType);
 
         // @todo determine language
         $entity->load(LanguageCodes::ENGLISH);
@@ -68,8 +60,6 @@ class FileUtilities
         $entity->set(Attributes::CORE_FILE_MIME_TYPE, $mimeType)
             ->set(Attributes::CORE_FILE_SIZE, $file->getSize())
             ->set(Attributes::CORE_FILE_URL, $this->remoteStorageAdapter->generateFileUrl($pathPrefix.'/'.$filename));
-
-        $this->entityUtilities->setEntityId($entity, $entityId);
 
         return $entity;
     }

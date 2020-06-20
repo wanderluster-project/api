@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Factory;
+namespace App\FileStorage\Factory;
 
 use App\FileStorage\FileAdapters\ChainFileAdapter;
 use App\FileStorage\FileAdapters\Gif;

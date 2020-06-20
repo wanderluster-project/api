@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\DataModel\Entity\EntityId;
+use App\DataModel\EntityManager;
 use App\DataModel\Serializer\Serializer;
-use App\EntityManager\EntityManager;
 use App\Exception\ErrorMessages;
 use App\Exception\InvalidEntityIdFormatException;
 use App\FileStorage\FileAdapters\ChainFileAdapter;
@@ -39,7 +39,7 @@ class StorageController
 
         try {
             $entity = $fileAdapter->saveFileToRemote($file);
-            $entityManager->commit($entity);
+            $entityManager->commit();
 
             return new JsonResponse($serializer->encode($entity), Response::HTTP_OK, [], true);
         } catch (Exception $e) {
