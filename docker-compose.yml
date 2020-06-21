@@ -7,65 +7,67 @@ services:
       dockerfile: ./Dockerfile
     depends_on:
       - redis
-      - mysql1
-      - mysql2
-      - mysql3
       - couchdb
+      - proxysql
     ports:
       - "80:80"
     links:
       - redis:redis
+      - couchdb:couchdb
+      - proxysql:proxysql
+    volumes:
+      - ./:/var/www/wanderluster
+  proxysql:
+    # ports = 6032, 6033
+    image: proxysql/proxysql:2.0.9
+    depends_on:
+      - mysql1
+      - mysql2
+      - mysql3
+      - mysql4
+    links:
       - mysql1:mysql1
       - mysql2:mysql2
       - mysql3:mysql3
-      - couchdb
+      - mysql3:mysql4
     volumes:
-      - ./:/var/www/wanderluster
+      - type: bind
+        source: ./build/proxysql/proxysql.cnf
+        target: /etc/proxysql.cnf
   redis:
+    # port = 6379
     image: redis:6.0
-    ports:
-      - "6379:6379"
   couchdb:
+    # port = 5984
     image: couchdb:3.1
-    ports:
-      - "5984:5984"
     environment:
       COUCHDB_USER: admin
       COUCHDB_PASSWORD: passpass
   mysql1:
+    # port = 3306
     image: mysql:8.0
-    ports:
-      - "33061:3306"
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: 237Ml1X8370D5nQ
-      MYSQL_USER: wanderluster_api
-      MYSQL_PASSWORD: passpass
-      MYSQL_DATABASE: wanderluster_api
-    volumes:
-      - db1_data:/var/lib/mysql
+      MYSQL_ROOT_PASSWORD: passpass
   mysql2:
+    # port = 3306
     image: mysql:8.0
-    ports:
-      - "33062:3306"
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: 237Ml1X8370D5nQ
-      MYSQL_USER: wanderluster_api
-      MYSQL_PASSWORD: P81Rp51UwxhCkvE
-      MYSQL_DATABASE: P81Rp51UwxhCkvE
-    volumes:
-      - db2_data:/var/lib/mysql
+      MYSQL_ROOT_PASSWORD: passpass
   mysql3:
+    # port = 3306
     image: mysql:8.0
-    ports:
-    - "33063:3306"
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: 237Ml1X8370D5nQ
-      MYSQL_USER: wanderluster_api
-      MYSQL_PASSWORD: P81Rp51UwxhCkvE
-      MYSQL_DATABASE: P81Rp51UwxhCkvE
-    volumes:
-    - db3_data:/var/lib/mysql
-volumes:
-  db1_data: {}
-  db2_data: {}
-  db3_data: {}
+      MYSQL_ROOT_PASSWORD: passpass
+  mysql4:
+    # port = 3306
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: passpass

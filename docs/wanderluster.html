@@ -265,6 +265,8 @@ Error message and password prompt
 
 <li>Multilanguage Support</li>
 
+<li>MySQL Sharding in Wanderluster</li>
+
 <li>Snapshot</li>
 
 <li>Table of Contents</li>
@@ -9688,7 +9690,7 @@ Error message and password prompt
 <div title="$:/status/RequireReloadDueToPluginChange">
 <pre>no</pre>
 </div>
-<div created="20200616183638727" list="Attributes:Core.Geo [[List of Data Types]] [[List of Entity Types]] [[List of Entity Attributes]] Attributes:Core.File [[Table of Contents]] [[Data Model Goals]]" modified="20200617043147411" title="$:/StoryList">
+<div created="20200621030336605" list="[[Data Model Goals]] [[MySQL Sharding in Wanderluster]]" modified="20200621030611438" title="$:/StoryList">
 <pre></pre>
 </div>
 <div plugin-type="info" title="$:/temp/info-plugin" type="application/json">
@@ -9704,7 +9706,7 @@ Error message and password prompt
         },
         &quot;$:/info/url/full&quot;: {
             &quot;title&quot;: &quot;$:/info/url/full&quot;,
-            &quot;text&quot;: &quot;file:///Users/simpkevin/Desktop/wanderluster.html&quot;
+            &quot;text&quot;: &quot;file:///Users/kevin_simpson/vhosts/wanderluster/docs/wanderluster.html&quot;
         },
         &quot;$:/info/url/host&quot;: {
             &quot;title&quot;: &quot;$:/info/url/host&quot;,
@@ -9724,7 +9726,7 @@ Error message and password prompt
         },
         &quot;$:/info/url/pathname&quot;: {
             &quot;title&quot;: &quot;$:/info/url/pathname&quot;,
-            &quot;text&quot;: &quot;/Users/simpkevin/Desktop/wanderluster.html&quot;
+            &quot;text&quot;: &quot;/Users/kevin_simpson/vhosts/wanderluster/docs/wanderluster.html&quot;
         },
         &quot;$:/info/url/search&quot;: {
             &quot;title&quot;: &quot;$:/info/url/search&quot;,
@@ -9736,11 +9738,11 @@ Error message and password prompt
         },
         &quot;$:/info/browser/screen/width&quot;: {
             &quot;title&quot;: &quot;$:/info/browser/screen/width&quot;,
-            &quot;text&quot;: &quot;1920&quot;
+            &quot;text&quot;: &quot;1680&quot;
         },
         &quot;$:/info/browser/screen/height&quot;: {
             &quot;title&quot;: &quot;$:/info/browser/screen/height&quot;,
-            &quot;text&quot;: &quot;1080&quot;
+            &quot;text&quot;: &quot;1050&quot;
         },
         &quot;$:/info/browser/language&quot;: {
             &quot;title&quot;: &quot;$:/info/browser/language&quot;,
@@ -9749,7 +9751,7 @@ Error message and password prompt
     }
 }</pre>
 </div>
-<div created="20200616183530255" modified="20200617035555447" title="$:/temp/NewTagName">
+<div created="20200616183530255" modified="20200621030821609" title="$:/temp/NewTagName">
 <pre></pre>
 </div>
 <div created="20200616183731757" modified="20200616183736886" title="$:/theme">
@@ -9903,8 +9905,7 @@ Error message and password prompt
 </pre>
 </div>
 <div created="20200617041408199" modified="20200617042147948" tags="EntityAttributes" title="Attributes:Core.Media">
-<pre>
-|''Attribute''|''Data Type''|''Description''|''Translatable?''|
+<pre>|''Attribute''|''Data Type''|''Description''|''Translatable?''|
 |core.media|CollectionType|Media gallery of entity|No|
 |core.media.thumb|ImageType|Thumbnail image of entity|No|
 |core.media.featured|CollectionType|Featured images for the Entity|No|</pre>
@@ -9935,7 +9936,7 @@ Error message and password prompt
 |core.trail.guide_books|CollectionType|Entities of guidebooks|No|
 |core.trail.online_trail_guides|CollectionType|Entities of online resources|No|</pre>
 </div>
-<div created="20200616183454835" modified="20200617040028768" tags="DataModel TableOfContents" title="Data Model Goals">
+<div created="20200616183454835" modified="20200621035721517" tags="DataModel TableOfContents" title="Data Model Goals">
 <pre>Wanderluster was inspired by many things including [[Freebase]].  The Resource Description Framework [[RDF]] from the Semantic Web provides theoretical underpinnings for the data model.  It uses an eventually consistent data structure inspired by [[Cassandra]] and [[CouchDB]].  It is built to be a collaborative software product similar to [[Wikipedia]] and [[OpenStreetMaps]].  It is released under a [[copy-left]] license to promote free and open sharing of data.  It also uses an immutable history of changes similar to version control systems such as [[Git]].
 
 The data model for Wanderluster was designed with the following ideals:
@@ -9969,7 +9970,10 @@ The data model for Wanderluster was designed with the following ideals:
 ** [[Understanding merge conflicts in Wanderluster]]
 ** [[Deterministic Conflict Resolution]]
 * The data model should be ''scalable''
+** [[Entities should be sharding]]
+** [[Sharding in Wanderluster]]
 * The data model should embrace ''asynchronous updates''.
+** [[Most data updates in Wanderluster should be asynchronous]]
 
 !! Other References:
 [[Data Modeling Example]]
@@ -10050,8 +10054,7 @@ The greater of the two integers wins (using the &gt; operator)
 | 250       | 150 |   250 |</pre>
 </div>
 <div created="20200616185722533" modified="20200616201635335" tags="DataModel" title="Entities">
-<pre>
-</pre>
+<pre></pre>
 </div>
 <div created="20200616202124926" modified="20200617031901995" tags="DataModel" title="Entities should be flexible">
 <pre>Entities are a generic data structure in Wanderluster, they are very flexible.  While some entities may be locked for vandalism or other reasons, for most cases:
@@ -10073,7 +10076,6 @@ If for some reason a change needs to be reverted, the Snapshot is not deleted, i
 </div>
 <div created="20200616202610863" modified="20200617031857151" tags="DataModel" title="Entities should use Entity Types for categorization">
 <pre>
-
 See also: [[List of Entity Types]]</pre>
 </div>
 <div created="20200616201954876" modified="20200617032410734" tags="DataModel" title="Entity UUIDs">
@@ -10456,6 +10458,60 @@ For the Mount Rainier example:
 |Vietnamese|Núi Rainier|
 
 A single Entity represents Mount Rainier, but the name field has different translations</pre>
+</div>
+<div created="20200621030659898" modified="20200621044325860" tags="DataModel SoftwareArchitecture MySQL" title="MySQL Sharding in Wanderluster">
+<pre>!! Problem Space
+
+Consider routes in Wanderluster, that are stored in a table in MySQL.  Each route corresponds to the combination of the language and the localized slug for the entity.
+
+Examples:
+
+|Lang|Slug|Full URL|
+|English|Mount Rainier|https://en.wanderluster.app/data/mount-rainier|
+|French|Mont Rainier|https://fr.wanderluster.app/data/mont-rainier|
+|Spanish|Monte Rainier|https://fr.wanderluster.app/data/monte-rainier|
+|Tagalog|Bundok Rainier|https://tl.wanderluster.app/data/bundok-rainier|
+
+The number of such routes could potentially grow unbounded.  To support growth, data is automatically distributed among multiple MySQL databases.
+
+!! How Wanderluster uses MySQL
+
+Whenever possible, Wanderluster leverages queues to update data in the background to prevent locking (see [[Most data updates in Wanderluster should be asynchronous]]).  As such, Wanderluster leverages CouchDB for most of the querying logic.  
+
+However there are some use cases that are better handled using a RDBMS - including when we need unique constraints or use locking to ensure correct ordering.
+
+To reduce contention, data is stored as is a collection of identical database schemas and multiple MySQL hosts.  Cross-table joins are ''not'' utilized Wanderluster.  The data is distributed horizontally using a 'share nothing' architecture.
+
+!! How sharding works in Wanderluster
+
+Each data item is given a ''shard key'' which uniquely identifies the item.  The shard key is then hashed, and the hashed value is then mapped to an integer in the range 0-16,777,215 ''logical shards''(the MEDIUMINT data type in MySQL).  
+
+However, there is an additional layer of abstraction, the ''physical shard'' which is an individual database schema.  By default, there are 32 physical shards in Wanderluster, but this can grow as needed.  See [[Adding MySQL Hosts]].
+
+!! Sharding Example
+
+There are 4 hosts (numbered mysql_001... mysql_003) with a bunch of MySQL databases (wanderluster_000 ... wanderluster_104).  Each database is identical, but holds the data for about 160,000 shards apiece.  
+
+|Host|Database|Min Shard|Max Shard|
+|mysql_001|wanderluster_000|0|159,999|
+|mysql_001|wanderluster_001|160,000|319,999|
+|...|...|...|...|
+|mysql_001|wanderluster_025|4,000,000|4,159,999|
+|mysql_002|wanderluster_026|4,160,000|4,319,999|
+|...|...|...|...|
+|mysql_004|wanderluster_104|16,640,000|16,777,215|
+
+When someone types in https://en.wanderluster.app/data/mount-rainier
+
+Internally this is mapped to the shard key &quot;en|mount-rainier&quot;.  the MD5 hash of this is &quot;66269a9a34acf8d658121eae1ae347fb&quot;.  The first 6 characters of the hash is &quot;66269a&quot; which is then converted from a hexcode to a number -  6694554 - which is the shard for this shard key.
+
+This shard number maps to host #2, and database wanderluster_042
+
+
+
+
+
+</pre>
 </div>
 <div created="20200616185811329" modified="20200616185816666" tags="" title="Snapshot">
 <pre></pre>

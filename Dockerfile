@@ -8,6 +8,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y curl wget gzip git zip && \
     apt-get install -y apache2 && \
     apt-get install -y php libapache2-mod-php php-mysql php-dom php-xml php-mbstring php-intl && \
+    apt-get install -y mysql-client && \
     rm -Rf /var/www/html/* && \
     rmdir /var/www/html && \
     ln -sfn /var/www/wanderluster/public /var/www/html && \
@@ -19,7 +20,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 COPY . /var/www/wanderluster
 
 # Dev Dependencies
-RUN apt-get install -y php7.4-phpdbg vim && \
+RUN apt-get install -y php7.4-phpdbg vim nmap && \
     wget https://get.symfony.com/cli/installer -O - | bash && \
     mv /root/.symfony/bin/symfony /usr/local/bin/symfony && \
     git config --global user.email "simpkevin@gmail.com" && \
