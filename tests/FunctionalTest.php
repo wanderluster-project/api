@@ -7,6 +7,8 @@ namespace App\Tests;
 use App\DataModel\Serializer\Serializer;
 use App\FileStorage\FileAdapters\ChainFileAdapter;
 use App\Persistence\AttributeManager;
+use App\Persistence\CouchDB\Client;
+use App\Persistence\CouchDB\ClientFactory;
 use App\Persistence\EntityManager;
 use App\Security\JwtTokenUtilities;
 use PHPUnit\Framework\TestCase;
@@ -61,5 +63,19 @@ class FunctionalTest extends WebTestCase
         self::bootKernel();
 
         return self::$container->get('test.attribute_manager');
+    }
+
+    public function getCouchClientFactory(): ClientFactory
+    {
+        self::bootKernel();
+
+        return self::$container->get('test.couch_db.client_factory');
+    }
+
+    public function getCouchClient(): Client
+    {
+        $clientFactory = $this->getCouchClientFactory();
+
+        return $clientFactory->build();
     }
 }

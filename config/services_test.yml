@@ -11,3 +11,9 @@ services:
   test.attribute_manager:
     alias: 'App\Persistence\AttributeManager'
     public: true
+  test.couch_db.client:
+    alias: 'App\Persistence\CouchDB\Client'
+    public: true
+  test.couch_db.client_factory:
+    alias: 'App\Persistence\CouchDB\ClientFactory'
+    public: true

@@ -47,4 +47,8 @@ class ErrorMessages
     const DATA_TYPE_ALREADY_REGISTERED = 'Data type already registered with Serializer - %s.';
     const DATA_TYPE_UNKOWN = 'Data type unknown - %s';
     const UNKNOWN_ATTRIBUTE_NAME = 'Unknown attribute - %s';
+
+    const COUCHDB_ERROR = 'CouchDB error - %s';
+    const COUCHDB_JSON_ERROR = 'Invalid JSON returned from CouchDB';
+    const COUCHDB_INVALID_SESSION = 'Invalid CouchDB Session';
 }

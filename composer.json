@@ -8,6 +8,7 @@
         "ext-json": "*",
         "aws/aws-sdk-php-symfony": "^2.2",
         "firebase/php-jwt": "^5.2",
+        "guzzlehttp/guzzle": "^6.5",
         "league/flysystem-aws-s3-v3": "^1.0",
         "league/flysystem-bundle": "^1.5",
         "mockery/mockery": "^1.3",

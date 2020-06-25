@@ -8,7 +8,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y curl wget gzip git zip && \
     apt-get install -y apache2 && \
     apt-get install -y php libapache2-mod-php php-mysql php-dom php-xml php-mbstring php-intl && \
-    apt-get install -y mysql-client && \
     rm -Rf /var/www/html/* && \
     rmdir /var/www/html && \
     ln -sfn /var/www/wanderluster/public /var/www/html && \
