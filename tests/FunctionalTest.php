@@ -65,16 +65,16 @@ class FunctionalTest extends WebTestCase
         return self::$container->get('test.attribute_manager');
     }
 
-    public function getCouchClientFactory(): ClientFactory
+    public static function getCouchClientFactory(): ClientFactory
     {
         self::bootKernel();
 
         return self::$container->get('test.couch_db.client_factory');
     }
 
-    public function getCouchClient(): Client
+    public static function getCouchClient(): Client
     {
-        $clientFactory = $this->getCouchClientFactory();
+        $clientFactory = self::getCouchClientFactory();
 
         return $clientFactory->build();
     }

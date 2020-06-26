@@ -17,8 +17,11 @@ class ClientFactory
     /**
      * ClientFactory constructor.
      */
-    public function __construct(ParameterBagInterface $parameterBag, HttpClientFactory $httpClientFactory, LoggerInterface $logger)
-    {
+    public function __construct(
+        ParameterBagInterface $parameterBag,
+        HttpClientFactory $httpClientFactory,
+        LoggerInterface $logger
+    ) {
         $this->config = new Config();
         $this->config->host = (string) $parameterBag->get('couchdb.host');
         $this->config->port = (int) $parameterBag->get('couchdb.port');
