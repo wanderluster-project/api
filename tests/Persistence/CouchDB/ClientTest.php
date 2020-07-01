@@ -15,7 +15,7 @@ class ClientTest extends FunctionalTest
 
     public static function setUpBeforeClass(): void
     {
-        $client = self::getCouchClient();
+        $client = self::getCouchDbClient();
         if ($client->hasDB(self::TEST_DB_1)) {
             $client->deleteDB(self::TEST_DB_1);
         }
@@ -26,13 +26,13 @@ class ClientTest extends FunctionalTest
 
     public function testIsAvailable(): void
     {
-        $client = $this->getCouchClient();
+        $client = $this->getCouchDbClient();
         $this->assertTrue($client->isAvailable());
     }
 
     public function testCreateGetDeleteDatabase(): void
     {
-        $client = self::getCouchClient();
+        $client = self::getCouchDbClient();
 
         // test creating
         $this->assertFalse($client->hasDB(self::TEST_DB_1));
@@ -51,7 +51,7 @@ class ClientTest extends FunctionalTest
 
     public function testExceptionOnCreateDB(): void
     {
-        $client = $this->getCouchClient();
+        $client = $this->getCouchDbClient();
 
         // initially create database
         $client->createDB(self::TEST_DB_2);

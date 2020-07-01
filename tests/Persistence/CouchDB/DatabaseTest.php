@@ -13,7 +13,7 @@ class DatabaseTest extends FunctionalTest
 
     public static function setUpBeforeClass(): void
     {
-        $client = self::getCouchClient();
+        $client = self::getCouchDbClient();
         if ($client->hasDB(self::TEST_DB)) {
             $client->deleteDB(self::TEST_DB);
         }
@@ -22,7 +22,7 @@ class DatabaseTest extends FunctionalTest
 
     public function testCreateDocument(): void
     {
-        $couchDB = $this->getCouchClient();
+        $couchDB = $this->getCouchDbClient();
         $db = $couchDB->getDB(self::TEST_DB);
         $doc = $db->createDocument('test_save_document', ['foo' => 'bar']);
         $this->assertTrue($db->hasDocument('test_save_document'));
@@ -33,7 +33,7 @@ class DatabaseTest extends FunctionalTest
 
     public function testGetDocument(): void
     {
-        $couchDB = $this->getCouchClient();
+        $couchDB = $this->getCouchDbClient();
         $db = $couchDB->getDB(self::TEST_DB);
         $this->assertFalse($db->hasDocument('test_get_document'));
         $db->createDocument('test_get_document', ['foo' => 'bar']);
@@ -46,7 +46,7 @@ class DatabaseTest extends FunctionalTest
 
     public function testGetDocumentException(): void
     {
-        $couchDB = $this->getCouchClient();
+        $couchDB = $this->getCouchDbClient();
         $db = $couchDB->getDB(self::TEST_DB);
         try {
             $db->getDocument('test_get_document');
@@ -57,7 +57,7 @@ class DatabaseTest extends FunctionalTest
 
     public function testUpdateDocument(): void
     {
-        $couchDB = $this->getCouchClient();
+        $couchDB = $this->getCouchDbClient();
         $db = $couchDB->getDB(self::TEST_DB);
         $doc = $db->createDocument('test_update_document', ['foo' => 'bar']);
         $this->assertRegExp('/1-(.*)/', $doc->getRev());

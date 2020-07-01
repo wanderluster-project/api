@@ -10,32 +10,41 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class ClientFactory
 {
-    protected Config $config;
-    protected Client $client;
-    protected bool $init = false;
+    public static function create(ParameterBagInterface $parameterBag, HttpClientFactory $httpClientFactory, LoggerInterface $logger): Client
+    {
+        $config = new Config();
+        $config->host = (string) $parameterBag->get('couchdb.host');
+        $config->port = (int) $parameterBag->get('couchdb.port');
+        $config->username = (string) $parameterBag->get('couchdb.username');
+        $config->password = (string) $parameterBag->get('couchdb.password');
+        $config->sessionTimeout = (int) $parameterBag->get('couchdb.session_timeout');
+        $config->protocol = (string) $parameterBag->get('couchdb.protocol');
+        $config->httpClient = $httpClientFactory->create('couchdb');
+        $config->logger = $logger;
 
-    /**
-     * ClientFactory constructor.
-     */
-    public function __construct(
-        ParameterBagInterface $parameterBag,
-        HttpClientFactory $httpClientFactory,
-        LoggerInterface $logger
-    ) {
-        $this->config = new Config();
-        $this->config->host = (string) $parameterBag->get('couchdb.host');
-        $this->config->port = (int) $parameterBag->get('couchdb.port');
-        $this->config->username = (string) $parameterBag->get('couchdb.username');
-        $this->config->password = (string) $parameterBag->get('couchdb.password');
-        $this->config->sessionTimeout = (int) $parameterBag->get('couchdb.session_timeout');
-        $this->config->protocol = (string) $parameterBag->get('couchdb.protocol');
-        $this->config->httpClient = $httpClientFactory->create('couchdb');
-        $this->config->logger = $logger;
-        $this->client = new Client($this->config);
+        return new Client($config);
     }
 
-    public function build(): Client
+    public static function createWithParameters(
+        string $protocol,
+        string $host,
+        int $port,
+        string $username,
+        string $password,
+        int $sessionTimeout,
+        HttpClientFactory $httpClientFactory,
+        LoggerInterface $logger): Client
     {
-        return $this->client;
+        $config = new Config();
+        $config->protocol = $protocol;
+        $config->host = $host;
+        $config->port = $port;
+        $config->username = $username;
+        $config->password = $password;
+        $config->sessionTimeout = $sessionTimeout;
+        $config->httpClient = $httpClientFactory->create('couchdb');
+        $config->logger = $logger;
+
+        return new Client($config);
     }
 }

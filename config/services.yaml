@@ -5,12 +5,12 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     wanderluster_s3_bucket: "%env(WANDERLUSTER_S3_BUCKET)%"
+    couchdb.protocol: "%env(COUCHDB_PROTOCOL)%"
     couchdb.host: "%env(COUCHDB_HOST)%"
     couchdb.port: "%env(COUCHDB_PORT)%"
     couchdb.session_timeout: "%env(COUCHDB_SESSION_TIMEOUT)%"
     couchdb.username: "%env(COUCHDB_USERNAME)%"
     couchdb.password: "%env(COUCHDB_PASSWORD)%"
-    couchdb.protocol: "%env(COUCHDB_PROTOCOL)%"
 
 
 services:
@@ -40,3 +40,6 @@ services:
 
     App\FileStorage\FileSystemAdapters\StorageAdapterInterface:
         factory: ['App\FileStorage\Factory\FileSystemAdapterFactory', 'create']
+
+    App\Persistence\CouchDB\Client:
+        factory: ['App\Persistence\CouchDB\ClientFactory', 'create']

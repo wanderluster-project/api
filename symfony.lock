@@ -250,7 +250,7 @@
         }
     },
     "symfony/mime": {
-        "version": "v5.0.7"
+        "version": "v5.0.8"
     },
     "symfony/monolog-bridge": {
         "version": "v5.0.7"
